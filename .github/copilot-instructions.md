@@ -24,6 +24,7 @@ High-level architecture
 
 Key conventions
 
+- Use a default indentation of 4 spaces for the entire project.
 - Files requiring client-side behavior have "use client" at the top.
 - Import alias: '@/...' resolves to project root; prefer it for app-local modules.
 - Lint: `npm run lint -- <path>` forwards args to eslint; use it to lint single files.
