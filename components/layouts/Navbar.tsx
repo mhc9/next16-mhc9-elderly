@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { LayoutDashboard, Users, FileText, Settings, LogOut, User, Bell, Search } from "lucide-react";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 export default function Navbar() {
     const [open, setOpen] = useState(false);
@@ -47,6 +48,8 @@ export default function Navbar() {
                         className="bg-transparent border-none focus:outline-none text-xs w-32"
                     />
                 </div>
+
+                <ThemeToggle />
 
                 <button className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full transition-colors relative">
                     <Bell size={20} />

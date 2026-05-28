@@ -1,7 +1,8 @@
+import { NextRequest } from "next/server"
 import { auth } from "@/auth"
 
-export default auth((req) => {
-    const isLoggedIn = !!req.auth
+export default auth((req: NextRequest) => {
+    const isLoggedIn = !!(req as any).auth
     const { nextUrl } = req
 
     const isDashboardRoute = nextUrl.pathname.startsWith("/dashboard")
