@@ -1,22 +1,27 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { useSession, signOut } from "next-auth/react";
 import { LayoutDashboard, Users, FileText, Settings, LogOut, User, Bell, Search } from "lucide-react";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 
 export default function Navbar() {
+    const { data: session } = useSession();
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement | null>(null);
 
-    useEffect(() => {
-            function handleClick(e: MouseEvent) {
-                if (ref.current && !ref.current.contains(e.target as Node)) {
-                    setOpen(false);
-                }
-            }
+    const user = session?.user;
+    const userInitials = user?.name ? user.name.split(" ").map(n => n[0]).join("").toUpperCase() : "U";
 
-            document.addEventListener("mousedown", handleClick);
-            return () => document.removeEventListener("mousedown", handleClick);
+    useEffect(() => {
+        function handleClick(e: MouseEvent) {
+            if (ref.current && !ref.current.contains(e.target as Node)) {
+                setOpen(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClick);
+        return () => document.removeEventListener("mousedown", handleClick);
     }, []);
 
     return (
@@ -63,11 +68,11 @@ export default function Navbar() {
                         aria-expanded={open}
                     >
                         <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-teal-700 flex items-center justify-center text-white font-semibold shadow-md">
-                            A
+                            {userInitials}
                         </div>
                         <div className="hidden sm:flex flex-col items-start pr-2">
-                            <span className="text-xs font-bold text-foreground leading-none">Admin User</span>
-                            <span className="text-[10px] text-muted-foreground">Super Admin</span>
+                            <span className="text-xs font-bold text-foreground leading-none">{user?.name || "User"}</span>
+                            <span className="text-[10px] text-muted-foreground capitalize">{user?.role?.toLowerCase() || "Guest"}</span>
                         </div>
                     </button>
 
@@ -75,12 +80,17 @@ export default function Navbar() {
                         <div className="absolute right-0 mt-2 w-56 bg-card rounded-xl shadow-xl border border-border py-2 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                             <div className="px-4 py-2 border-b border-border mb-1">
                                 <p className="text-xs font-medium text-muted-foreground">Signed in as</p>
-                                <p className="text-sm font-bold text-foreground truncate">admin@elderlycare.go.th</p>
+                                <p className="text-sm font-bold text-foreground truncate">{user?.email}</p>
                             </div>
                             <MenuLink icon={<User size={16} />} label="Your Profile" />
                             <MenuLink icon={<Settings size={16} />} label="Settings" />
                             <div className="border-t border-border mt-1 pt-1">
-                                <MenuLink icon={<LogOut size={16} />} label="Sign out" variant="danger" />
+                                <button 
+                                    onClick={() => signOut({ callbackUrl: "/login" })}
+                                    className="w-full"
+                                >
+                                    <MenuLink icon={<LogOut size={16} />} label="Sign out" variant="danger" />
+                                </button>
                             </div>
                         </div>
                     )}

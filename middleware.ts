@@ -4,6 +4,7 @@ import { auth } from "@/auth"
 export default auth((req: NextRequest) => {
     const isLoggedIn = !!(req as any).auth
     const { nextUrl } = req
+    console.log((req as any).auth)
 
     const isDashboardRoute = nextUrl.pathname.startsWith("/dashboard")
     const isApiAiRoute = nextUrl.pathname.startsWith("/api/ai")
