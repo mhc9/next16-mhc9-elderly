@@ -50,10 +50,10 @@ export default function Dashboard() {
         {dashboardData.summary.map((item, idx) => (
           <div key={idx} className="group bg-card p-6 rounded-2xl shadow-sm border border-border hover:shadow-md transition-all relative overflow-hidden">
             <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity">
-               {item.icon === "Users" && <Users size={120} />}
-               {item.icon === "ClipboardCheck" && <ClipboardCheck size={120} />}
-               {item.icon === "AlertTriangle" && <AlertTriangle size={120} />}
-               {item.icon === "HeartPulse" && <HeartPulse size={120} />}
+              {item.icon === "Users" && <Users size={120} />}
+              {item.icon === "ClipboardCheck" && <ClipboardCheck size={120} />}
+              {item.icon === "AlertTriangle" && <AlertTriangle size={120} />}
+              {item.icon === "HeartPulse" && <HeartPulse size={120} />}
             </div>
             
             <div className="flex items-center justify-between mb-4">

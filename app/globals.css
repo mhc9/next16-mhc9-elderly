@@ -64,13 +64,13 @@ body {
 }
 
 .glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: color-mix(in srgb, var(--background), transparent 20%);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 1px solid color-mix(in srgb, var(--foreground), transparent 90%);
 }
 
 .dark .glass {
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: color-mix(in srgb, var(--background), transparent 40%);
+  border-bottom: 1px solid color-mix(in srgb, var(--foreground), transparent 85%);
 }
