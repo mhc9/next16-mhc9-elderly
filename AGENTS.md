@@ -5,4 +5,12 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # Coding Standards
 - **Indentation**: Use exactly 4 spaces for indentation in all files (TSX, TS, CSS, JSON, MD).
+
+# Auth & AI Provider Configuration
+- This project uses NextAuth.js for authentication.
+- Auth route (app router): `app/api/auth/[...nextauth]/route.ts`.
+- OAuth providers configured: Google, GitHub, Discord (via env vars).
+- Middleware at `middleware.ts` protects `/dashboard/*`, `/api/ai/*`, `/settings/*`.
+- Use `useSession()` / `signIn()` / `signOut()` from `next-auth/react` client-side.
+- AI provider API keys (OpenAI, Anthropic, Google AI, etc.) stored server-side in `.env.local`.
 <!-- END:nextjs-agent-rules -->

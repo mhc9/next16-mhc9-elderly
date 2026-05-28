@@ -31,10 +31,19 @@ Key conventions
 - AI/agent docs: consult CLAUDE.md and AGENTS.md for project-specific guidance.
 - Next16 note: see CLAUDE.md header about Next16 differences and `node_modules/next/dist/docs/` for breaking changes.
 
+Auth & AI Provider Configuration
+
+- This project uses NextAuth.js for authentication.
+- Auth route (app router): `app/api/auth/[...nextauth]/route.ts`.
+- OAuth providers configured: Google, GitHub, Discord (via env vars).
+- AI provider API keys (OpenAI, Anthropic, Google AI, Mistral, Cohere, Hugging Face, Replicate, Together AI, Fireworks AI, Groq, DeepSeek) stored server-side in `.env.local`.
+- Middleware at `middleware.ts` protects `/dashboard/*`, `/api/ai/*`, `/settings/*`.
+- AI proxy routes at `app/api/ai/<provider>/route.ts` — validates session, proxies to AI API.
+- Per-user API keys handled via `app/api/ai/keys/` endpoint (encrypted storage).
+- Use `useSession()` / `signIn()` / `signOut()` from `next-auth/react` client-side.
+
 Files to consult
 
 - README.md (basic run instructions)
 - CLAUDE.md, AGENTS.md (assistant/agent guidance)
 - eslint.config.mjs, tsconfig.json, postcss.config.mjs (rules/configs)
-
-If you want, I can also add lint/test scripts (e.g., `npm run test`) or configure an MCP server for browser tests.

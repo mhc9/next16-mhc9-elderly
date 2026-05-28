@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layouts/Navbar";
+import { Providers } from "./providers";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -26,25 +27,27 @@ export default function RootLayout({
     return (
         <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
             <body className="min-h-full flex flex-col bg-background font-sans">
-                <header className="sticky top-0 z-40 w-full glass">
-                    <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <Navbar />
-                    </div>
-                </header>
+                <Providers>
+                    <header className="sticky top-0 z-40 w-full glass">
+                        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+                            <Navbar />
+                        </div>
+                    </header>
 
-                <main className="flex-1">
-                    <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-                        {children}
-                    </div>
-                </main>
+                    <main className="flex-1">
+                        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+                            {children}
+                        </div>
+                    </main>
 
-                <footer className="border-t border-border py-6 bg-card/50">
-                    <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <p className="text-center text-sm text-muted-foreground">
-                            © 2024 Elderly Care System. All rights reserved.
-                        </p>
-                    </div>
-                </footer>
+                    <footer className="border-t border-border py-6 bg-card/50">
+                        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+                            <p className="text-center text-sm text-muted-foreground">
+                                © 2024 Elderly Care System. All rights reserved.
+                            </p>
+                        </div>
+                    </footer>
+                </Providers>
             </body>
         </html>
     );
