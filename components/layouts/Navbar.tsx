@@ -6,11 +6,13 @@ import { LayoutDashboard, Users, FileText, Settings, LogOut, User, Bell, Search 
 import ThemeToggle from "@/components/ui/ThemeToggle";
 
 export default function Navbar() {
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement | null>(null);
 
     const user = session?.user;
+    const isLoggedIn = status === "authenticated";
+
     const userInitials = user?.name ? user.name.split(" ").map(n => n[0]).join("").toUpperCase() : "U";
 
     useEffect(() => {
@@ -37,64 +39,72 @@ export default function Navbar() {
                     </div>
                 </div>
 
-                <div className="hidden lg:flex items-center gap-1">
-                    <NavLink icon={<LayoutDashboard size={18} />} label="Overview" active />
-                    <NavLink icon={<Users size={18} />} label="Population" />
-                    <NavLink icon={<FileText size={18} />} label="Reports" />
-                </div>
+                {isLoggedIn && (
+                    <div className="hidden lg:flex items-center gap-1">
+                        <NavLink icon={<LayoutDashboard size={18} />} label="Overview" active />
+                        <NavLink icon={<Users size={18} />} label="Population" />
+                        <NavLink icon={<FileText size={18} />} label="Reports" />
+                    </div>
+                )}
             </div>
 
             <div className="flex items-center gap-3">
-                <div className="hidden md:flex items-center bg-muted/50 border border-border rounded-full px-3 py-1.5 gap-2">
-                    <Search size={14} className="text-muted-foreground" />
-                    <input 
-                        type="text" 
-                        placeholder="Search..." 
-                        className="bg-transparent border-none focus:outline-none text-xs w-32"
-                    />
-                </div>
+                {isLoggedIn && (
+                    <div className="hidden md:flex items-center bg-muted/50 border border-border rounded-full px-3 py-1.5 gap-2">
+                        <Search size={14} className="text-muted-foreground" />
+                        <input 
+                            type="text" 
+                            placeholder="Search..." 
+                            className="bg-transparent border-none focus:outline-none text-xs w-32"
+                        />
+                    </div>
+                )}
 
                 <ThemeToggle />
 
-                <button className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full transition-colors relative">
-                    <Bell size={20} />
-                    <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-background"></span>
-                </button>
+                {isLoggedIn && (
+                    <>
+                        <button className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full transition-colors relative">
+                            <Bell size={20} />
+                            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-background"></span>
+                        </button>
 
-                <div className="relative" ref={ref}>
-                    <button
-                        onClick={() => setOpen(!open)}
-                        className="flex items-center gap-2 p-1 rounded-full hover:bg-muted/50 transition-colors"
-                        aria-expanded={open}
-                    >
-                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-teal-700 flex items-center justify-center text-white font-semibold shadow-md">
-                            {userInitials}
-                        </div>
-                        <div className="hidden sm:flex flex-col items-start pr-2">
-                            <span className="text-xs font-bold text-foreground leading-none">{user?.name || "User"}</span>
-                            <span className="text-[10px] text-muted-foreground capitalize">{user?.role?.toLowerCase() || "Guest"}</span>
-                        </div>
-                    </button>
+                        <div className="relative" ref={ref}>
+                            <button
+                                onClick={() => setOpen(!open)}
+                                className="flex items-center gap-2 p-1 rounded-full hover:bg-muted/50 transition-colors"
+                                aria-expanded={open}
+                            >
+                                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-teal-700 flex items-center justify-center text-white font-semibold shadow-md">
+                                    {userInitials}
+                                </div>
+                                <div className="hidden sm:flex flex-col items-start pr-2">
+                                    <span className="text-xs font-bold text-foreground leading-none">{user?.name || "User"}</span>
+                                    <span className="text-[10px] text-muted-foreground capitalize">{user?.role?.toLowerCase() || "Guest"}</span>
+                                </div>
+                            </button>
 
-                    {open && (
-                        <div className="absolute right-0 mt-2 w-56 bg-card rounded-xl shadow-xl border border-border py-2 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                            <div className="px-4 py-2 border-b border-border mb-1">
-                                <p className="text-xs font-medium text-muted-foreground">Signed in as</p>
-                                <p className="text-sm font-bold text-foreground truncate">{user?.email}</p>
-                            </div>
-                            <MenuLink icon={<User size={16} />} label="Your Profile" />
-                            <MenuLink icon={<Settings size={16} />} label="Settings" />
-                            <div className="border-t border-border mt-1 pt-1">
-                                <button 
-                                    onClick={() => signOut({ callbackUrl: "/login" })}
-                                    className="w-full"
-                                >
-                                    <MenuLink icon={<LogOut size={16} />} label="Sign out" variant="danger" />
-                                </button>
-                            </div>
+                            {open && (
+                                <div className="absolute right-0 mt-2 w-56 bg-card rounded-xl shadow-xl border border-border py-2 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                                    <div className="px-4 py-2 border-b border-border mb-1">
+                                        <p className="text-xs font-medium text-muted-foreground">Signed in as</p>
+                                        <p className="text-sm font-bold text-foreground truncate">{user?.email}</p>
+                                    </div>
+                                    <MenuLink icon={<User size={16} />} label="Your Profile" />
+                                    <MenuLink icon={<Settings size={16} />} label="Settings" />
+                                    <div className="border-t border-border mt-1 pt-1">
+                                        <button 
+                                            onClick={() => signOut({ callbackUrl: "/login" })}
+                                            className="w-full text-left"
+                                        >
+                                            <MenuLink icon={<LogOut size={16} />} label="Sign out" variant="danger" />
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                    )}
-                </div>
+                    </>
+                )}
             </div>
         </nav>
     );
