@@ -37,7 +37,7 @@ Auth & AI Provider Configuration
 - Auth route (app router): `app/api/auth/[...nextauth]/route.ts`.
 - OAuth providers configured: Google, GitHub, Discord (via env vars).
 - AI provider API keys (OpenAI, Anthropic, Google AI, Mistral, Cohere, Hugging Face, Replicate, Together AI, Fireworks AI, Groq, DeepSeek) stored server-side in `.env.local`.
-- Middleware at `middleware.ts` protects `/dashboard/*`, `/api/ai/*`, `/settings/*`.
+- Middleware at `proxy.ts` protects `/dashboard/*`, `/api/ai/*`, `/settings/*`.
 - AI proxy routes at `app/api/ai/<provider>/route.ts` — validates session, proxies to AI API.
 - Per-user API keys handled via `app/api/ai/keys/` endpoint (encrypted storage).
 - Use `useSession()` / `signIn()` / `signOut()` from `next-auth/react` client-side.
