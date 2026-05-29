@@ -54,8 +54,8 @@ model User {
     sessions        Session[]
 
     // Relations to Health Center (linked via hcode)
-    hcode         String?
-    healthCenter  HealthCenter? @relation(fields: [hcode], references: [hcode])
+    hcode           String?
+    hospital        Hospital? @relation(fields: [hcode], references: [hcode])
     
     @@map("users")
 }
@@ -85,8 +85,10 @@ model Province {
     short_en        String?    @db.VarChar(100)
     region_id       Int
 
-    districts       District[]
     subdistricts    Subdistrict[]
+    districts       District[]
+    hospitals       Hospital[]
+    persons         Person[]
 
     @@map("provinces")
 }
@@ -94,11 +96,13 @@ model Province {
 model District {
     id              Int           @id
     name            String?       @db.VarChar(200)
-    province_id     Int?          @map("chw_id")
-    district_code   String?       @map("amp_id") @db.VarChar(200)
+    province_id     Int?          
+    district_code   String?       @db.VarChar(200)
 
     provinces       Province?     @relation(fields: [province_id], references: [id])
     subdistricts    Subdistrict[]
+    hospitals       Hospital[]
+    persons         Person[]
 
     @@map("districts")
 }
@@ -106,13 +110,13 @@ model District {
 model Subdistrict {
     id              Int            @id @default(autoincrement())
     name            String?        @db.VarChar(200)
-    province_id     Int?           @map("chw_id")
-    district_id     Int?           @map("amp_id")
-    subdistrict_code String?       @map("tam_id")
+    province_id     Int?           
+    district_id     Int?           
+    subdistrict_code String?
+     
     province        Province?      @relation(fields: [province_id], references: [id])
     district        District?      @relation(fields: [district_id], references: [id])
-
-    healthCenters   HealthCenter[]
+    hospitals       Hospital[]
     persons         Person[]
 
     @@map("subdistricts")
@@ -120,24 +124,34 @@ model Subdistrict {
 
 // --- Health Center & Reporting Models ---
 
-model HealthCenter {
+model Hospital {
     hcode           String        @id @db.VarChar(5) // Primary Key: 5-digit code
     name            String        @db.VarChar(255)
-    subdistrict_id  Int?          @map("tambonId")
+    hospital_type_id Int?
+    address         String?       @db.Text
+    moo             Int?
+    subdistrict_id  Int?          
+    district_id     Int?
+    province_id     Int?           
+    region_id       Int?
+    phone           String?
+
     subdistrict     Subdistrict?  @relation(fields: [subdistrict_id], references: [id])
+    province        Province?     @relation(fields: [province_id], references: [id])
+    district        District?     @relation(fields: [district_id], references: [id])
 
     users           User[]
     persons         Person[]
     summaryReports  SummaryReport[]
 
-    @@map("health_centers")
+    @@map("hospitals")
 }
 
 model SummaryReport {
     id                  Int    @id @default(autoincrement())
     year                Int    // e.g., 2568, 2569
     hcode               String
-    healthCenter        HealthCenter @relation(fields: [hcode], references: [hcode])
+    hospital            Hospital @relation(fields: [hcode], references: [hcode])
 
     // Aggregate totals matching Excel columns
     target_population   Int    @default(0) // N (คน)
@@ -169,27 +183,33 @@ model SummaryReport {
 // --- Individual Case Management ---
 
 model Person {
-    pid                Int      @id @default(autoincrement())
-    cid                String?  @unique @db.VarChar(13) // Thai National ID
-    firstname          String   @db.VarChar(100)
-    lastname           String   @db.VarChar(100)
-    birth_date         DateTime? @db.Date
-    address            String?  @db.Text
+    pid                Int          @id @default(autoincrement())
+    cid                String?      @unique @db.VarChar(13) // Thai National ID
+    firstname          String       @db.VarChar(100)
+    lastname           String       @db.VarChar(100)
+    birth_date         DateTime?    @db.Date
+    address            String?      @db.Text
+    moo                Int?
+    road               Int?        
     subdistrict_id     Int?
-    subdistrict        Subdistrict? @relation(fields: [subdistrict_id], references: [id])
-    zipcode            String?  @db.VarChar(10)
-    telephone          String?  @db.VarChar(20)
-    mobile             String?  @db.VarChar(20)
-    email              String?  @db.VarChar(100)
+    district_id        Int?
+    province_id        Int? 
+    zipcode            String?      @db.VarChar(10)
+    telephone          String?      @db.VarChar(20)
+    mobile             String?      @db.VarChar(20)
+    email              String?      @db.VarChar(100)
     hcode              String
-    healthCenter       HealthCenter @relation(fields: [hcode], references: [hcode])
 
+    subdistrict        Subdistrict? @relation(fields: [subdistrict_id], references: [id])
+    district           District?    @relation(fields: [district_id], references: [id])
+    province           Province?    @relation(fields: [province_id], references: [id])
+    hospital           Hospital     @relation(fields: [hcode], references: [hcode])
     screenings         Screening[]
 
-    created_at         DateTime @default(now())
-    updated_at         DateTime @updatedAt
+    created_at         DateTime     @default(now())
+    updated_at         DateTime     @updatedAt
 
-    @@map("people")
+    @@map("persons")
 }
 
 model Screening {
