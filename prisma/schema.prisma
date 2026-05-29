@@ -1,13 +1,222 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../lib/generated/prisma"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"
+    provider = "mysql"
+//    url      = env("DATABASE_URL")
+}
+
+// --- Authentication Models (NextAuth.js) ---
+
+model Account {
+    id                 String  @id @default(cuid())
+    userId             String
+    type               String
+    provider           String
+    providerAccountId  String
+    refresh_token      String? @db.Text
+    access_token       String? @db.Text
+    expires_at         Int?
+    token_type         String?
+    scope              String?
+    id_token           String? @db.Text
+    session_state      String?
+
+    user               User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+    @@map("accounts")
+}
+
+model Session {
+    id              String   @id @default(cuid())
+    sessionToken    String   @unique
+    userId          String
+    expires         DateTime
+    user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@map("sessions")
+}
+
+model User {
+    id              String    @id @default(cuid())
+    name            String?
+    email           String?   @unique
+    emailVerified   DateTime?
+    image           String?
+    password        String?
+    role            Role      @default(USER)
+    employeeId      String?   @unique
+    accounts        Account[]
+    sessions        Session[]
+
+    // Relations to Health Center (linked via hcode)
+    hcode         String?
+    healthCenter  HealthCenter? @relation(fields: [hcode], references: [hcode])
+    
+    @@map("users")
+}
+
+enum Role {
+    USER
+    ADMIN
+    SUPERADMIN
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+    @@map("verification_tokens")
+}
+
+// --- Geographical Models (Standardized to English) ---
+
+model Province {
+    id        Int        @id @default(autoincrement())
+    name      String?    @db.VarChar(200)
+    name_en   String?    @db.VarChar(200)
+    short     String?    @db.VarChar(200)
+    short_en  String?    @db.VarChar(100)
+    region_id Int
+
+    districts District[]
+    subdistricts Subdistrict[]
+
+    @@map("provinces")
+}
+
+model District {
+    id           Int           @id
+    name         String?       @db.VarChar(200)
+    provinceId   Int?          @map("chw_id")
+    districtCode String?       @map("amp_id") @db.VarChar(200)
+
+    provinces    Province?     @relation(fields: [provinceId], references: [id])
+    subdistricts Subdistrict[]
+
+    @@map("districts")
+}
+
+model Subdistrict {
+    id            Int            @id @default(autoincrement())
+    name          String?        @db.VarChar(200)
+    provinceId    Int?           @map("chw_id")
+    districtId    Int?           @map("amp_id")
+    subdistrictCode String?      @map("tam_id")
+    province      Province?      @relation(fields: [provinceId], references: [id])
+    district      District?      @relation(fields: [districtId], references: [id])
+
+    healthCenters HealthCenter[]
+    persons       Person[]
+
+    @@map("subdistricts")
+}
+
+// --- Health Center & Reporting Models ---
+
+model HealthCenter {
+    hcode           String        @id @db.VarChar(5) // Primary Key: 5-digit code
+    name            String        @db.VarChar(255)
+    subdistrictId   Int?          @map("tambonId")
+    subdistrict     Subdistrict?  @relation(fields: [subdistrictId], references: [id])
+
+    users           User[]
+    persons         Person[]
+    summaryReports  SummaryReport[]
+
+    @@map("health_centers")
+}
+
+model SummaryReport {
+    id                 Int    @id @default(autoincrement())
+    year         Int    // e.g., 2568, 2569
+    hcode              String
+    healthCenter       HealthCenter @relation(fields: [hcode], references: [hcode])
+
+    // aggregate totals matching Excel columns
+    targetPopulation   Int    @default(0) // N (คน)
+    screenedTotal      Int    @default(0) // จำนวนที่ได้รับการคัดกรองทั้งหมด (n)
+    screenedNormal     Int    @default(0) // ปกติ
+    screenedRisk       Int    @default(0) // เสี่ยง
+
+    // Care Round 1
+    careTotal          Int    @default(0) // จำนวนที่ได้รับดูแลช่วยเหลือทั้งหมด
+    assess9QNormal     Int    @default(0) // 9Q ปกติ
+    assess9QRisk       Int    @default(0) // 9Q เสี่ยง (>=7)
+    assess8QNormal     Int    @default(0) // 8Q ปกติ
+    assess8QRisk       Int    @default(0) // 8Q เสี่ยง (>=1)
+    careCounseling     Int    @default(0) // ให้คำปรึกษา/ดูแลสังคมจิตใจ
+    careReferral       Int    @default(0) // ส่งต่อ
+
+    // Round 2 (Follow-up)
+    followUpNormal     Int    @default(0) // 2Q plus ซ้ำ ปกติ
+    followUpRiskQ12    Int    @default(0) // 2Q plus ซ้ำ เสี่ยง Q1/Q2
+    followUpRiskQ3     Int    @default(0) // 2Q plus ซ้ำ เสี่ยง Q3
+
+    createdAt          DateTime @default(now())
+    updatedAt          DateTime @updatedAt
+
+    @@unique([year, hcode])
+    @@map("summary_reports")
+}
+
+// --- Individual Case Management ---
+
+model Person {
+    pid                Int      @id @default(autoincrement())
+    cid                String?  @unique @db.VarChar(13) // Thai National ID
+    firstName          String   @db.VarChar(100)
+    lastName           String   @db.VarChar(100)
+    birthDate          DateTime?
+    address            String?  @db.Text
+    subdistrictId      Int?
+    subdistrict        Subdistrict? @relation(fields: [subdistrictId], references: [id])
+    zipcode            String?  @db.VarChar(10)
+    telephone          String?  @db.VarChar(20)
+    mobile             String?  @db.VarChar(20)
+    email              String?  @db.VarChar(100)
+    healthCenterHcode  String
+    healthCenter       HealthCenter @relation(fields: [healthCenterHcode], references: [hcode])
+
+    screenings         Screening[]
+
+    createdAt          DateTime @default(now())
+    updatedAt          DateTime @updatedAt
+
+    @@map("people")
+}
+
+model Screening {
+    id              Int         @id @default(autoincrement())
+    person_id       Int         @map("personId")
+    screen_date     DateTime    @default(now())
+
+    // 2Q plus
+    q2Result        Boolean     @default(false) // false=Normal, true=Risk
+
+    // 9Q & 8Q Details
+    q9Score         Int?
+    q9Result        Boolean?    // false=Normal, true=Risk (>=7)
+    q8Score         Int?
+    q8Result        Boolean?    // false=Normal, true=Risk (>=1)
+
+    // Care Outcomes
+    careType        String?     @db.VarChar(255) // Counseling, Referral, etc.
+    careDetail      String?     @db.Text
+
+    year            Int
+
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+
+    person          Person      @relation(fields: [person_id], references: [pid])
+
+    @@map("screenings")
 }

@@ -1,0 +1,42 @@
+
+model Changwat {
+  id                        Int                          @id @default(autoincrement())
+  name                      String?                      @db.VarChar(200)
+  name_en                   String?                      @db.VarChar(200)
+  short                     String?                      @db.VarChar(200)
+  short_en                  String?                      @db.VarChar(100)
+  region_id                 Int                       
+  amphurs                   Amphur[]
+  tambons                   Tambon[]
+  children                  Child[]
+  schools                   School[]
+
+  @@map("changwats")
+}
+
+model Amphur {
+  id                         Int                          @id
+  name                       String?                      @db.VarChar(200)
+  chw_id                     Int?                         
+  amp_id                     String?                      @db.VarChar(200)
+  changwat                   Changwat?                    @relation(fields: [chw_id], references: [id])
+  tambons                    Tambon[]
+  children                   Child[]
+  schools                    School[]
+
+  @@map("amphurs")
+}
+
+model Tambon {
+  id                         Int                          @id @default(autoincrement())
+  name                       String?                      @db.VarChar(200)
+  chw_id                     Int?                         
+  amp_id                     Int?                         
+  tam_id                     String?                         
+  changwat                   Changwat?                    @relation(fields: [chw_id], references: [id])
+  amphur                     Amphur?                      @relation(fields: [amp_id], references: [id])
+  children                   Child[]
+  schools                    School[]
+
+  @@map("tambons")
+}
