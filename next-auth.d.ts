@@ -2,14 +2,20 @@ import NextAuth, { DefaultSession } from "next-auth"
 
 declare module "next-auth" {
     interface User {
-        id: number; // match your database type
+        id: string;
         role: string;
-        employee_id?: number;
-        access_token?: string;
+        employee_id?: string | null;
+        healthCenterHcode?: string | null;
     }
 
     interface Session {
-        userId: string;
         user: User & DefaultSession["user"];
     }
-}
+
+    interface JWT {
+        id: string;
+        role: string;
+        employee_id?: string | null;
+        healthCenterHcode?: string | null;
+    }
+    }

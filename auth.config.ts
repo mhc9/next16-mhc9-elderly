@@ -1,4 +1,6 @@
 import CredentialProvider from "next-auth/providers/credentials";
+import { authService } from "@/lib/services/AuthService";
+import { loginSchema } from "@/lib/types/auth";
 
 export default {
     providers: [
@@ -9,25 +11,25 @@ export default {
                 password: { label: 'Password', type: 'password' },
             },
             async authorize(credentials) {
-                if (!credentials?.email || !credentials?.password) return null
+                const validatedFields = loginSchema.safeParse(credentials);
 
-                const user = await Promise.resolve({
-                    id: 1,
-                    email: credentials.email,
-                    name: 'John Doe',
-                    role: 'USER',
-                    access_token: 'fake_access_token',
-                    employee_id: 123
-                })
-
-                return {
-                    id: user.id,
-                    email: user.email,
-                    name: user.name,
-                    role: user.role,
-                    access_token: user.access_token,
-                    employee_id: user.employee_id
+                if (validatedFields.success) {
+                    try {
+                        const user = await authService.login(validatedFields.data);
+                        return {
+                            id: user.id,
+                            email: user.email,
+                            name: user.name,
+                            role: user.role,
+                            employee_id: user.employeeId,
+                            healthCenterHcode: user.healthCenterHcode
+                        }
+                    } catch (error) {
+                        return null;
+                    }
                 }
+
+                return null;
             },
         }),
     ]
