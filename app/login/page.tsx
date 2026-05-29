@@ -1,14 +1,23 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
-import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { LogIn, Mail, Lock, Loader2, CheckCircle2 } from "lucide-react";
 
 export default function LoginPage() {
+    const searchParams = useSearchParams();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
+
+    useEffect(() => {
+        if (searchParams.get("registered")) {
+            setSuccess("Registration successful! Please sign in with your new account.");
+        }
+    }, [searchParams]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -51,6 +60,13 @@ export default function LoginPage() {
                     {error && (
                         <div className="mb-6 p-4 bg-rose-50 border border-rose-100 text-rose-600 text-sm rounded-xl animate-in shake duration-300">
                             {error}
+                        </div>
+                    )}
+
+                    {success && (
+                        <div className="mb-6 p-4 bg-emerald-50 border border-emerald-100 text-emerald-600 text-sm rounded-xl flex items-center gap-3 animate-in fade-in duration-500">
+                            <CheckCircle2 size={18} />
+                            {success}
                         </div>
                     )}
 
