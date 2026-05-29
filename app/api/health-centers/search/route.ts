@@ -10,7 +10,7 @@ export async function GET(req: Request) {
             return NextResponse.json({ data: [] });
         }
 
-        const healthCenters = await prisma.healthCenter.findMany({
+        const hospitals = await prisma.hospital.findMany({
             where: {
                 OR: [
                     { hcode: { contains: q } },
@@ -20,12 +20,22 @@ export async function GET(req: Request) {
             select: {
                 hcode: true,
                 name: true,
+                province: {
+                    select: {
+                        name: true,
+                    },
+                },
+                district: {
+                    select: {
+                        name: true,
+                    },
+                },
             },
             take: 20,
             orderBy: { name: "asc" },
         });
 
-        return NextResponse.json({ data: healthCenters });
+        return NextResponse.json({ data: hospitals });
     } catch (error) {
         return NextResponse.json(
             { error: "Failed to search health centers" },

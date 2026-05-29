@@ -15,10 +15,10 @@ export default function RegisterPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
-    const [searchResults, setSearchResults] = useState<{ hcode: string; name: string }[]>([]);
+    const [searchResults, setSearchResults] = useState<{ hcode: string; name: string, province: any, district: any }[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
-    const [selectedCenter, setSelectedCenter] = useState<{ hcode: string; name: string } | null>(null);
+    const [selectedCenter, setSelectedCenter] = useState<{ hcode: string; name: string, province: any, district: any } | null>(null);
     const dropdownRef = useRef<HTMLDivElement | null>(null);
     const searchTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -64,7 +64,7 @@ export default function RegisterPage() {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSelectCenter = (center: { hcode: string; name: string }) => {
+    const handleSelectCenter = (center: { hcode: string; name: string, province: any, district: any }) => {
         setSelectedCenter(center);
         setSearchQuery(center.name);
         setFormData(prev => ({ ...prev, hcode: center.hcode }));
@@ -214,8 +214,8 @@ export default function RegisterPage() {
                                                 >
                                                     <Building size={16} className="text-muted-foreground shrink-0" />
                                                     <div className="flex flex-col">
-                                                        <span className="font-medium text-foreground">{center.name}</span>
-                                                        <span className="text-xs text-muted-foreground">{center.hcode}</span>
+                                                        <span className="font-medium text-foreground">{center.hcode} - {center.name}</span>
+                                                        <span className="text-xs text-muted-foreground">อ.{center.district.name} จ.{center.province.name}</span>
                                                     </div>
                                                 </li>
                                             ))}
