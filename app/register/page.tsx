@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { UserPlus, Mail, Lock, User, Building, Loader2 } from "lucide-react";
+import { UserPlus, Mail, Lock, User, Building, Loader2, Search, X } from "lucide-react";
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -14,10 +14,68 @@ export default function RegisterPage() {
     });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchResults, setSearchResults] = useState<{ hcode: string; name: string }[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const [selectedCenter, setSelectedCenter] = useState<{ hcode: string; name: string } | null>(null);
+    const dropdownRef = useRef<HTMLDivElement | null>(null);
+    const searchTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+    useEffect(() => {
+        function handleClick(e: MouseEvent) {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+                setShowDropdown(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClick);
+        return () => document.removeEventListener("mousedown", handleClick);
+    }, []);
+
+    useEffect(() => {
+        if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+
+        if (!searchQuery.trim()) {
+            setSearchResults([]);
+            return;
+        }
+
+        searchTimeoutRef.current = setTimeout(async () => {
+            setIsSearching(true);
+            try {
+                const res = await fetch(`/api/health-centers/search?q=${encodeURIComponent(searchQuery)}`);
+                const json = await res.json();
+                setSearchResults(json.data ?? []);
+                setShowDropdown(true);
+            } catch {
+                setSearchResults([]);
+            } finally {
+                setIsSearching(false);
+            }
+        }, 300);
+
+        return () => {
+            if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+        };
+    }, [searchQuery]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSelectCenter = (center: { hcode: string; name: string }) => {
+        setSelectedCenter(center);
+        setSearchQuery(center.name);
+        setFormData(prev => ({ ...prev, hcode: center.hcode }));
+        setShowDropdown(false);
+    };
+
+    const handleClearCenter = () => {
+        setSelectedCenter(null);
+        setSearchQuery("");
+        setFormData(prev => ({ ...prev, hcode: "" }));
+        setSearchResults([]);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -38,7 +96,6 @@ export default function RegisterPage() {
                 throw new Error(data.error || "Registration failed");
             }
 
-            // Redirect to login on success
             router.push("/login?registered=true");
         } catch (err: any) {
             setError(err.message || "Something went wrong. Please try again.");
@@ -49,7 +106,7 @@ export default function RegisterPage() {
 
     return (
         <div className="min-h-[80vh] flex items-center justify-center p-4">
-            <div className="w-full max-w-md bg-card rounded-2xl shadow-xl border border-border overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="w-full max-w-md bg-card rounded-2xl shadow-xl border border-border animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div className="p-8">
                     <div className="flex justify-center mb-6">
                         <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
@@ -109,25 +166,67 @@ export default function RegisterPage() {
                             </div>
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-2 relative" ref={dropdownRef}>
                             <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">
-                                Health Center Code (HCODE)
+                                Health Center
                             </label>
                             <div className="relative group">
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
+                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
                                     <Building size={18} />
                                 </div>
                                 <input
-                                    name="hcode"
                                     type="text"
                                     required
-                                    maxLength={5}
-                                    value={formData.hcode}
-                                    onChange={handleChange}
-                                    placeholder="12345"
-                                    className="w-full bg-muted/50 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                    value={searchQuery}
+                                    onChange={e => {
+                                        setSearchQuery(e.target.value);
+                                        if (selectedCenter) handleClearCenter();
+                                    }}
+                                    onFocus={() => searchResults.length > 0 && setShowDropdown(true)}
+                                    placeholder="Search health center by name or code..."
+                                    className="w-full bg-muted/50 border border-border rounded-xl py-3 pl-10 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                                 />
+                                {searchQuery && (
+                                    <button
+                                        type="button"
+                                        onClick={handleClearCenter}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                )}
                             </div>
+
+                            {showDropdown && (
+                                <div className="absolute z-50 mt-1 w-full bg-card border border-border rounded-xl shadow-xl overflow-hidden">
+                                    {isSearching ? (
+                                        <div className="flex items-center justify-center gap-2 px-4 py-3 text-sm text-muted-foreground">
+                                            <Loader2 size={14} className="animate-spin" />
+                                            Searching...
+                                        </div>
+                                    ) : searchResults.length > 0 ? (
+                                        <ul className="max-h-48 overflow-y-auto">
+                                            {searchResults.map(center => (
+                                                <li
+                                                    key={center.hcode}
+                                                    onClick={() => handleSelectCenter(center)}
+                                                    className="flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-muted/50 text-sm transition-colors"
+                                                >
+                                                    <Building size={16} className="text-muted-foreground shrink-0" />
+                                                    <div className="flex flex-col">
+                                                        <span className="font-medium text-foreground">{center.name}</span>
+                                                        <span className="text-xs text-muted-foreground">{center.hcode}</span>
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <div className="px-4 py-3 text-sm text-muted-foreground">
+                                            No health centers found
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
 
                         <div className="space-y-2">

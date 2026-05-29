@@ -6,9 +6,9 @@ import Navbar from "@/components/layouts/Navbar";
 
 export default function Header() {
     const pathname = usePathname();
-    const isLoginPage = pathname === "/login";
+    const isAuthPage = pathname === "/login" || pathname === "/register";
 
-    if (isLoginPage) return null;
+    if (isAuthPage) return null;
 
     return (
         <header className="sticky top-0 z-40 w-full glass">

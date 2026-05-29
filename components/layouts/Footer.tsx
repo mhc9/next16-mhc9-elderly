@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 
 export default function Footer() {
     const pathname = usePathname();
-    const isLoginPage = pathname === "/login";
+    const isAuthPage = pathname === "/login" || pathname === "/register";
 
-    if (isLoginPage) return null;
+    if (isAuthPage) return null;
 
     return (
         <footer className="border-t border-border py-6 bg-card/50">
