@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layouts/Header";
+import Footer from "@/components/layouts/Footer";
 import { Providers } from "./providers";
 
 const geistSans = Geist({
@@ -36,13 +37,7 @@ export default function RootLayout({
                         </div>
                     </main>
 
-                    <footer className="border-t border-border py-6 bg-card/50">
-                        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-                            <p className="text-center text-sm text-muted-foreground">
-                                © 2024 Elderly Care System. All rights reserved.
-                            </p>
-                        </div>
-                    </footer>
+                    <Footer />
                 </Providers>
             </body>
         </html>
