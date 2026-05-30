@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { LogIn, Mail, Lock, Loader2, CheckCircle2 } from "lucide-react";
@@ -124,6 +125,13 @@ export default function LoginPage() {
                             )}
                         </button>
                     </form>
+
+                    <div className="mt-8 text-center text-sm">
+                        <span className="text-muted-foreground">Don&apos;t have an account? </span>
+                        <Link href="/register" className="text-primary font-bold hover:underline transition-colors">
+                            Create an account
+                        </Link>
+                    </div>
                 </div>
                 
                 <div className="px-8 py-4 bg-muted/30 border-t border-border flex items-center justify-between">
