@@ -125,7 +125,7 @@ model Subdistrict {
 // --- Health Center & Reporting Models ---
 
 model Hospital {
-    hcode           String        @id @db.VarChar(5) // Primary Key: 5-digit code
+    hcode           String        @id @db.VarChar(9) // Primary Key: 5-digit code
     name            String        @db.VarChar(255)
     hospital_type_id Int?
     address         String?       @db.Text
