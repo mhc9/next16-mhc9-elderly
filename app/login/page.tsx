@@ -4,40 +4,76 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
-import { LogIn, Mail, Lock, Loader2, CheckCircle2 } from "lucide-react";
+import { LogIn, Mail, Lock, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+
+interface ValidationErrors {
+    email?: string;
+    password?: string;
+}
 
 export default function LoginPage() {
     const searchParams = useSearchParams();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState("");
+    const [errors, setErrors] = useState<ValidationErrors>({});
+    const [apiError, setApiError] = useState("");
     const [success, setSuccess] = useState("");
 
     useEffect(() => {
-        if (searchParams.get("registered")) {
-            setSuccess("Registration successful! Please sign in with your new account.");
+        const registered = searchParams.get("registered");
+        if (registered) {
+            // Using a small timeout to avoid the "setState synchronously within an effect" warning
+            const timer = setTimeout(() => {
+                setSuccess("Registration successful! Please sign in with your new account.");
+            }, 0);
+            return () => clearTimeout(timer);
         }
     }, [searchParams]);
 
+    const validateForm = (): boolean => {
+        const newErrors: ValidationErrors = {};
+        
+        if (!email.trim()) {
+            newErrors.email = "Email address is required";
+        } else if (!/\S+@\S+\.\S+/.test(email)) {
+            newErrors.email = "Please enter a valid email address";
+        }
+        
+        if (!password) {
+            newErrors.password = "Password is required";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setApiError("");
+        setSuccess("");
+        
+        if (!validateForm()) {
+            return;
+        }
+
         setIsLoading(true);
-        setError("");
 
         try {
             const result = await signIn("credentials", {
                 email,
                 password,
-                redirect: true,
-                callbackUrl: "/",
+                redirect: false, // Changed to false to handle error manually without full page redirect
             });
 
             if (result?.error) {
-                setError("Invalid credentials. Please try again.");
+                setApiError("Invalid credentials. Please try again.");
+            } else {
+                // Manually redirect on success
+                window.location.href = "/";
             }
         } catch (err) {
-            setError("Something went wrong. Please try again later.");
+            setApiError("Something went wrong. Please try again later.");
         } finally {
             setIsLoading(false);
         }
@@ -58,9 +94,10 @@ export default function LoginPage() {
                         <p className="text-sm text-muted-foreground mt-1">Please sign in to access the dashboard</p>
                     </div>
 
-                    {error && (
-                        <div className="mb-6 p-4 bg-rose-50 border border-rose-100 text-rose-600 text-sm rounded-xl animate-in shake duration-300">
-                            {error}
+                    {apiError && (
+                        <div className="mb-6 p-4 bg-rose-50 border border-rose-100 text-rose-600 text-sm rounded-xl flex items-center gap-2 animate-in shake duration-300">
+                            <AlertCircle size={18} />
+                            {apiError}
                         </div>
                     )}
 
@@ -71,43 +108,59 @@ export default function LoginPage() {
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-5">
+                    <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+                        {/* Email Field */}
                         <div className="space-y-2">
                             <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">
                                 Email Address
                             </label>
                             <div className="relative group">
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
+                                <div className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${errors.email ? 'text-rose-500' : 'text-muted-foreground group-focus-within:text-primary'}`}>
                                     <Mail size={18} />
                                 </div>
                                 <input
                                     type="email"
-                                    required
                                     value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    onChange={(e) => {
+                                        setEmail(e.target.value);
+                                        if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
+                                    }}
                                     placeholder="admin@elderlycare.go.th"
-                                    className="w-full bg-muted/50 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                    className={`w-full bg-muted/50 border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 transition-all ${
+                                        errors.email 
+                                            ? 'border-rose-500 focus:ring-rose-500/20' 
+                                            : 'border-border focus:ring-primary/20 focus:border-primary'
+                                    }`}
                                 />
                             </div>
+                            {errors.email && <p className="text-xs text-rose-500 ml-1 font-medium">{errors.email}</p>}
                         </div>
 
+                        {/* Password Field */}
                         <div className="space-y-2">
                             <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">
                                 Password
                             </label>
                             <div className="relative group">
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
+                                <div className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${errors.password ? 'text-rose-500' : 'text-muted-foreground group-focus-within:text-primary'}`}>
                                     <Lock size={18} />
                                 </div>
                                 <input
                                     type="password"
-                                    required
                                     value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    onChange={(e) => {
+                                        setPassword(e.target.value);
+                                        if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
+                                    }}
                                     placeholder="••••••••"
-                                    className="w-full bg-muted/50 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                    className={`w-full bg-muted/50 border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 transition-all ${
+                                        errors.password 
+                                            ? 'border-rose-500 focus:ring-rose-500/20' 
+                                            : 'border-border focus:ring-primary/20 focus:border-primary'
+                                    }`}
                                 />
                             </div>
+                            {errors.password && <p className="text-xs text-rose-500 ml-1 font-medium">{errors.password}</p>}
                         </div>
 
                         <button
