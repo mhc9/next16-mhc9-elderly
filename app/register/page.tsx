@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { UserPlus, Mail, Lock, User, Building, Loader2, X } from "lucide-react";
+import { UserPlus, Mail, Lock, User, Building, Loader2, X, AlertCircle } from "lucide-react";
 
 interface LocationInfo {
     name: string;
@@ -15,6 +15,14 @@ interface HealthCenter {
     district?: LocationInfo;
 }
 
+interface ValidationErrors {
+    name?: string;
+    email?: string;
+    hcode?: string;
+    password?: string;
+    confirmPassword?: string;
+}
+
 export default function RegisterPage() {
     const router = useRouter();
     const [formData, setFormData] = useState({
@@ -25,7 +33,8 @@ export default function RegisterPage() {
     });
     const [confirmPassword, setConfirmPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState("");
+    const [errors, setErrors] = useState<ValidationErrors>({});
+    const [apiError, setApiError] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState<HealthCenter[]>([]);
     const [isSearching, setIsSearching] = useState(false);
@@ -74,6 +83,10 @@ export default function RegisterPage() {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+        // Clear field-specific error when user types
+        if (errors[name as keyof ValidationErrors]) {
+            setErrors(prev => ({ ...prev, [name]: undefined }));
+        }
     };
 
     const handleSelectCenter = (center: HealthCenter) => {
@@ -81,6 +94,10 @@ export default function RegisterPage() {
         setSearchQuery(center.name);
         setFormData(prev => ({ ...prev, hcode: center.hcode }));
         setShowDropdown(false);
+        // Clear hcode error
+        if (errors.hcode) {
+            setErrors(prev => ({ ...prev, hcode: undefined }));
+        }
     };
 
     const handleClearCenter = () => {
@@ -90,16 +107,46 @@ export default function RegisterPage() {
         setSearchResults([]);
     };
 
+    const validateForm = (): boolean => {
+        const newErrors: ValidationErrors = {};
+        
+        if (!formData.name.trim()) {
+            newErrors.name = "Full name is required";
+        }
+        
+        if (!formData.email.trim()) {
+            newErrors.email = "Email address is required";
+        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            newErrors.email = "Please enter a valid email address";
+        }
+        
+        if (!formData.hcode) {
+            newErrors.hcode = "Please select a health center";
+        }
+        
+        if (!formData.password) {
+            newErrors.password = "Password is required";
+        } else if (formData.password.length < 8) {
+            newErrors.password = "Password must be at least 8 characters";
+        }
+        
+        if (formData.password !== confirmPassword) {
+            newErrors.confirmPassword = "Passwords do not match";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsLoading(true);
-        setError("");
-
-        if (formData.password !== confirmPassword) {
-            setError("Passwords do not match");
-            setIsLoading(false);
+        setApiError("");
+        
+        if (!validateForm()) {
             return;
         }
+
+        setIsLoading(true);
 
         try {
             const response = await fetch("/api/register", {
@@ -117,7 +164,7 @@ export default function RegisterPage() {
             router.push("/login?registered=true");
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : "Something went wrong. Please try again.";
-            setError(errorMessage);
+            setApiError(errorMessage);
         } finally {
             setIsLoading(false);
         }
@@ -138,64 +185,75 @@ export default function RegisterPage() {
                         <p className="text-sm text-muted-foreground mt-1">Join the Elderly Care System</p>
                     </div>
 
-                    {error && (
-                        <div className="mb-6 p-4 bg-rose-50 border border-rose-100 text-rose-600 text-sm rounded-xl">
-                            {error}
+                    {apiError && (
+                        <div className="mb-6 p-4 bg-rose-50 border border-rose-100 text-rose-600 text-sm rounded-xl flex items-center gap-2">
+                            <AlertCircle size={18} />
+                            {apiError}
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+                        {/* Name Field */}
                         <div className="space-y-2">
                             <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">
                                 Full Name
                             </label>
                             <div className="relative group">
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
+                                <div className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${errors.name ? 'text-rose-500' : 'text-muted-foreground group-focus-within:text-primary'}`}>
                                     <User size={18} />
                                 </div>
                                 <input
                                     name="name"
                                     type="text"
-                                    required
                                     value={formData.name}
                                     onChange={handleChange}
                                     placeholder="John Doe"
-                                    className="w-full bg-muted/50 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                    className={`w-full bg-muted/50 border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 transition-all ${
+                                        errors.name 
+                                            ? 'border-rose-500 focus:ring-rose-500/20' 
+                                            : 'border-border focus:ring-primary/20 focus:border-primary'
+                                    }`}
                                 />
                             </div>
+                            {errors.name && <p className="text-xs text-rose-500 ml-1 font-medium">{errors.name}</p>}
                         </div>
 
+                        {/* Email Field */}
                         <div className="space-y-2">
                             <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">
                                 Email Address
                             </label>
                             <div className="relative group">
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
+                                <div className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${errors.email ? 'text-rose-500' : 'text-muted-foreground group-focus-within:text-primary'}`}>
                                     <Mail size={18} />
                                 </div>
                                 <input
                                     name="email"
                                     type="email"
-                                    required
                                     value={formData.email}
                                     onChange={handleChange}
                                     placeholder="admin@elderlycare.go.th"
-                                    className="w-full bg-muted/50 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                    className={`w-full bg-muted/50 border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 transition-all ${
+                                        errors.email 
+                                            ? 'border-rose-500 focus:ring-rose-500/20' 
+                                            : 'border-border focus:ring-primary/20 focus:border-primary'
+                                    }`}
                                 />
                             </div>
+                            {errors.email && <p className="text-xs text-rose-500 ml-1 font-medium">{errors.email}</p>}
                         </div>
 
+                        {/* Health Center Search */}
                         <div className="space-y-2 relative" ref={dropdownRef}>
                             <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">
                                 Health Center
                             </label>
                             <div className="relative group">
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
+                                <div className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors pointer-events-none ${errors.hcode ? 'text-rose-500' : 'text-muted-foreground group-focus-within:text-primary'}`}>
                                     <Building size={18} />
                                 </div>
                                 <input
                                     type="text"
-                                    required
                                     value={searchQuery}
                                     onChange={e => {
                                         setSearchQuery(e.target.value);
@@ -203,7 +261,11 @@ export default function RegisterPage() {
                                     }}
                                     onFocus={() => searchResults.length > 0 && setShowDropdown(true)}
                                     placeholder="Search health center by name or code..."
-                                    className="w-full bg-muted/50 border border-border rounded-xl py-3 pl-10 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                    className={`w-full bg-muted/50 border rounded-xl py-3 pl-10 pr-10 text-sm focus:outline-none focus:ring-2 transition-all ${
+                                        errors.hcode 
+                                            ? 'border-rose-500 focus:ring-rose-500/20' 
+                                            : 'border-border focus:ring-primary/20 focus:border-primary'
+                                    }`}
                                 />
                                 {searchQuery && (
                                     <button
@@ -246,45 +308,61 @@ export default function RegisterPage() {
                                     )}
                                 </div>
                             )}
+                            {errors.hcode && <p className="text-xs text-rose-500 ml-1 font-medium">{errors.hcode}</p>}
                         </div>
 
+                        {/* Password Field */}
                         <div className="space-y-2">
                             <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">
                                 Password
                             </label>
                             <div className="relative group">
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
+                                <div className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${errors.password ? 'text-rose-500' : 'text-muted-foreground group-focus-within:text-primary'}`}>
                                     <Lock size={18} />
                                 </div>
                                 <input
                                     name="password"
                                     type="password"
-                                    required
                                     value={formData.password}
                                     onChange={handleChange}
                                     placeholder="••••••••"
-                                    className="w-full bg-muted/50 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                    className={`w-full bg-muted/50 border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 transition-all ${
+                                        errors.password 
+                                            ? 'border-rose-500 focus:ring-rose-500/20' 
+                                            : 'border-border focus:ring-primary/20 focus:border-primary'
+                                    }`}
                                 />
                             </div>
+                            {errors.password && <p className="text-xs text-rose-500 ml-1 font-medium">{errors.password}</p>}
                         </div>
 
+                        {/* Confirm Password Field */}
                         <div className="space-y-2">
                             <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">
                                 Confirm Password
                             </label>
                             <div className="relative group">
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
+                                <div className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${errors.confirmPassword ? 'text-rose-500' : 'text-muted-foreground group-focus-within:text-primary'}`}>
                                     <Lock size={18} />
                                 </div>
                                 <input
                                     type="password"
-                                    required
                                     value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    onChange={(e) => {
+                                        setConfirmPassword(e.target.value);
+                                        if (errors.confirmPassword) {
+                                            setErrors(prev => ({ ...prev, confirmPassword: undefined }));
+                                        }
+                                    }}
                                     placeholder="••••••••"
-                                    className="w-full bg-muted/50 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                    className={`w-full bg-muted/50 border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 transition-all ${
+                                        errors.confirmPassword 
+                                            ? 'border-rose-500 focus:ring-rose-500/20' 
+                                            : 'border-border focus:ring-primary/20 focus:border-primary'
+                                    }`}
                                 />
                             </div>
+                            {errors.confirmPassword && <p className="text-xs text-rose-500 ml-1 font-medium">{errors.confirmPassword}</p>}
                         </div>
 
                         <button
