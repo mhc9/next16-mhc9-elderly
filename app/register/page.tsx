@@ -2,7 +2,18 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { UserPlus, Mail, Lock, User, Building, Loader2, Search, X } from "lucide-react";
+import { UserPlus, Mail, Lock, User, Building, Loader2, X } from "lucide-react";
+
+interface LocationInfo {
+    name: string;
+}
+
+interface HealthCenter {
+    hcode: string;
+    name: string;
+    province?: LocationInfo;
+    district?: LocationInfo;
+}
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -12,13 +23,14 @@ export default function RegisterPage() {
         password: "",
         hcode: "",
     });
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
-    const [searchResults, setSearchResults] = useState<{ hcode: string; name: string, province?: any, district?: any }[]>([]);
+    const [searchResults, setSearchResults] = useState<HealthCenter[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
-    const [selectedCenter, setSelectedCenter] = useState<{ hcode: string; name: string, province?: any, district?: any } | null>(null);
+    const [selectedCenter, setSelectedCenter] = useState<HealthCenter | null>(null);
     const dropdownRef = useRef<HTMLDivElement | null>(null);
     const searchTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -64,7 +76,7 @@ export default function RegisterPage() {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSelectCenter = (center: { hcode: string; name: string, province?: any, district?: any }) => {
+    const handleSelectCenter = (center: HealthCenter) => {
         setSelectedCenter(center);
         setSearchQuery(center.name);
         setFormData(prev => ({ ...prev, hcode: center.hcode }));
@@ -83,6 +95,12 @@ export default function RegisterPage() {
         setIsLoading(true);
         setError("");
 
+        if (formData.password !== confirmPassword) {
+            setError("Passwords do not match");
+            setIsLoading(false);
+            return;
+        }
+
         try {
             const response = await fetch("/api/register", {
                 method: "POST",
@@ -97,8 +115,9 @@ export default function RegisterPage() {
             }
 
             router.push("/login?registered=true");
-        } catch (err: any) {
-            setError(err.message || "Something went wrong. Please try again.");
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+            setError(errorMessage);
         } finally {
             setIsLoading(false);
         }
@@ -243,6 +262,25 @@ export default function RegisterPage() {
                                     required
                                     value={formData.password}
                                     onChange={handleChange}
+                                    placeholder="••••••••"
+                                    className="w-full bg-muted/50 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">
+                                Confirm Password
+                            </label>
+                            <div className="relative group">
+                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
+                                    <Lock size={18} />
+                                </div>
+                                <input
+                                    type="password"
+                                    required
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
                                     placeholder="••••••••"
                                     className="w-full bg-muted/50 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                                 />
