@@ -10,8 +10,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             if (user) {
                 token.id = user.id;
                 token.role = (user as any).role;
-                token.employee_id = (user as any).employee_id;
-                token.healthCenterHcode = (user as any).healthCenterHcode;
+                token.hcode = (user as any).hcode;
             }
             return token;
         },
@@ -19,8 +18,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             if (session.user) {
                 (session.user as any).id = token.id;
                 (session.user as any).role = token.role;
-                (session.user as any).employee_id = token.employee_id;
-                (session.user as any).healthCenterHcode = token.healthCenterHcode;
+                (session.user as any).hcode = token.hcode;
             }
             return session;
         }
