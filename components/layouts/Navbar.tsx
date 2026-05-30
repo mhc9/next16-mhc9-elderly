@@ -1,12 +1,15 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { LayoutDashboard, Users, FileText, Settings, LogOut, User, Bell, Search } from "lucide-react";
 import ThemeToggle from "@/components/ui/ThemeToggle";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
     const { data: session, status } = useSession();
+    const pathname = usePathname();
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement | null>(null);
 
@@ -29,7 +32,7 @@ export default function Navbar() {
     return (
         <nav className="h-16 w-full flex items-center justify-between">
             <div className="flex items-center gap-8">
-                <div className="flex items-center gap-2">
+                <Link href="/" className="flex items-center gap-2">
                     <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
                         <Users size={24} strokeWidth={2.5} />
                     </div>
@@ -37,13 +40,13 @@ export default function Navbar() {
                         <span className="text-base font-bold text-foreground leading-none">Elderly Care</span>
                         <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Dashboard v2.0</span>
                     </div>
-                </div>
+                </Link>
 
                 {isLoggedIn && (
                     <div className="hidden lg:flex items-center gap-1">
-                        <NavLink icon={<LayoutDashboard size={18} />} label="Overview" active />
-                        <NavLink icon={<Users size={18} />} label="Population" />
-                        <NavLink icon={<FileText size={18} />} label="Reports" />
+                        <NavLink href="/" icon={<LayoutDashboard size={18} />} label="Overview" active={pathname === "/"} />
+                        <NavLink href="/population" icon={<Users size={18} />} label="Population" active={pathname === "/population"} />
+                        <NavLink href="/dashboard/reports" icon={<FileText size={18} />} label="Reports" active={pathname === "/dashboard/reports"} />
                     </div>
                 )}
             </div>
@@ -90,14 +93,14 @@ export default function Navbar() {
                                         <p className="text-xs font-medium text-muted-foreground">Signed in as</p>
                                         <p className="text-sm font-bold text-foreground truncate">{user?.email}</p>
                                     </div>
-                                    <MenuLink icon={<User size={16} />} label="Your Profile" />
-                                    <MenuLink icon={<Settings size={16} />} label="Settings" />
+                                    <MenuLink href="/profile" icon={<User size={16} />} label="Your Profile" />
+                                    <MenuLink href="/settings" icon={<Settings size={16} />} label="Settings" />
                                     <div className="border-t border-border mt-1 pt-1">
                                         <button 
                                             onClick={() => signOut({ callbackUrl: "/login" })}
                                             className="w-full text-left"
                                         >
-                                            <MenuLink icon={<LogOut size={16} />} label="Sign out" variant="danger" />
+                                            <MenuLink href="#" icon={<LogOut size={16} />} label="Sign out" variant="danger" />
                                         </button>
                                     </div>
                                 </div>
@@ -110,10 +113,10 @@ export default function Navbar() {
     );
 }
 
-function NavLink({ icon, label, active = false }: { icon: React.ReactNode, label: string, active?: boolean }) {
+function NavLink({ href, icon, label, active = false }: { href: string, icon: React.ReactNode, label: string, active?: boolean }) {
     return (
-        <a 
-            href="#" 
+        <Link 
+            href={href} 
             className={`
                 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all
                 ${active 
@@ -124,14 +127,14 @@ function NavLink({ icon, label, active = false }: { icon: React.ReactNode, label
         >
             {icon}
             {label}
-        </a>
+        </Link>
     );
 }
 
-function MenuLink({ icon, label, variant = "default" }: { icon: React.ReactNode, label: string, variant?: "default" | "danger" }) {
+function MenuLink({ href, icon, label, variant = "default" }: { href: string, icon: React.ReactNode, label: string, variant?: "default" | "danger" }) {
     return (
-        <a 
-            href="#" 
+        <Link 
+            href={href} 
             className={`
                 flex items-center gap-3 px-4 py-2.5 text-sm transition-colors
                 ${variant === "danger"
@@ -142,6 +145,6 @@ function MenuLink({ icon, label, variant = "default" }: { icon: React.ReactNode,
         >
             {icon}
             {label}
-        </a>
+        </Link>
     );
 }
