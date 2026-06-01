@@ -130,7 +130,6 @@ export default function SummaryReportsPage() {
                 <div className="flex items-center gap-2 px-4 py-2.5 bg-muted/50 rounded-xl border border-border text-xs text-muted-foreground font-medium uppercase tracking-wider">
                     <Filter size={14} />
                     Found {filteredReports.length} Reports
-                    {totalPages > 1 && ` (Page ${currentPage}/${totalPages})`}
                 </div>
             </div>
 
@@ -216,52 +215,58 @@ export default function SummaryReportsPage() {
 
                         {/* Pagination Controls */}
                         {totalPages > 1 && (
-                            <div className="flex items-center justify-center gap-2 pt-4">
-                                <button
-                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                                    disabled={currentPage === 1}
-                                    className="p-2 rounded-xl bg-card border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                                >
-                                    <ChevronLeft size={20} />
-                                </button>
-                                
-                                <div className="flex items-center gap-1 mx-4">
-                                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                        // Show pages around current page
-                                        let pageNum = currentPage;
-                                        if (currentPage <= 3) pageNum = i + 1;
-                                        else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + i;
-                                        else pageNum = currentPage - 2 + i;
-                                        
-                                        // Ensure pageNum is valid
-                                        if (pageNum < 1 || pageNum > totalPages) return null;
+                            <div className="flex flex-col items-center gap-4 pt-8">
+                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest">
+                                    Page <span className="text-foreground font-bold">{currentPage}</span> of <span className="text-foreground font-bold">{totalPages}</span>
+                                </p>
+                                <div className="flex items-center justify-center gap-2">
+                                    <button
+                                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                        disabled={currentPage === 1}
+                                        className="p-2 rounded-xl bg-card border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                    >
+                                        <ChevronLeft size={20} />
+                                    </button>
+                                    
+                                    <div className="flex items-center gap-1 mx-4">
+                                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                            // Show pages around current page
+                                            let pageNum = currentPage;
+                                            if (currentPage <= 3) pageNum = i + 1;
+                                            else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + i;
+                                            else pageNum = currentPage - 2 + i;
+                                            
+                                            // Ensure pageNum is valid
+                                            if (pageNum < 1 || pageNum > totalPages) return null;
 
-                                        return (
-                                            <button
-                                                key={pageNum}
-                                                onClick={() => setCurrentPage(pageNum)}
-                                                className={`w-10 h-10 rounded-xl text-sm font-bold transition-all border ${
-                                                    currentPage === pageNum
-                                                        ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-110"
-                                                        : "bg-card border-border hover:bg-muted text-muted-foreground"
-                                                }`}
-                                            >
-                                                {pageNum}
-                                            </button>
-                                        );
-                                    })}
+                                            return (
+                                                <button
+                                                    key={pageNum}
+                                                    onClick={() => setCurrentPage(pageNum)}
+                                                    className={`w-10 h-10 rounded-xl text-sm font-bold transition-all border ${
+                                                        currentPage === pageNum
+                                                            ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-110"
+                                                            : "bg-card border-border hover:bg-muted text-muted-foreground"
+                                                    }`}
+                                                >
+                                                    {pageNum}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+
+                                    <button
+                                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                        disabled={currentPage === totalPages}
+                                        className="p-2 rounded-xl bg-card border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                    >
+                                        <ChevronRight size={20} />
+                                    </button>
                                 </div>
-
-                                <button
-                                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                                    disabled={currentPage === totalPages}
-                                    className="p-2 rounded-xl bg-card border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                                >
-                                    <ChevronRight size={20} />
-                                </button>
                             </div>
                         )}
                     </>
+
                 ) : (
                     <div className="flex flex-col items-center justify-center py-20 bg-muted/20 border-2 border-dashed border-border rounded-3xl gap-4">
                         <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center text-muted-foreground">
