@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { FileText, Search, Filter, Calendar, Building2, MapPin, ChevronRight, Loader2, AlertCircle } from "lucide-react";
+import { FileText, Search, Filter, Calendar, Building2, MapPin, ChevronRight, ChevronLeft, Loader2, AlertCircle } from "lucide-react";
 
 interface SummaryReport {
     id: number;
@@ -24,6 +24,8 @@ export default function SummaryReportsPage() {
     const [error, setError] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [yearFilter, setYearFilter] = useState<string>("all");
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     useEffect(() => {
         async function fetchReports() {
@@ -44,6 +46,11 @@ export default function SummaryReportsPage() {
         fetchReports();
     }, []);
 
+    // Reset to first page when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, yearFilter]);
+
     const years = Array.from(new Set(reports.map(r => r.year))).sort((a, b) => b - a);
 
     const filteredReports = reports.filter(report => {
@@ -53,6 +60,11 @@ export default function SummaryReportsPage() {
         const matchesYear = yearFilter === "all" || report.year.toString() === yearFilter;
         return matchesSearch && matchesYear;
     });
+
+    // Pagination logic
+    const totalPages = Math.ceil(filteredReports.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedReports = filteredReports.slice(startIndex, startIndex + itemsPerPage);
 
     if (isLoading) {
         return (
@@ -118,81 +130,138 @@ export default function SummaryReportsPage() {
                 <div className="flex items-center gap-2 px-4 py-2.5 bg-muted/50 rounded-xl border border-border text-xs text-muted-foreground font-medium uppercase tracking-wider">
                     <Filter size={14} />
                     Found {filteredReports.length} Reports
+                    {totalPages > 1 && ` (Page ${currentPage}/${totalPages})`}
                 </div>
             </div>
 
             {/* Reports List */}
             <div className="grid grid-cols-1 gap-4">
-                {filteredReports.length > 0 ? (
-                    filteredReports.map((report) => (
-                        <div 
-                            key={report.id}
-                            className="bg-card border border-border rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/20 transition-all group"
-                        >
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                <div className="space-y-1.5">
-                                    <div className="flex items-center gap-2">
-                                        <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-md uppercase tracking-wide">
-                                            Year {report.year}
-                                        </span>
-                                        <span className="text-xs text-muted-foreground font-mono">
-                                            #{report.hcode}
-                                        </span>
-                                    </div>
-                                    <h3 className="text-lg font-bold text-foreground flex items-center gap-2 group-hover:text-primary transition-colors">
-                                        {report.hospital.name}
-                                    </h3>
-                                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                                        <div className="flex items-center gap-1">
-                                            <MapPin size={14} />
-                                            {report.hospital.district?.name}, {report.hospital.province?.name}
+                {paginatedReports.length > 0 ? (
+                    <>
+                        {paginatedReports.map((report) => (
+                            <div 
+                                key={report.id}
+                                className="bg-card border border-border rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/20 transition-all group"
+                            >
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                    <div className="space-y-1.5">
+                                        <div className="flex items-center gap-2">
+                                            <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-md uppercase tracking-wide">
+                                                Year {report.year}
+                                            </span>
+                                            <span className="text-xs text-muted-foreground font-mono">
+                                                #{report.hcode}
+                                            </span>
+                                        </div>
+                                        <h3 className="text-lg font-bold text-foreground flex items-center gap-2 group-hover:text-primary transition-colors">
+                                            {report.hospital.name}
+                                        </h3>
+                                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                                            <div className="flex items-center gap-1">
+                                                <MapPin size={14} />
+                                                {report.hospital.district?.name}, {report.hospital.province?.name}
+                                            </div>
                                         </div>
                                     </div>
+
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 md:gap-12">
+                                        <div className="text-center md:text-left">
+                                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Target</p>
+                                            <p className="text-xl font-black text-foreground">{report.target_population.toLocaleString()}</p>
+                                        </div>
+                                        <div className="text-center md:text-left">
+                                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Screened</p>
+                                            <p className="text-xl font-black text-primary">{report.screened_total.toLocaleString()}</p>
+                                        </div>
+                                        <div className="text-center md:text-left">
+                                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Normal</p>
+                                            <p className="text-xl font-black text-emerald-600">{report.screened_normal.toLocaleString()}</p>
+                                        </div>
+                                        <div className="text-center md:text-left">
+                                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Risk</p>
+                                            <p className="text-xl font-black text-rose-600">{report.screened_risk.toLocaleString()}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center justify-end">
+                                        <button className="p-2 rounded-xl bg-muted group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
+                                            <ChevronRight size={20} />
+                                        </button>
+                                    </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 md:gap-12">
-                                    <div className="text-center md:text-left">
-                                        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Target</p>
-                                        <p className="text-xl font-black text-foreground">{report.target_population.toLocaleString()}</p>
+                                {/* Progress Bar */}
+                                <div className="mt-5 space-y-2">
+                                    <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider">
+                                        <span className="text-muted-foreground">Screening Progress</span>
+                                        <span className="text-primary">
+                                            {report.target_population > 0 
+                                                ? ((report.screened_total / report.target_population) * 100).toFixed(1) 
+                                                : "0.0"}%
+                                        </span>
                                     </div>
-                                    <div className="text-center md:text-left">
-                                        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Screened</p>
-                                        <p className="text-xl font-black text-primary">{report.screened_total.toLocaleString()}</p>
+                                    <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
+                                        <div 
+                                            className="h-full bg-primary rounded-full transition-all duration-1000"
+                                            style={{ 
+                                                width: `${report.target_population > 0 
+                                                    ? Math.min(100, (report.screened_total / report.target_population) * 100) 
+                                                    : 0}%` 
+                                            }}
+                                        ></div>
                                     </div>
-                                    <div className="text-center md:text-left">
-                                        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Normal</p>
-                                        <p className="text-xl font-black text-emerald-600">{report.screened_normal.toLocaleString()}</p>
-                                    </div>
-                                    <div className="text-center md:text-left">
-                                        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Risk</p>
-                                        <p className="text-xl font-black text-rose-600">{report.screened_risk.toLocaleString()}</p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center justify-end">
-                                    <button className="p-2 rounded-xl bg-muted group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
-                                        <ChevronRight size={20} />
-                                    </button>
                                 </div>
                             </div>
+                        ))}
 
-                            {/* Progress Bar */}
-                            <div className="mt-5 space-y-2">
-                                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider">
-                                    <span className="text-muted-foreground">Screening Progress</span>
-                                    <span className="text-primary">
-                                        {((report.screened_total / report.target_population) * 100).toFixed(1)}%
-                                    </span>
+                        {/* Pagination Controls */}
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-center gap-2 pt-4">
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                    disabled={currentPage === 1}
+                                    className="p-2 rounded-xl bg-card border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                >
+                                    <ChevronLeft size={20} />
+                                </button>
+                                
+                                <div className="flex items-center gap-1 mx-4">
+                                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                        // Show pages around current page
+                                        let pageNum = currentPage;
+                                        if (currentPage <= 3) pageNum = i + 1;
+                                        else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + i;
+                                        else pageNum = currentPage - 2 + i;
+                                        
+                                        // Ensure pageNum is valid
+                                        if (pageNum < 1 || pageNum > totalPages) return null;
+
+                                        return (
+                                            <button
+                                                key={pageNum}
+                                                onClick={() => setCurrentPage(pageNum)}
+                                                className={`w-10 h-10 rounded-xl text-sm font-bold transition-all border ${
+                                                    currentPage === pageNum
+                                                        ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-110"
+                                                        : "bg-card border-border hover:bg-muted text-muted-foreground"
+                                                }`}
+                                            >
+                                                {pageNum}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
-                                <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
-                                    <div 
-                                        className="h-full bg-primary rounded-full transition-all duration-1000"
-                                        style={{ width: `${(report.screened_total / report.target_population) * 100}%` }}
-                                    ></div>
-                                </div>
+
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                    disabled={currentPage === totalPages}
+                                    className="p-2 rounded-xl bg-card border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                >
+                                    <ChevronRight size={20} />
+                                </button>
                             </div>
-                        </div>
-                    ))
+                        )}
+                    </>
                 ) : (
                     <div className="flex flex-col items-center justify-center py-20 bg-muted/20 border-2 border-dashed border-border rounded-3xl gap-4">
                         <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center text-muted-foreground">
@@ -208,3 +277,4 @@ export default function SummaryReportsPage() {
         </div>
     );
 }
+
