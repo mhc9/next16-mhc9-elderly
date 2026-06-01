@@ -16,13 +16,14 @@ export default {
                 if (validatedFields.success) {
                     try {
                         const user = await authService.login(validatedFields.data);
+                        console.log('User logged in:', user);
+
                         return {
                             id: user.id,
                             email: user.email,
                             name: user.name,
                             role: user.role,
-                            employee_id: user.employeeId,
-                            healthCenterHcode: user.healthCenterHcode
+                            hcode: user.hcode
                         }
                     } catch (error) {
                         return null;

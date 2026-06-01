@@ -30,6 +30,7 @@ export default function SummaryReportsPage() {
             try {
                 const res = await fetch("/api/reports/summary");
                 const json = await res.json();
+
                 if (!res.ok) throw new Error(json.error || "Failed to fetch reports");
                 setReports(json.data || []);
             } catch (err) {
@@ -39,6 +40,7 @@ export default function SummaryReportsPage() {
                 setIsLoading(false);
             }
         }
+
         fetchReports();
     }, []);
 

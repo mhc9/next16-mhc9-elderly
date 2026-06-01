@@ -4,8 +4,7 @@ declare module "next-auth" {
     interface User {
         id: string;
         role: string;
-        employee_id?: string | null;
-        healthCenterHcode?: string | null;
+        hcode?: string | null;
     }
 
     interface Session {
@@ -15,7 +14,6 @@ declare module "next-auth" {
     interface JWT {
         id: string;
         role: string;
-        employee_id?: string | null;
-        healthCenterHcode?: string | null;
+        hcode?: string | null;
     }
     }
