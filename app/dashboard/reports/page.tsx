@@ -24,6 +24,8 @@ export default function SummaryReportsPage() {
     const [error, setError] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [yearFilter, setYearFilter] = useState<string>("all");
+    const [provinceFilter, setProvinceFilter] = useState<string>("all");
+    const [districtFilter, setDistrictFilter] = useState<string>("all");
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
@@ -46,19 +48,39 @@ export default function SummaryReportsPage() {
         fetchReports();
     }, []);
 
-    // Reset to first page when filters change
+    // Reset to first page when any filter changes
     useEffect(() => {
         setCurrentPage(1);
-    }, [searchQuery, yearFilter]);
+    }, [searchQuery, yearFilter, provinceFilter, districtFilter]);
 
+    // Derived data for filters
     const years = Array.from(new Set(reports.map(r => r.year))).sort((a, b) => b - a);
+    const provinces = Array.from(new Set(reports.map(r => r.hospital.province?.name).filter(Boolean))).sort();
+    
+    // Districts should only show those in the selected province
+    const districts = Array.from(new Set(
+        reports
+            .filter(r => provinceFilter === "all" || r.hospital.province?.name === provinceFilter)
+            .map(r => r.hospital.district?.name)
+            .filter(Boolean)
+    )).sort();
+
+    // Reset district if it's no longer in the valid list for the selected province
+    useEffect(() => {
+        if (districtFilter !== "all" && !districts.includes(districtFilter)) {
+            setDistrictFilter("all");
+        }
+    }, [provinceFilter, districts, districtFilter]);
 
     const filteredReports = reports.filter(report => {
         const matchesSearch = 
             report.hospital.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             report.hcode.includes(searchQuery);
         const matchesYear = yearFilter === "all" || report.year.toString() === yearFilter;
-        return matchesSearch && matchesYear;
+        const matchesProvince = provinceFilter === "all" || report.hospital.province?.name === provinceFilter;
+        const matchesDistrict = districtFilter === "all" || report.hospital.district?.name === districtFilter;
+        
+        return matchesSearch && matchesYear && matchesProvince && matchesDistrict;
     });
 
     // Pagination logic
@@ -97,14 +119,14 @@ export default function SummaryReportsPage() {
             )}
 
             {/* Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="relative group">
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div className="relative group lg:col-span-1">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
                         <Search size={18} />
                     </div>
                     <input
                         type="text"
-                        placeholder="Search hospital or hcode..."
+                        placeholder="Search hospital..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full bg-card border border-border rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
@@ -112,13 +134,46 @@ export default function SummaryReportsPage() {
                 </div>
 
                 <div className="relative group">
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
+                        <MapPin size={18} />
+                    </div>
+                    <select
+                        value={provinceFilter}
+                        onChange={(e) => setProvinceFilter(e.target.value)}
+                        className="w-full bg-card border border-border rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
+                    >
+                        <option value="all">All Provinces</option>
+                        {provinces.map(p => (
+                            <option key={p} value={p}>{p}</option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="relative group">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
+                        <MapPin size={18} />
+                    </div>
+                    <select
+                        value={districtFilter}
+                        onChange={(e) => setDistrictFilter(e.target.value)}
+                        disabled={districts.length === 0}
+                        className="w-full bg-card border border-border rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer disabled:opacity-50"
+                    >
+                        <option value="all">All Districts</option>
+                        {districts.map(d => (
+                            <option key={d} value={d}>{d}</option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="relative group">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
                         <Calendar size={18} />
                     </div>
                     <select
                         value={yearFilter}
                         onChange={(e) => setYearFilter(e.target.value)}
-                        className="w-full bg-card border border-border rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
+                        className="w-full bg-card border border-border rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
                     >
                         <option value="all">All Years</option>
                         {years.map(y => (
@@ -127,9 +182,9 @@ export default function SummaryReportsPage() {
                     </select>
                 </div>
 
-                <div className="flex items-center gap-2 px-4 py-2.5 bg-muted/50 rounded-xl border border-border text-xs text-muted-foreground font-medium uppercase tracking-wider">
-                    <Filter size={14} />
-                    Found {filteredReports.length} Reports
+                <div className="flex items-center justify-center gap-2 px-4 py-2.5 bg-muted/50 rounded-xl border border-border text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
+                    <Filter size={14} className="shrink-0" />
+                    <span className="whitespace-nowrap">{filteredReports.length} Matches</span>
                 </div>
             </div>
 
@@ -215,7 +270,7 @@ export default function SummaryReportsPage() {
 
                         {/* Pagination Controls */}
                         {totalPages > 1 && (
-                            <div className="flex flex-col items-center gap-4 pt-8">
+                            <div className="flex flex-row items-center justify-between gap-4">
                                 <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest">
                                     Page <span className="text-foreground font-bold">{currentPage}</span> of <span className="text-foreground font-bold">{totalPages}</span>
                                 </p>
