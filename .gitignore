@@ -40,3 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 /lib/generated/prisma
+
+/data/*.csv
+/data/screening*.csv
+/data/screening*.xlsx

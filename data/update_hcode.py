@@ -28,8 +28,6 @@ def get_lookup_table(sql_file_path):
                 
                 matches = value_pattern.findall(line)
                 for match in matches:
-                    # Basic split by comma. SQL strings are in single quotes.
-                    # This handles strings with commas inside quotes poorly but usually hcodes and names don't have them.
                     parts = [p.strip() for p in match.split(',')]
                     if len(parts) >= 8:
                         hcode = parts[0].strip("'")
@@ -41,7 +39,6 @@ def get_lookup_table(sql_file_path):
                         name = normalize_name(parts[1])
                         prov_id = parts[7].strip("'")
                         
-                        # Store in lookup (Name + Province ID composite key)
                         lookup[(name, prov_id)] = hcode
                         
         print(f"Found {len(lookup)} unique 5-digit hospital mappings.")
@@ -50,11 +47,14 @@ def get_lookup_table(sql_file_path):
         print(f"Error reading SQL file: {e}")
         return None
 
-def update_csv_file(csv_file_path, lookup):
+def update_csv_file(csv_file_path, lookup, output_path=None):
     """Updates the hcode column and adds a year column to the given CSV file."""
     if not os.path.exists(csv_file_path):
         print(f"CSV file not found: {csv_file_path}")
         return
+
+    if output_path is None:
+        output_path = csv_file_path
 
     updated_rows = []
     matched_count = 0
@@ -64,14 +64,11 @@ def update_csv_file(csv_file_path, lookup):
     print(f"Processing {csv_file_path}...")
     try:
         with open(csv_file_path, 'r', encoding='utf-8') as f:
-            # Filter out lines that are just commas (Excel artifact rows)
             lines = [line for line in f if line.strip() and not line.strip().replace(',', '') == '']
             reader = csv.DictReader(lines)
             
-            # Ensure 'year' is in the fieldnames
             fieldnames = list(reader.fieldnames)
             if 'year' not in fieldnames:
-                # Insert 'year' after 'hcode' if possible, or just append
                 try:
                     idx = fieldnames.index('hcode') + 1
                     fieldnames.insert(idx, 'year')
@@ -83,10 +80,8 @@ def update_csv_file(csv_file_path, lookup):
                 prov_id = row.get('province_id', '').strip()
                 current_hcode = row.get('hcode', '').strip()
                 
-                # Add/Update fixed year value
                 row['year'] = '2569'
                 
-                # Try to find the 5-digit hcode
                 if hospital_name:
                     norm_name = normalize_name(hospital_name)
                     key = (norm_name, prov_id)
@@ -103,15 +98,15 @@ def update_csv_file(csv_file_path, lookup):
                 
                 updated_rows.append(row)
 
-        # Write updates back to the same file
-        with open(csv_file_path, 'w', encoding='utf-8', newline='') as f:
+        with open(output_path, 'w', encoding='utf-8', newline='') as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(updated_rows)
 
-        print(f"  - Successfully updated {len(updated_rows)} rows with year=2569")
-        print(f"  - Rows newly matched with 5-digit hcode: {matched_count}")
-        print(f"  - Rows corrected (GA/EA -> 5-digit): {overwritten_count}")
+        print(f"  - Successfully wrote to {output_path}")
+        print(f"  - Total rows: {len(updated_rows)}")
+        print(f"  - Rows newly matched: {matched_count}")
+        print(f"  - Rows corrected: {overwritten_count}")
         if unmatched:
             print(f"  - Failed to match {len(unmatched)} unique hospital names.")
             
@@ -124,4 +119,5 @@ if __name__ == "__main__":
         sys.exit(1)
 
     target_file = sys.argv[1] if len(sys.argv) > 1 else 'data/screening69_nakhonratchasina.csv'
-    update_csv_file(target_file, lookup)
+    output_file = sys.argv[2] if len(sys.argv) > 2 else target_file
+    update_csv_file(target_file, lookup, output_file)
