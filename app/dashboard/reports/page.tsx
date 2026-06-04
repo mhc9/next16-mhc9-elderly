@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { FileText, Search, Filter, Calendar, Building2, MapPin, ChevronRight, ChevronLeft, Loader2, AlertCircle } from "lucide-react";
+import Link from "next/link";
+import { FileText, Search, Filter, Calendar, Building2, MapPin, ChevronRight, ChevronLeft, Loader2, AlertCircle, Plus } from "lucide-react";
 
 interface SummaryReport {
     id: number;
@@ -109,6 +110,13 @@ export default function SummaryReportsPage() {
                         Overview of screening performance and elderly care distribution
                     </p>
                 </div>
+                <Link 
+                    href="/dashboard/reports/new"
+                    className="flex items-center gap-2 px-6 py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 shrink-0 whitespace-nowrap text-sm"
+                >
+                    <Plus size={18} />
+                    New Report
+                </Link>
             </div>
 
             {error && (
@@ -121,7 +129,7 @@ export default function SummaryReportsPage() {
             {/* Filters */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 <div className="relative group lg:col-span-1">
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
                         <Search size={18} />
                     </div>
                     <input
@@ -129,7 +137,7 @@ export default function SummaryReportsPage() {
                         placeholder="Search hospital..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-card border border-border rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                        className="w-full bg-card border border-border rounded-xl py-2.5 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                     />
                 </div>
 
