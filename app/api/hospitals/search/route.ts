@@ -31,11 +31,16 @@ export async function GET(req: Request) {
                     },
                 },
             },
-            take: 20,
+            take: 100, // Fetch more to allow for filtering
             orderBy: { name: "asc" },
         });
 
-        return NextResponse.json({ data: hospitals });
+        // Filter hospitals that have hcode value length more than 5 digits out
+        const filteredHospitals = hospitals
+            .filter(h => h.hcode.length <= 5)
+            .slice(0, 20);
+
+        return NextResponse.json({ data: filteredHospitals });
     } catch (error) {
         return NextResponse.json(
             { error: "Failed to search health centers" },

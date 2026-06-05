@@ -64,7 +64,7 @@ export default function RegisterPage() {
         searchTimeoutRef.current = setTimeout(async () => {
             setIsSearching(true);
             try {
-                const res = await fetch(`/api/health-centers/search?q=${encodeURIComponent(searchQuery)}`);
+                const res = await fetch(`/api/hospitals/search?q=${encodeURIComponent(searchQuery)}`);
                 const json = await res.json();
                 setSearchResults(json.data ?? []);
                 setShowDropdown(true);
