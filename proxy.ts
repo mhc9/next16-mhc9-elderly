@@ -8,6 +8,7 @@ export default auth((req: NextRequest) => {
     const isDashboardRoute = nextUrl.pathname.startsWith("/")
     const isApiAiRoute = nextUrl.pathname.startsWith("/api/ai")
     const isSettingsRoute = nextUrl.pathname.startsWith("/settings")
+    const isAdminRoute = nextUrl.pathname.startsWith("/admin/users")
     const publicPaths = ['/login', '/register'] // Define public paths
 
     if (!isLoggedIn && !publicPaths.includes(nextUrl.pathname)) {
@@ -16,6 +17,17 @@ export default auth((req: NextRequest) => {
 
     if (isLoggedIn && publicPaths.includes(nextUrl.pathname)) {
         return NextResponse.redirect(new URL('/', req.url)); // Redirect logged-in users from public pages
+    }
+
+    // Role-based access control for /admin/users
+    if (isLoggedIn && isAdminRoute) {
+        const user = (req as any).auth?.user
+        const isSelf = nextUrl.pathname === `/admin/users/${user?.id}`
+        const isAdmin = user?.role === "ADMIN" || user?.role === "SUPERADMIN"
+
+        if (!isAdmin && !isSelf) {
+            return NextResponse.redirect(new URL("/", req.url))
+        }
     }
 
     if (isDashboardRoute || isApiAiRoute || isSettingsRoute) {

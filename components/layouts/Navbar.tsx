@@ -97,6 +97,9 @@ export default function Navbar() {
                                         <p className="text-sm font-bold text-foreground truncate">{user?.email}</p>
                                     </div>
                                     <MenuLink href={`/admin/users/${user?.id}`} icon={<User size={16} />} label="Your Profile" />
+                                    {(user?.role === "ADMIN" || user?.role === "SUPERADMIN") && (
+                                        <MenuLink href="/admin/users" icon={<UserCog size={16} />} label="Manage Users" />
+                                    )}
                                     <MenuLink href="/settings" icon={<Settings size={16} />} label="Settings" />
                                     <div className="border-t border-border mt-1 pt-1">
                                         <button 
