@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { LayoutDashboard, Users, FileText, Settings, LogOut, User, Bell, Search, UserCog } from "lucide-react";
+import { ChartPie, LayoutDashboard, Users, Settings, LogOut, User, Bell, Search, UserCog, CircleUser } from "lucide-react";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import { usePathname } from "next/navigation";
 
@@ -46,9 +46,9 @@ export default function Navbar() {
                     <div className="hidden lg:flex items-center gap-1">
                         <NavLink href="/" icon={<LayoutDashboard size={18} />} label="แดชบอร์ด" active={pathname === "/"} />
                         <NavLink href="/population" icon={<Users size={18} />} label="ประชากร" active={pathname === "/population"} />
-                        <NavLink href="/summary/reports" icon={<FileText size={18} />} label="รายงาน" active={pathname === "/summary/reports"} />
+                        <NavLink href="/summary/reports" icon={<ChartPie size={18} />} label="รายงาน" active={pathname === "/summary/reports"} />
                         {(user?.role === "ADMIN" || user?.role === "SUPERADMIN") && (
-                            <NavLink href="/admin/users" icon={<UserCog size={18} />} label="ผู้ใช้งาน" active={pathname === "/admin/users"} />
+                            <NavLink href="/admin/users" icon={<CircleUser size={18} />} label="ผู้ใช้งาน" active={pathname === "/admin/users"} />
                         )}
                     </div>
                 )}

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Users, Search, Filter, Shield, Building2, Mail, Loader2, AlertCircle, MapPin } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Users, Search, Filter, Shield, Building2, Mail, Loader2, AlertCircle, CircleUser } from "lucide-react";
 import Link from "next/link";
 
 interface User {
@@ -76,8 +76,8 @@ export default function UsersPage() {
         <div className="p-6 space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                        <Users className="text-primary" />
+                    <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
+                        <CircleUser className="text-primary" />
                         รายชื่อผู้ใช้งาน
                     </h1>
                     <p className="text-sm text-muted-foreground mt-1">

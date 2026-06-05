@@ -16,7 +16,8 @@ import {
     ClipboardCheck,
     Stethoscope,
     HeartPulse,
-    Building2
+    Building2,
+    ClipboardPlus
 } from "lucide-react";
 
 export default function NewReportPage() {
@@ -137,7 +138,10 @@ export default function NewReportPage() {
                         <ChevronLeft size={20} />
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-foreground">Create New Report</h1>
+                        <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
+                            <ClipboardPlus className="text-primary" />
+                            Create New Report
+                        </h1>
                         <p className="text-sm text-muted-foreground">Add annual screening statistics for a healthcare facility</p>
                     </div>
                 </div>

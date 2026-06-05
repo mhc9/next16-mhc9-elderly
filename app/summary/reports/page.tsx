@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { FileText, Search, Filter, Calendar, Building2, MapPin, ChevronRight, ChevronLeft, Loader2, AlertCircle, Plus } from "lucide-react";
+import { Search, Filter, Calendar, Building2, MapPin, ChevronRight, ChevronLeft, Loader2, AlertCircle, Plus, ChartPie } from "lucide-react";
 
 interface SummaryReport {
     id: number;
@@ -99,7 +99,7 @@ function SummaryReportsContent() {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
                 <Loader2 className="animate-spin text-primary" size={40} />
-                <p className="text-muted-foreground animate-pulse">Loading reports...</p>
+                <p className="text-muted-foreground animate-pulse">กำลังโหลดรายงาน...</p>
             </div>
         );
     }
@@ -108,12 +108,12 @@ function SummaryReportsContent() {
         <div className="p-6 space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                        <FileText className="text-primary" />
-                        Summary Reports
+                    <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
+                        <ChartPie className="text-primary" />
+                        รายงานสรุปผล
                     </h1>
-                    <p className="text-sm text-muted-foreground mt-1">
-                        Overview of screening performance and elderly care distribution
+                    <p className="text-base text-muted-foreground mt-1">
+                        ภาพรวมผลการดำเนินงานการคัดกรองและการดูแลช่วยเหลือผู้สูงอายุ
                     </p>
                 </div>
                 <Link 
@@ -121,7 +121,7 @@ function SummaryReportsContent() {
                     className="flex items-center gap-2 px-6 py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 shrink-0 whitespace-nowrap text-sm cursor-pointer"
                 >
                     <Plus size={18} />
-                    New Report
+                    สร้างรายงานใหม่
                 </Link>
             </div>
 
@@ -140,7 +140,7 @@ function SummaryReportsContent() {
                     </div>
                     <input
                         type="text"
-                        placeholder="Search hospital..."
+                        placeholder="ค้นหาชื่อหน่วยบริการ..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full bg-card border border-border rounded-xl py-2.5 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
@@ -156,7 +156,7 @@ function SummaryReportsContent() {
                         onChange={(e) => setProvinceFilter(e.target.value)}
                         className="w-full bg-card border border-border rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
                     >
-                        <option value="all">All Provinces</option>
+                        <option value="all">ทุกจังหวัด</option>
                         {provinces.map(p => (
                             <option key={p} value={p}>{p}</option>
                         ))}
@@ -173,7 +173,7 @@ function SummaryReportsContent() {
                         disabled={districts.length === 0}
                         className="w-full bg-card border border-border rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer disabled:opacity-50"
                     >
-                        <option value="all">All Districts</option>
+                        <option value="all">ทุกอำเภอ</option>
                         {districts.map(d => (
                             <option key={d} value={d}>{d}</option>
                         ))}
@@ -189,16 +189,16 @@ function SummaryReportsContent() {
                         onChange={(e) => setYearFilter(e.target.value)}
                         className="w-full bg-card border border-border rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
                     >
-                        <option value="all">All Years</option>
+                        <option value="all">ทุกปีงบประมาณ</option>
                         {years.map(y => (
                             <option key={y} value={y}>{y}</option>
                         ))}
                     </select>
                 </div>
 
-                <div className="flex items-center justify-center gap-2 px-4 py-2.5 bg-muted/50 rounded-xl border border-border text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
+                <div className="flex items-center justify-center gap-2 px-4 py-2.5 bg-muted/50 rounded-xl border border-border text-[12px] text-muted-foreground font-semibold uppercase tracking-wider">
                     <Filter size={14} className="shrink-0" />
-                    <span className="whitespace-nowrap">{filteredReports.length} Matches</span>
+                    <span className="whitespace-nowrap">พบทั้งหมด {filteredReports.length} รายการ</span>
                 </div>
             </div>
 
@@ -215,7 +215,7 @@ function SummaryReportsContent() {
                                     <div className="space-y-1.5">
                                         <div className="flex items-center gap-2">
                                             <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-md uppercase tracking-wide">
-                                                Year {report.year}
+                                                ปีงบประมาณ {report.year}
                                             </span>
                                             <span className="text-xs text-muted-foreground font-mono">
                                                 #{report.hcode}
@@ -227,26 +227,26 @@ function SummaryReportsContent() {
                                         <div className="flex items-center gap-3 text-sm text-muted-foreground">
                                             <div className="flex items-center gap-1">
                                                 <MapPin size={14} />
-                                                {report.hospital.district?.name}, {report.hospital.province?.name}
+                                                ต. {report.hospital.district?.name}, จ. {report.hospital.province?.name}
                                             </div>
                                         </div>
                                     </div>
 
                                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 md:gap-12">
                                         <div className="text-center md:text-left">
-                                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Target</p>
+                                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">เป้าหมาย</p>
                                             <p className="text-xl font-black text-foreground">{report.target_population.toLocaleString()}</p>
                                         </div>
                                         <div className="text-center md:text-left">
-                                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Screened</p>
+                                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">คัดกรองแล้ว</p>
                                             <p className="text-xl font-black text-primary">{report.screened_total.toLocaleString()}</p>
                                         </div>
                                         <div className="text-center md:text-left">
-                                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Normal</p>
+                                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">ปกติ</p>
                                             <p className="text-xl font-black text-emerald-600">{report.screened_normal.toLocaleString()}</p>
                                         </div>
                                         <div className="text-center md:text-left">
-                                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">Risk</p>
+                                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">กลุ่มเสี่ยง</p>
                                             <p className="text-xl font-black text-rose-600">{report.screened_risk.toLocaleString()}</p>
                                         </div>
                                     </div>
@@ -261,7 +261,7 @@ function SummaryReportsContent() {
                                 {/* Progress Bar */}
                                 <div className="mt-5 space-y-2">
                                     <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider">
-                                        <span className="text-muted-foreground">Screening Progress</span>
+                                        <span className="text-muted-foreground">ความครอบคลุมการคัดกรอง</span>
                                         <span className="text-primary">
                                             {report.target_population > 0 
                                                 ? ((report.screened_total / report.target_population) * 100).toFixed(1) 
@@ -286,7 +286,7 @@ function SummaryReportsContent() {
                         {totalPages > 1 && (
                             <div className="flex flex-row items-center justify-between gap-4">
                                 <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest">
-                                    Page <span className="text-foreground font-bold">{currentPage}</span> of <span className="text-foreground font-bold">{totalPages}</span>
+                                    หน้า <span className="text-foreground font-bold">{currentPage}</span> จาก <span className="text-foreground font-bold">{totalPages}</span>
                                 </p>
                                 <div className="flex items-center justify-center gap-2">
                                     <button
@@ -342,8 +342,8 @@ function SummaryReportsContent() {
                             <Building2 size={32} />
                         </div>
                         <div className="text-center">
-                            <p className="text-lg font-bold text-foreground">No reports found</p>
-                            <p className="text-sm text-muted-foreground">Try adjusting your search or filters</p>
+                            <p className="text-lg font-bold text-foreground">ไม่พบข้อมูลรายงาน</p>
+                            <p className="text-sm text-muted-foreground">ลองปรับเปลี่ยนคำค้นหาหรือตัวกรอง</p>
                         </div>
                     </div>
                 )}
@@ -357,7 +357,7 @@ export default function SummaryReportsPage() {
         <Suspense fallback={
             <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
                 <Loader2 className="animate-spin text-primary" size={40} />
-                <p className="text-muted-foreground animate-pulse">Initializing...</p>
+                <p className="text-muted-foreground animate-pulse">กำลังเริ่มต้น...</p>
             </div>
         }>
             <SummaryReportsContent />
