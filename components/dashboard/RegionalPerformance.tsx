@@ -91,42 +91,56 @@ export default function RegionalPerformance({
                     </thead>
                     <tbody className="divide-y divide-border">
                         {paginatedData.length > 0 ? (
-                            paginatedData.map((d, i) => (
-                                <tr key={i} className="hover:bg-muted/10 transition-colors group">
-                                    <td className="px-6 py-4">
-                                        <Link 
-                                            href={`/summary/reports?district=${encodeURIComponent(d.name)}&province=${encodeURIComponent(d.province)}&year=${year}`}
-                                            className="font-bold text-foreground group-hover:text-primary transition-colors hover:underline"
-                                        >
-                                            {d.name}
-                                        </Link>
-                                        <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mt-0.5">
-                                            จ. {d.province}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-muted-foreground font-medium hidden sm:table-cell">
-                                        {d.target.toLocaleString()} <span className="text-[10px]">คน</span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="flex-1 min-w-[60px] sm:min-w-[100px] h-2 bg-muted rounded-full overflow-hidden">
-                                                <div 
-                                                    className="h-full bg-gradient-to-r from-primary to-teal-400 rounded-full" 
-                                                    style={{ width: `${d.target > 0 ? (d.screened/d.target*100).toFixed(0) : 0}%` }}
-                                                />
+                            paginatedData.map((d, i) => {
+                                const coverage = d.target > 0 ? (d.screened / d.target * 100) : 0;
+                                
+                                const getColors = (val: number) => {
+                                    if (val >= 80) return { text: "text-primary", bg: "bg-primary" };
+                                    if (val >= 60) return { text: "text-lime-600", bg: "bg-lime-500" };
+                                    if (val >= 40) return { text: "text-cyan-500", bg: "bg-cyan-500" };
+                                    if (val >= 20) return { text: "text-amber-500", bg: "bg-amber-500" };
+                                    return { text: "text-rose-500", bg: "bg-rose-500" };
+                                };
+
+                                const colors = getColors(coverage);
+
+                                return (
+                                    <tr key={i} className="hover:bg-muted/10 transition-colors group">
+                                        <td className="px-6 py-4">
+                                            <Link 
+                                                href={`/summary/reports?district=${encodeURIComponent(d.name)}&province=${encodeURIComponent(d.province)}&year=${year}`}
+                                                className="font-bold text-foreground group-hover:text-primary transition-colors hover:underline"
+                                            >
+                                                {d.name}
+                                            </Link>
+                                            <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mt-0.5">
+                                                จ. {d.province}
                                             </div>
-                                            <span className="text-xs font-bold text-foreground">
-                                                {d.target > 0 ? (d.screened/d.target*100).toFixed(1) : 0}%
+                                        </td>
+                                        <td className="px-6 py-4 text-muted-foreground font-medium hidden sm:table-cell">
+                                            {d.target.toLocaleString()} <span className="text-[10px]">คน</span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="flex-1 min-w-[60px] sm:min-w-[100px] h-2 bg-muted rounded-full overflow-hidden">
+                                                    <div 
+                                                        className={`h-full ${colors.bg} rounded-full transition-all duration-500`}
+                                                        style={{ width: `${coverage.toFixed(0)}%` }}
+                                                    />
+                                                </div>
+                                                <span className={`text-xs font-black ${colors.text}`}>
+                                                    {coverage.toFixed(1)}%
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-right hidden sm:table-cell">
+                                            <span className="inline-flex items-center justify-center bg-primary/10 text-primary text-xs font-black px-3 py-1 rounded-lg">
+                                                {d.care.toLocaleString()}
                                             </span>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-right hidden sm:table-cell">
-                                        <span className="inline-flex items-center justify-center bg-primary/10 text-primary text-xs font-black px-3 py-1 rounded-lg">
-                                            {d.care.toLocaleString()}
-                                        </span>
-                                    </td>
-                                </tr>
-                            ))
+                                        </td>
+                                    </tr>
+                                );
+                            })
                         ) : (
                             <tr>
                                 <td colSpan={4} className="px-6 py-12 text-center text-muted-foreground font-medium">
