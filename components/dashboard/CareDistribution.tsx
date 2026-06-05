@@ -3,10 +3,9 @@
 import React from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { PieChart as PieChartIcon } from "lucide-react";
-import { dashboardData } from "@/lib/data-mock";
 import { COLORS } from "@/lib/constants/dashboard";
 
-export default function CareDistribution() {
+export default function CareDistribution({ data = [] }: { data?: any[] }) {
     return (
         <div className="lg:col-span-4 bg-card rounded-2xl shadow-sm border border-border flex flex-col">
             <div className="p-6 border-b border-border">
@@ -25,14 +24,14 @@ export default function CareDistribution() {
                     <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
                             <Pie
-                                data={dashboardData.careTypes}
+                                data={data}
                                 innerRadius={70}
                                 outerRadius={90}
                                 paddingAngle={8}
                                 dataKey="value"
                                 stroke="none"
                             >
-                                {dashboardData.careTypes.map((entry, index) => (
+                                {data.map((entry, index) => (
                                     <Cell key={`cell-${index}`} fill={COLORS[(index + 2) % COLORS.length]} />
                                 ))}
                             </Pie>
@@ -44,7 +43,7 @@ export default function CareDistribution() {
                 </div>
 
                 <div className="space-y-3 mt-6">
-                    {dashboardData.careTypes.map((item, i) => (
+                    {data.map((item, i) => (
                         <div key={i} className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[(i + 2) % COLORS.length] }} />

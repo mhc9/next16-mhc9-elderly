@@ -3,9 +3,8 @@
 import React from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { Activity } from "lucide-react";
-import { dashboardData } from "@/lib/data-mock";
 
-export default function AssessmentRisk() {
+export default function AssessmentRisk({ data = [] }: { data?: any[] }) {
     return (
         <div className="lg:col-span-5 bg-card rounded-2xl shadow-sm border border-border">
             <div className="p-6 border-b border-border">
@@ -22,7 +21,7 @@ export default function AssessmentRisk() {
             <div className="p-6">
                 <div className="h-[300px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={dashboardData.assessments}>
+                        <BarChart data={data}>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
                             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
                             <YAxis axisLine={false} tickLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />

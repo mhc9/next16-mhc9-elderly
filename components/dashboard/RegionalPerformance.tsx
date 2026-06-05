@@ -2,9 +2,8 @@
 
 import React from "react";
 import { MapPin, ChevronRight } from "lucide-react";
-import { dashboardData } from "@/lib/data-mock";
 
-export default function RegionalPerformance() {
+export default function RegionalPerformance({ data = [] }: { data?: any[] }) {
     return (
         <div className="lg:col-span-7 bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
             <div className="p-6 border-b border-border flex items-center justify-between">
@@ -32,7 +31,7 @@ export default function RegionalPerformance() {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
-                        {dashboardData.districts.map((d, i) => (
+                        {data.map((d, i) => (
                             <tr key={i} className="hover:bg-muted/20 transition-colors">
                                 <td className="px-6 py-4">
                                     <div className="font-bold text-foreground">{d.name}</div>
@@ -44,10 +43,10 @@ export default function RegionalPerformance() {
                                         <div className="flex-1 min-w-[100px] h-1.5 bg-muted rounded-full overflow-hidden">
                                             <div 
                                                 className="h-full bg-gradient-to-r from-primary to-teal-400 rounded-full" 
-                                                style={{ width: `${(d.screened/d.target*100).toFixed(0)}%` }}
+                                                style={{ width: `${d.target > 0 ? (d.screened/d.target*100).toFixed(0) : 0}%` }}
                                             />
                                         </div>
-                                        <span className="text-xs font-bold text-foreground">{(d.screened/d.target*100).toFixed(1)}%</span>
+                                        <span className="text-xs font-bold text-foreground">{d.target > 0 ? (d.screened/d.target*100).toFixed(1) : 0}%</span>
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 text-right">

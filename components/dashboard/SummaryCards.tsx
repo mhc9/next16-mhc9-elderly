@@ -2,12 +2,18 @@
 
 import React from "react";
 import { Users, ClipboardCheck, AlertTriangle, HeartPulse } from "lucide-react";
-import { dashboardData } from "@/lib/data-mock";
 
-export default function SummaryCards() {
+interface SummaryItem {
+    label: string;
+    value: number;
+    suffix: string;
+    icon: string;
+}
+
+export default function SummaryCards({ data = [] }: { data?: SummaryItem[] }) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {dashboardData.summary.map((item, idx) => (
+            {data.map((item, idx) => (
                 <div key={idx} className="group bg-card p-6 rounded-2xl shadow-sm border border-border hover:shadow-md transition-all relative overflow-hidden">
                     <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity">
                         {item.icon === "Users" && <Users size={120} />}
