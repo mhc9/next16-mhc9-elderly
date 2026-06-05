@@ -206,81 +206,91 @@ function SummaryReportsContent() {
             <div className="grid grid-cols-1 gap-4">
                 {paginatedReports.length > 0 ? (
                     <>
-                        {paginatedReports.map((report) => (
-                            <div 
-                                key={report.id}
-                                className="bg-card border border-border rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/20 transition-all group"
-                            >
-                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                    <div className="space-y-1.5">
-                                        <div className="flex items-center gap-2">
-                                            <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-md uppercase tracking-wide">
-                                                ปีงบประมาณ {report.year}
-                                            </span>
-                                            <span className="text-xs text-muted-foreground font-mono">
-                                                #{report.hcode}
-                                            </span>
-                                        </div>
-                                        <h3 className="text-lg font-bold text-foreground flex items-center gap-2 group-hover:text-primary transition-colors">
-                                            {report.hospital.name}
-                                        </h3>
-                                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                                            <div className="flex items-center gap-1">
-                                                <MapPin size={14} />
-                                                ต. {report.hospital.district?.name}, จ. {report.hospital.province?.name}
+                        {paginatedReports.map((report) => {
+                            const coverage = report.target_population > 0 
+                                ? (report.screened_total / report.target_population) * 100 
+                                : 0;
+                            
+                            const getColors = (val: number) => {
+                                if (val >= 80) return { text: "text-primary", bg: "bg-primary" };
+                                if (val >= 60) return { text: "text-lime-600", bg: "bg-lime-500" };
+                                if (val >= 40) return { text: "text-cyan-500", bg: "bg-cyan-500" };
+                                if (val >= 20) return { text: "text-amber-500", bg: "bg-amber-500" };
+                                return { text: "text-rose-500", bg: "bg-rose-500" };
+                            };
+
+                            const colors = getColors(coverage);
+
+                            return (
+                                <div 
+                                    key={report.id}
+                                    className="bg-card border border-border rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/20 transition-all group"
+                                >
+                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                        <div className="space-y-1.5">
+                                            <div className="flex items-center gap-2">
+                                                <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-md uppercase tracking-wide">
+                                                    ปีงบประมาณ {report.year}
+                                                </span>
+                                                <span className="text-xs text-muted-foreground font-mono">
+                                                    #{report.hcode}
+                                                </span>
+                                            </div>
+                                            <h3 className="text-lg font-bold text-foreground flex items-center gap-2 group-hover:text-primary transition-colors">
+                                                {report.hospital.name}
+                                            </h3>
+                                            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                                                <div className="flex items-center gap-1">
+                                                    <MapPin size={14} />
+                                                    ต. {report.hospital.district?.name}, จ. {report.hospital.province?.name}
+                                                </div>
                                             </div>
                                         </div>
+
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 md:gap-12">
+                                            <div className="text-center md:text-left">
+                                                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">เป้าหมาย</p>
+                                                <p className="text-xl font-black text-foreground">{report.target_population.toLocaleString()}</p>
+                                            </div>
+                                            <div className="text-center md:text-left">
+                                                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">คัดกรองแล้ว</p>
+                                                <p className="text-xl font-black text-primary">{report.screened_total.toLocaleString()}</p>
+                                            </div>
+                                            <div className="text-center md:text-left">
+                                                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">ปกติ</p>
+                                                <p className="text-xl font-black text-emerald-600">{report.screened_normal.toLocaleString()}</p>
+                                            </div>
+                                            <div className="text-center md:text-left">
+                                                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">กลุ่มเสี่ยง</p>
+                                                <p className="text-xl font-black text-rose-600">{report.screened_risk.toLocaleString()}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center justify-end">
+                                            <button className="p-2 rounded-xl bg-muted group-hover:bg-primary group-hover:text-white transition-all shadow-sm cursor-pointer">
+                                                <ChevronRight size={20} />
+                                            </button>
+                                        </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 md:gap-12">
-                                        <div className="text-center md:text-left">
-                                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">เป้าหมาย</p>
-                                            <p className="text-xl font-black text-foreground">{report.target_population.toLocaleString()}</p>
+                                    {/* Progress Bar */}
+                                    <div className="mt-5 space-y-2">
+                                        <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider">
+                                            <span className="text-muted-foreground">ความครอบคลุมการคัดกรอง</span>
+                                            <span className={`font-black ${colors.text}`}>
+                                                {coverage.toFixed(1)}%
+                                            </span>
                                         </div>
-                                        <div className="text-center md:text-left">
-                                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">คัดกรองแล้ว</p>
-                                            <p className="text-xl font-black text-primary">{report.screened_total.toLocaleString()}</p>
+                                        <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
+                                            <div 
+                                                className={`h-full ${colors.bg} rounded-full transition-all duration-1000`}
+                                                style={{ width: `${Math.min(100, coverage)}%` }}
+                                            ></div>
                                         </div>
-                                        <div className="text-center md:text-left">
-                                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">ปกติ</p>
-                                            <p className="text-xl font-black text-emerald-600">{report.screened_normal.toLocaleString()}</p>
-                                        </div>
-                                        <div className="text-center md:text-left">
-                                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-1">กลุ่มเสี่ยง</p>
-                                            <p className="text-xl font-black text-rose-600">{report.screened_risk.toLocaleString()}</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center justify-end">
-                                        <button className="p-2 rounded-xl bg-muted group-hover:bg-primary group-hover:text-white transition-all shadow-sm cursor-pointer">
-                                            <ChevronRight size={20} />
-                                        </button>
                                     </div>
                                 </div>
-
-                                {/* Progress Bar */}
-                                <div className="mt-5 space-y-2">
-                                    <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider">
-                                        <span className="text-muted-foreground">ความครอบคลุมการคัดกรอง</span>
-                                        <span className="text-primary">
-                                            {report.target_population > 0 
-                                                ? ((report.screened_total / report.target_population) * 100).toFixed(1) 
-                                                : "0.0"}%
-                                        </span>
-                                    </div>
-                                    <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
-                                        <div 
-                                            className="h-full bg-primary rounded-full transition-all duration-1000"
-                                            style={{ 
-                                                width: `${report.target_population > 0 
-                                                    ? Math.min(100, (report.screened_total / report.target_population) * 100) 
-                                                    : 0}%` 
-                                            }}
-                                        ></div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
 
                         {/* Pagination Controls */}
                         {totalPages > 1 && (
