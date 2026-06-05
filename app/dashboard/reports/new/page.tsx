@@ -167,7 +167,7 @@ export default function NewReportPage() {
                     />
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                             <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2 pl-1">
                                 <Calendar size={14} className="text-primary" />
                                 ปีงบประมาณ (พ.ศ.)
@@ -179,11 +179,11 @@ export default function NewReportPage() {
                                 onChange={handleInputChange}
                                 required
                                 placeholder="2569"
-                                className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono font-bold"
+                                className="w-full bg-muted/30 border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono font-bold"
                             />
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                             <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2 pl-1">
                                 <Users size={14} className="text-primary" />
                                 จำนวนประชากรเป้าหมาย
@@ -195,7 +195,7 @@ export default function NewReportPage() {
                                 onChange={handleInputChange}
                                 required
                                 placeholder="0"
-                                className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono font-bold"
+                                className="w-full bg-muted/30 border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono font-bold"
                             />
                         </div>
                     </div>
@@ -229,9 +229,9 @@ export default function NewReportPage() {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                            <FormField label="คัดกรองทั้งหมด" name="screened_total" value={formData.screened_total} onChange={handleInputChange} />
-                            <FormField label="ปกติ" name="screened_normal" value={formData.screened_normal} onChange={handleInputChange} color="text-emerald-600" />
-                            <FormField label="เสี่ยง" name="screened_risk" value={formData.screened_risk} onChange={handleInputChange} color="text-rose-600" />
+                            <FormField label="คัดกรองทั้งหมด (ราย)" name="screened_total" value={formData.screened_total} onChange={handleInputChange} />
+                            <FormField label="ปกติ (ราย)" name="screened_normal" value={formData.screened_normal} onChange={handleInputChange} color="text-emerald-600" />
+                            <FormField label="เสี่ยง (ราย)" name="screened_risk" value={formData.screened_risk} onChange={handleInputChange} color="text-rose-600" />
                         </div>
                     </div>
 
@@ -245,9 +245,9 @@ export default function NewReportPage() {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                            <FormField label="ได้รับการดูแลช่วยเหลือทั้งหมด" name="care_total" value={formData.care_total} onChange={handleInputChange} />
-                            <FormField label="ให้คำปรึกษา/ดูแลสังคมจิตใจ" name="care_counseling" value={formData.care_counseling} onChange={handleInputChange} />
-                            <FormField label="ส่งต่อ" name="care_referral" value={formData.care_referral} onChange={handleInputChange} />
+                            <FormField label="ได้รับการดูแลช่วยเหลือทั้งหมด (ราย)" name="care_total" value={formData.care_total} onChange={handleInputChange} />
+                            <FormField label="ให้คำปรึกษา/ดูแลสังคมจิตใจ (ราย)" name="care_counseling" value={formData.care_counseling} onChange={handleInputChange} />
+                            <FormField label="ส่งต่อ (ราย)" name="care_referral" value={formData.care_referral} onChange={handleInputChange} />
                         </div>
 
                         <div>
@@ -260,10 +260,10 @@ export default function NewReportPage() {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <FormField label="9Q ปกติ" name="assess_9q_normal" value={formData.assess_9q_normal} onChange={handleInputChange} color="text-emerald-600" />
-                                <FormField label="9Q เสี่ยง (>=7)" name="assess_9q_risk" value={formData.assess_9q_risk} onChange={handleInputChange} color="text-rose-600" />
-                                <FormField label="8Q ปกติ" name="assess_8q_normal" value={formData.assess_8q_normal} onChange={handleInputChange} color="text-emerald-600" />
-                                <FormField label="8Q เสี่ยง (>=1)" name="assess_8q_risk" value={formData.assess_8q_risk} onChange={handleInputChange} color="text-rose-600" />
+                                <FormField label="9Q ปกติ (ราย)" name="assess_9q_normal" value={formData.assess_9q_normal} onChange={handleInputChange} color="text-emerald-600" />
+                                <FormField label="9Q เสี่ยง (>=7) (ราย)" name="assess_9q_risk" value={formData.assess_9q_risk} onChange={handleInputChange} color="text-rose-600" />
+                                <FormField label="8Q ปกติ (ราย)" name="assess_8q_normal" value={formData.assess_8q_normal} onChange={handleInputChange} color="text-emerald-600" />
+                                <FormField label="8Q เสี่ยง (>=1) (ราย)" name="assess_8q_risk" value={formData.assess_8q_risk} onChange={handleInputChange} color="text-rose-600" />
                             </div>
                         </div>
                     </div>
@@ -284,9 +284,9 @@ export default function NewReportPage() {
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                            <FormField label="ปกติ" name="followup_normal" value={formData.followup_normal} onChange={handleInputChange} color="text-emerald-600" />
-                            <FormField label="ความเสี่ยง ข้อ 1 / ข้อ 2" name="followup_risk_q12" value={formData.followup_risk_q12} onChange={handleInputChange} color="text-rose-600" />
-                            <FormField label="ความเสี่ยง ข้อ 3" name="followup_risk_q3" value={formData.followup_risk_q3} onChange={handleInputChange} color="text-rose-600" />
+                            <FormField label="ปกติ (ราย)" name="followup_normal" value={formData.followup_normal} onChange={handleInputChange} color="text-emerald-600" />
+                            <FormField label="ความเสี่ยง ข้อ 1 / ข้อ 2 (ราย)" name="followup_risk_q12" value={formData.followup_risk_q12} onChange={handleInputChange} color="text-rose-600" />
+                            <FormField label="ความเสี่ยง ข้อ 3 (ราย)" name="followup_risk_q3" value={formData.followup_risk_q3} onChange={handleInputChange} color="text-rose-600" />
                         </div>
                     </div>
                 </div>

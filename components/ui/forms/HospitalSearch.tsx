@@ -93,10 +93,10 @@ export function HospitalSearch({
     };
 
     return (
-        <div className="space-y-2 relative" ref={dropdownRef}>
+        <div className="space-y-1.5 relative" ref={dropdownRef}>
             {label && (
-                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2 pl-1">
-                    {icon && <span className="mr-2">{icon}</span>}
+                <label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2 pl-1">
+                    {icon && <span>{icon}</span>}
                     {label}
                 </label>
             )}
@@ -139,9 +139,13 @@ export function HospitalSearch({
                                             className="group/hosp flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-muted/50 text-sm transition-colors"
                                         >
                                             <Building size={18} className="text-muted-foreground shrink-0 group-hover/hosp:text-teal-500 transition-colors" />
-                                            <div className="flex flex-col group-hover/hosp:text-teal-500 transition-colors">
-                                                <span className="font-medium text-foreground">{hosp.hcode} - {hosp.name}</span>
-                                                <span className="text-xs text-muted-foreground">อ.{hosp.district?.name} จ.{hosp.province?.name}</span>
+                                            <div className="flex flex-col">
+                                                <span className="font-medium group-hover/hosp:text-teal-500 transition-colors">
+                                                    {hosp.hcode} - {hosp.name}
+                                                </span>
+                                                <span className="text-xs text-muted-foreground">
+                                                    อ.{hosp.district?.name} จ.{hosp.province?.name}
+                                                </span>
                                             </div>
                                         </li>
                                     ))
@@ -162,9 +166,9 @@ export function HospitalSearch({
                     )}
                 </div>
             ) : (
-                <div className="flex items-center justify-between p-4 rounded-2xl bg-primary/10 border-2 border-primary shadow-sm animate-in zoom-in-95 duration-200">
+                <div className="flex items-center justify-between p-4 rounded-2xl bg-primary/10 border-2 border-primary/50 shadow-sm animate-in zoom-in-95 duration-200">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20">
+                        <div className="w-12 h-12 rounded-xl bg-primary/80 text-white flex items-center justify-center shadow-lg shadow-primary/20">
                             <Building2 size={24} />
                         </div>
                         <div>
@@ -177,7 +181,7 @@ export function HospitalSearch({
                     <button
                         type="button"
                         onClick={handleClear}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-border text-[10px] font-bold text-rose-600 hover:bg-rose-50 hover:border-rose-200 transition-all shadow-sm uppercase tracking-wider cursor-pointer"
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white border border-border text-[10px] font-bold text-rose-600 hover:bg-rose-50 hover:border-rose-200 transition-all shadow-sm uppercase tracking-wider cursor-pointer"
                     >
                         <X size={12} />
                         เปลี่ยน
