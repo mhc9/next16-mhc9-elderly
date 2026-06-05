@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { ChartPie, LayoutDashboard, Users, Settings, LogOut, User, Bell, Search, UserCog, CircleUser } from "lucide-react";
+import { ChartPie, LayoutDashboard, Users, Settings, LogOut, Bell, Search, CircleUser } from "lucide-react";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import { usePathname } from "next/navigation";
 
@@ -96,17 +96,17 @@ export default function Navbar() {
                                         <p className="text-xs font-medium text-muted-foreground">Signed in as</p>
                                         <p className="text-sm font-bold text-foreground truncate">{user?.email}</p>
                                     </div>
-                                    <MenuLink href={`/admin/users/${user?.id}`} icon={<User size={16} />} label="Your Profile" />
+                                    <MenuLink href={`/admin/users/${user?.id}`} icon={<CircleUser size={16} />} label="โปรไฟล์" />
                                     {(user?.role === "ADMIN" || user?.role === "SUPERADMIN") && (
-                                        <MenuLink href="/admin/users" icon={<UserCog size={16} />} label="Manage Users" />
+                                        <MenuLink href="/admin/users" icon={<Users size={16} />} label="จัดการผู้ใช้งาน" />
                                     )}
-                                    <MenuLink href="/settings" icon={<Settings size={16} />} label="Settings" />
+                                    <MenuLink href="/settings" icon={<Settings size={16} />} label="การตั้งค่า" />
                                     <div className="border-t border-border mt-1 pt-1">
                                         <button 
                                             onClick={() => signOut({ callbackUrl: "/login" })}
                                             className="w-full text-left cursor-pointer"
                                         >
-                                            <MenuLink href="#" icon={<LogOut size={16} />} label="Sign out" variant="danger" />
+                                            <MenuLink href="#" icon={<LogOut size={16} />} label="ออกจากระบบ" variant="danger" />
                                         </button>
                                     </div>
                                 </div>
