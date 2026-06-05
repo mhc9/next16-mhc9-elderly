@@ -111,8 +111,8 @@ export default function SummaryReportsPage() {
                     </p>
                 </div>
                 <Link 
-                    href="/dashboard/reports/new"
-                    className="flex items-center gap-2 px-6 py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 shrink-0 whitespace-nowrap text-sm"
+                    href="/summary/reports/new"
+                    className="flex items-center gap-2 px-6 py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 shrink-0 whitespace-nowrap text-sm cursor-pointer"
                 >
                     <Plus size={18} />
                     New Report
@@ -246,7 +246,7 @@ export default function SummaryReportsPage() {
                                     </div>
 
                                     <div className="flex items-center justify-end">
-                                        <button className="p-2 rounded-xl bg-muted group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
+                                        <button className="p-2 rounded-xl bg-muted group-hover:bg-primary group-hover:text-white transition-all shadow-sm cursor-pointer">
                                             <ChevronRight size={20} />
                                         </button>
                                     </div>
@@ -286,7 +286,7 @@ export default function SummaryReportsPage() {
                                     <button
                                         onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                                         disabled={currentPage === 1}
-                                        className="p-2 rounded-xl bg-card border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                        className="p-2 rounded-xl bg-card border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
                                     >
                                         <ChevronLeft size={20} />
                                     </button>
@@ -306,7 +306,7 @@ export default function SummaryReportsPage() {
                                                 <button
                                                     key={pageNum}
                                                     onClick={() => setCurrentPage(pageNum)}
-                                                    className={`w-10 h-10 rounded-xl text-sm font-bold transition-all border ${
+                                                    className={`w-10 h-10 rounded-xl text-sm font-bold transition-all border cursor-pointer ${
                                                         currentPage === pageNum
                                                             ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-110"
                                                             : "bg-card border-border hover:bg-muted text-muted-foreground"
@@ -321,7 +321,7 @@ export default function SummaryReportsPage() {
                                     <button
                                         onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                                         disabled={currentPage === totalPages}
-                                        className="p-2 rounded-xl bg-card border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                        className="p-2 rounded-xl bg-card border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
                                     >
                                         <ChevronRight size={20} />
                                     </button>

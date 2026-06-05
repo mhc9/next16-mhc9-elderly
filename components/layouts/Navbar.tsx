@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { LayoutDashboard, Users, FileText, Settings, LogOut, User, Bell, Search } from "lucide-react";
+import { LayoutDashboard, Users, FileText, Settings, LogOut, User, Bell, Search, UserCog } from "lucide-react";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import { usePathname } from "next/navigation";
 
@@ -44,9 +44,12 @@ export default function Navbar() {
 
                 {isLoggedIn && (
                     <div className="hidden lg:flex items-center gap-1">
-                        <NavLink href="/" icon={<LayoutDashboard size={18} />} label="Overview" active={pathname === "/"} />
-                        <NavLink href="/population" icon={<Users size={18} />} label="Population" active={pathname === "/population"} />
-                        <NavLink href="/dashboard/reports" icon={<FileText size={18} />} label="Reports" active={pathname === "/dashboard/reports"} />
+                        <NavLink href="/" icon={<LayoutDashboard size={18} />} label="แดชบอร์ด" active={pathname === "/"} />
+                        <NavLink href="/population" icon={<Users size={18} />} label="ประชากร" active={pathname === "/population"} />
+                        <NavLink href="/summary/reports" icon={<FileText size={18} />} label="รายงาน" active={pathname === "/summary/reports"} />
+                        {(user?.role === "ADMIN" || user?.role === "SUPERADMIN") && (
+                            <NavLink href="/admin/users" icon={<UserCog size={18} />} label="ผู้ใช้งาน" active={pathname === "/admin/users"} />
+                        )}
                     </div>
                 )}
             </div>
@@ -67,7 +70,7 @@ export default function Navbar() {
 
                 {isLoggedIn && (
                     <>
-                        <button className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full transition-colors relative">
+                        <button className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full transition-colors relative cursor-pointer">
                             <Bell size={20} />
                             <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-background"></span>
                         </button>
@@ -75,7 +78,7 @@ export default function Navbar() {
                         <div className="relative" ref={ref}>
                             <button
                                 onClick={() => setOpen(!open)}
-                                className="flex items-center gap-2 p-1 rounded-full hover:bg-muted/50 transition-colors"
+                                className="flex items-center gap-2 p-1 rounded-full hover:bg-muted/50 transition-colors cursor-pointer"
                                 aria-expanded={open}
                             >
                                 <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-teal-700 flex items-center justify-center text-white font-semibold shadow-md">
@@ -98,7 +101,7 @@ export default function Navbar() {
                                     <div className="border-t border-border mt-1 pt-1">
                                         <button 
                                             onClick={() => signOut({ callbackUrl: "/login" })}
-                                            className="w-full text-left"
+                                            className="w-full text-left cursor-pointer"
                                         >
                                             <MenuLink href="#" icon={<LogOut size={16} />} label="Sign out" variant="danger" />
                                         </button>
@@ -118,7 +121,7 @@ function NavLink({ href, icon, label, active = false }: { href: string, icon: Re
         <Link 
             href={href} 
             className={`
-                flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all
+                flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer
                 ${active 
                     ? "bg-primary/10 text-primary" 
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -136,7 +139,7 @@ function MenuLink({ href, icon, label, variant = "default" }: { href: string, ic
         <Link 
             href={href} 
             className={`
-                flex items-center gap-3 px-4 py-2.5 text-sm transition-colors
+                flex items-center gap-3 px-4 py-2.5 text-sm transition-colors cursor-pointer
                 ${variant === "danger"
                     ? "text-red-500 hover:bg-red-50" 
                     : "text-foreground hover:bg-muted/50"

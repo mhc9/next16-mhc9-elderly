@@ -132,7 +132,7 @@ export default function NewReportPage() {
                 <div className="flex items-center gap-4">
                     <Link 
                         href="/dashboard/reports"
-                        className="p-2.5 rounded-xl bg-card border border-border hover:bg-muted transition-all"
+                        className="p-2.5 rounded-xl bg-card border border-border hover:bg-muted transition-all cursor-pointer"
                     >
                         <ChevronLeft size={20} />
                     </Link>
@@ -296,7 +296,7 @@ export default function NewReportPage() {
                     <div className="mx-auto flex items-center justify-end gap-4">
                         <Link 
                             href="/dashboard/reports"
-                            className="px-6 py-2.5 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors"
+                            className="px-6 py-2.5 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                         >
                             ยกเลิก
                         </Link>
