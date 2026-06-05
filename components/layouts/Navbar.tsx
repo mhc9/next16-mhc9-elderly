@@ -96,7 +96,7 @@ export default function Navbar() {
                                         <p className="text-xs font-medium text-muted-foreground">Signed in as</p>
                                         <p className="text-sm font-bold text-foreground truncate">{user?.email}</p>
                                     </div>
-                                    <MenuLink href="/profile" icon={<User size={16} />} label="Your Profile" />
+                                    <MenuLink href={`/admin/users/${user?.id}`} icon={<User size={16} />} label="Your Profile" />
                                     <MenuLink href="/settings" icon={<Settings size={16} />} label="Settings" />
                                     <div className="border-t border-border mt-1 pt-1">
                                         <button 

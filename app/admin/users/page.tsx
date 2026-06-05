@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Users, Search, Filter, Shield, Building2, Mail, Loader2, AlertCircle, MapPin } from "lucide-react";
+import Link from "next/link";
 
 interface User {
     id: string;
@@ -171,10 +172,12 @@ export default function UsersPage() {
                                 </div>
 
                                 <div className="flex items-center justify-end gap-2">
-                                    {/* Edit button placeholder if needed in future */}
-                                    <button className="px-4 py-2 text-xs font-bold text-primary hover:bg-primary/5 rounded-lg transition-all cursor-pointer">
+                                    <Link 
+                                        href={`/admin/users/${user.id}`}
+                                        className="px-4 py-2 text-xs font-bold text-primary hover:bg-primary/5 rounded-lg transition-all cursor-pointer border border-transparent hover:border-primary/20"
+                                    >
                                         รายละเอียด
-                                    </button>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
