@@ -59,7 +59,7 @@ export default function RegionalPerformance({
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <div className="relative group min-w-[200px]">
+                    <div className="relative group w-full md:min-w-[200px]">
                         <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
                             <Filter size={16} />
                         </div>
@@ -69,8 +69,10 @@ export default function RegionalPerformance({
                             className="w-full bg-muted/50 border border-border rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer font-medium"
                         >
                             <option value="all">ทุกจังหวัด</option>
-                            {provinces.map(p => (
-                                <option key={p} value={p}>{p}</option>
+                            {provinces.map(province => (
+                                <option key={province} value={province}>
+                                    {province}
+                                </option>
                             ))}
                         </select>
                     </div>
@@ -82,9 +84,9 @@ export default function RegionalPerformance({
                     <thead>
                         <tr className="bg-muted/30 text-muted-foreground font-bold border-b border-border">
                             <th className="px-6 py-4">อำเภอ / จังหวัด</th>
-                            <th className="px-6 py-4">เป้าหมาย</th>
+                            <th className="px-6 py-4 hidden sm:table-cell">เป้าหมาย</th>
                             <th className="px-6 py-4">ความครอบคลุม</th>
-                            <th className="px-6 py-4 text-right">การดูแล</th>
+                            <th className="px-6 py-4 text-right hidden sm:table-cell">การดูแล</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
@@ -102,12 +104,12 @@ export default function RegionalPerformance({
                                             จ. {d.province}
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 text-muted-foreground font-medium">
+                                    <td className="px-6 py-4 text-muted-foreground font-medium hidden sm:table-cell">
                                         {d.target.toLocaleString()} <span className="text-[10px]">คน</span>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="flex-1 min-w-[100px] h-2 bg-muted rounded-full overflow-hidden">
+                                            <div className="flex-1 min-w-[60px] sm:min-w-[100px] h-2 bg-muted rounded-full overflow-hidden">
                                                 <div 
                                                     className="h-full bg-gradient-to-r from-primary to-teal-400 rounded-full" 
                                                     style={{ width: `${d.target > 0 ? (d.screened/d.target*100).toFixed(0) : 0}%` }}
@@ -118,7 +120,7 @@ export default function RegionalPerformance({
                                             </span>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 text-right">
+                                    <td className="px-6 py-4 text-right hidden sm:table-cell">
                                         <span className="inline-flex items-center justify-center bg-primary/10 text-primary text-xs font-black px-3 py-1 rounded-lg">
                                             {d.care.toLocaleString()}
                                         </span>
@@ -138,8 +140,8 @@ export default function RegionalPerformance({
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
-                <div className="p-4 border-t border-border flex items-center justify-between bg-muted/20">
-                    <p className="text-xs text-muted-foreground font-medium">
+                <div className="p-4 border-t border-border flex flex-col sm:flex-row items-center justify-center sm:justify-between bg-muted/20 gap-4">
+                    <p className="text-xs text-muted-foreground font-medium hidden sm:block">
                         แสดง {Math.min(filteredData.length, (currentPage - 1) * itemsPerPage + 1)} - {Math.min(filteredData.length, currentPage * itemsPerPage)} จาก {filteredData.length} รายการ
                     </p>
                     <div className="flex items-center gap-1">
