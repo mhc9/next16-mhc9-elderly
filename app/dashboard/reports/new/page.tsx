@@ -22,6 +22,7 @@ import {
 export default function NewReportPage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
+    const [isFetching, setIsFetching] = useState(false);
     const [message, setMessage] = useState({ type: "", text: "" });
 
     // Hospital selection state
@@ -31,16 +32,16 @@ export default function NewReportPage() {
     const [formData, setFormData] = useState({
         year: new Date().getFullYear() + 543, // Default to current Thai year
         target_population: 0,
-        screened_total: 0,
         screened_normal: 0,
         screened_risk: 0,
+        screened_total: 0,
+        care_counseling: 0,
+        care_referral: 0,
         care_total: 0,
         assess_9q_normal: 0,
         assess_9q_risk: 0,
         assess_8q_normal: 0,
         assess_8q_risk: 0,
-        care_counseling: 0,
-        care_referral: 0,
         followup_normal: 0,
         followup_risk_q12: 0,
         followup_risk_q3: 0,
@@ -52,6 +53,36 @@ export default function NewReportPage() {
             ...prev,
             [name]: parseInt(value) || 0
         }));
+    };
+
+    const fetchSystemData = async () => {
+        if (!selectedHospital) {
+            setMessage({ type: "error", text: "Please select a hospital first" });
+            return;
+        }
+
+        setIsFetching(true);
+        setMessage({ type: "", text: "" });
+
+        try {
+            const res = await fetch(`/api/reports/summary/fetch?hcode=${selectedHospital.hcode}&year=${formData.year}`);
+            const json = await res.json();
+
+            if (!res.ok) throw new Error(json.error || "Failed to fetch data");
+
+            setFormData(prev => ({
+                ...prev,
+                ...json.data
+            }));
+            setMessage({ type: "success", text: "Data fetched from system successfully!" });
+        } catch (err) {
+            setMessage({ 
+                type: "error", 
+                text: err instanceof Error ? err.message : "Failed to fetch data" 
+            });
+        } finally {
+            setIsFetching(false);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -95,7 +126,7 @@ export default function NewReportPage() {
     };
 
     return (
-        <div className="max-w-4xl mx-auto p-6 space-y-8">
+        <div className="p-6 space-y-6">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -115,7 +146,7 @@ export default function NewReportPage() {
             {message.text && (
                 <div className={`p-4 rounded-xl flex items-center gap-3 border ${
                     message.type === "success" 
-                        ? "bg-emerald-50 border-emerald-100 text-emerald-700" 
+                        ? "bg-emerald-50 border-emerald-100 text-primary" 
                         : "bg-rose-50 border-rose-100 text-rose-700"
                 }`}>
                     {message.type === "success" ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
@@ -123,7 +154,7 @@ export default function NewReportPage() {
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} className="relative space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Section 1: Hospital Selection */}
                 <div className="bg-card border border-border rounded-3xl p-6 shadow-sm space-y-6">
                     <HospitalSearch 
@@ -135,7 +166,7 @@ export default function NewReportPage() {
                         placeholder="Search by hospital name or HCODE..."
                     />
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2 pl-1">
                                 <Calendar size={14} className="text-primary" />
@@ -168,83 +199,106 @@ export default function NewReportPage() {
                             />
                         </div>
                     </div>
+
+                    <div className="flex items-center justify-end">
+                        <button
+                            type="button"
+                            onClick={fetchSystemData}
+                            disabled={isFetching || !selectedHospital}
+                            className="flex items-center justify- gap-2 py-2 px-4 bg-primary/5 hover:bg-primary/10 text-primary font-bold rounded-xl border border-primary/20 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {isFetching ? (
+                                <Loader2 size={18} className="animate-spin" />
+                            ) : (
+                                <ClipboardCheck size={18} />
+                            )}
+                            ดึงข้อมูลจากการคัดกรอง
+                        </button>
+                    </div>
                 </div>
 
                 {/* Section 2: Core Metrics */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="flex flex-col gap-6">
                     <div className="bg-card border border-border rounded-3xl p-6 shadow-sm space-y-6">
-                        <div className="flex items-center gap-3 pb-2 border-b border-border/50">
+                        {/* Section Header */}
+                        <div className="flex items-center gap-1 pb-2 border-b border-border/50">
                             <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500">
                                 <Users size={20} />
                             </div>
-                            <h2 className="font-bold text-lg">Screening</h2>
+                            <h2 className="font-bold text-lg">การคัดกรอง 2Q+</h2>
                         </div>
-                        
-                        <div className="space-y-4">
-                            <FormField label="Total Screened" name="screened_total" value={formData.screened_total} onChange={handleInputChange} />
-                            <FormField label="Normal Cases" name="screened_normal" value={formData.screened_normal} onChange={handleInputChange} color="text-emerald-600" />
-                            <FormField label="Risk Cases" name="screened_risk" value={formData.screened_risk} onChange={handleInputChange} color="text-rose-600" />
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <FormField label="คัดกรองทั้งหมด" name="screened_total" value={formData.screened_total} onChange={handleInputChange} />
+                            <FormField label="ปกติ" name="screened_normal" value={formData.screened_normal} onChange={handleInputChange} color="text-emerald-600" />
+                            <FormField label="เสี่ยง" name="screened_risk" value={formData.screened_risk} onChange={handleInputChange} color="text-rose-600" />
                         </div>
                     </div>
 
                     <div className="bg-card border border-border rounded-3xl p-6 shadow-sm space-y-6">
-                        <div className="flex items-center gap-3 pb-2 border-b border-border/50">
-                            <div className="p-2 rounded-lg bg-orange-500/10 text-orange-500">
-                                <Stethoscope size={20} />
+                        {/* Section Header */}
+                        <div className="flex items-center gap-1 pb-2 border-b border-border/50">
+                            <div className="p-2 rounded-lg bg-purple-500/10 text-purple-500">
+                                <ClipboardCheck size={20} />
                             </div>
-                            <h2 className="font-bold text-lg">Assessment</h2>
+                            <h2 className="font-bold text-lg">การดูแลช่วยเหลือ (รอบ 1)</h2>
                         </div>
-                        
-                        <div className="space-y-4">
-                            <FormField label="9Q Normal" name="assess_9q_normal" value={formData.assess_9q_normal} onChange={handleInputChange} color="text-emerald-600" />
-                            <FormField label="9Q Risk (>=7)" name="assess_9q_risk" value={formData.assess_9q_risk} onChange={handleInputChange} color="text-rose-600" />
-                            <FormField label="8Q Normal" name="assess_8q_normal" value={formData.assess_8q_normal} onChange={handleInputChange} color="text-emerald-600" />
-                            <FormField label="8Q Risk (>=1)" name="assess_8q_risk" value={formData.assess_8q_risk} onChange={handleInputChange} color="text-rose-600" />
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <FormField label="ได้รับการดูแลช่วยเหลือทั้งหมด" name="care_total" value={formData.care_total} onChange={handleInputChange} />
+                            <FormField label="ให้คำปรึกษา/ดูแลสังคมจิตใจ" name="care_counseling" value={formData.care_counseling} onChange={handleInputChange} />
+                            <FormField label="ส่งต่อ" name="care_referral" value={formData.care_referral} onChange={handleInputChange} />
+                        </div>
+
+                        <div>
+                            {/* Sub Section Header */}
+                            <div className="flex items-center gap-1 pb-1">
+                                <div className="p-2 rounded-lg text-orange-500">
+                                    <Stethoscope size={16} />
+                                </div>
+                                <h2 className="font-semibold text-sm">การประเมิน 9Q และ 8Q</h2>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <FormField label="9Q ปกติ" name="assess_9q_normal" value={formData.assess_9q_normal} onChange={handleInputChange} color="text-emerald-600" />
+                                <FormField label="9Q เสี่ยง (>=7)" name="assess_9q_risk" value={formData.assess_9q_risk} onChange={handleInputChange} color="text-rose-600" />
+                                <FormField label="8Q ปกติ" name="assess_8q_normal" value={formData.assess_8q_normal} onChange={handleInputChange} color="text-emerald-600" />
+                                <FormField label="8Q เสี่ยง (>=1)" name="assess_8q_risk" value={formData.assess_8q_risk} onChange={handleInputChange} color="text-rose-600" />
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Section 3: Advanced Metrics */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="flex flex-col gap-6">
                     <div className="bg-card border border-border rounded-3xl p-6 shadow-sm space-y-6">
-                        <div className="flex items-center gap-3 pb-2 border-b border-border/50">
-                            <div className="p-2 rounded-lg bg-purple-500/10 text-purple-500">
-                                <ClipboardCheck size={20} />
-                            </div>
-                            <h2 className="font-bold text-lg">Summary</h2>
-                        </div>
-                        
-                        <div className="space-y-4">
-                            <FormField label="Care Total" name="care_total" value={formData.care_total} onChange={handleInputChange} />
-                            <FormField label="Care Counseling" name="care_counseling" value={formData.care_counseling} onChange={handleInputChange} />
-                            <FormField label="Care Referral" name="care_referral" value={formData.care_referral} onChange={handleInputChange} />
-                        </div>
-                    </div>
-
-                    <div className="bg-card border border-border rounded-3xl p-6 shadow-sm space-y-6">
-                        <div className="flex items-center gap-3 pb-2 border-b border-border/50">
+                        {/* Section Header */}
+                        <div className="flex items-center gap-1 pb-2 border-b border-border/50">
                             <div className="p-2 rounded-lg bg-rose-500/10 text-rose-500">
                                 <HeartPulse size={20} />
                             </div>
-                            <h2 className="font-bold text-lg">Follow-up</h2>
+                            <h2 className="font-bold text-lg mr-2">การดูแลช่วยเหลือ (รอบ 2)</h2> • 
+                            <p className="text-sm text-muted-foreground ml-2">
+                                คัดกรอง 2Q+ ซ้ำ
+                            </p>
                         </div>
                         
-                        <div className="space-y-4">
-                            <FormField label="Follow-up Normal" name="followup_normal" value={formData.followup_normal} onChange={handleInputChange} color="text-emerald-600" />
-                            <FormField label="Risk Q1/Q2" name="followup_risk_q12" value={formData.followup_risk_q12} onChange={handleInputChange} color="text-rose-600" />
-                            <FormField label="Risk Q3" name="followup_risk_q3" value={formData.followup_risk_q3} onChange={handleInputChange} color="text-rose-600" />
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <FormField label="ปกติ" name="followup_normal" value={formData.followup_normal} onChange={handleInputChange} color="text-emerald-600" />
+                            <FormField label="ความเสี่ยง ข้อ 1 / ข้อ 2" name="followup_risk_q12" value={formData.followup_risk_q12} onChange={handleInputChange} color="text-rose-600" />
+                            <FormField label="ความเสี่ยง ข้อ 3" name="followup_risk_q3" value={formData.followup_risk_q3} onChange={handleInputChange} color="text-rose-600" />
                         </div>
                     </div>
                 </div>
 
                 {/* Submit Area */}
-                <div className="relative w-full p-0 bg-background/80 backdrop-blur-md z-999">
-                    <div className="max-w-4xl mx-auto flex items-center justify-end gap-4">
+                <div className="w-full p-0 bg-background/80 backdrop-blur-md">
+                    <div className="mx-auto flex items-center justify-end gap-4">
                         <Link 
                             href="/dashboard/reports"
                             className="px-6 py-2.5 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors"
                         >
-                            Cancel
+                            ยกเลิก
                         </Link>
                         <button
                             type="submit"
@@ -256,7 +310,7 @@ export default function NewReportPage() {
                             ) : (
                                 <Save size={20} className="group-hover:scale-110 transition-transform" />
                             )}
-                            Save Record
+                            บันทึกข้อมูล
                         </button>
                     </div>
                 </div>

@@ -168,7 +168,7 @@ export function HospitalSearch({
                             <Building2 size={24} />
                         </div>
                         <div>
-                            <h3 className="font-bold text-foreground">{selectedHospital.name}</h3>
+                            <h3 className="font-bold text-primary">{selectedHospital.name}</h3>
                             <p className="text-xs text-muted-foreground font-mono font-bold mt-0.5">
                                 HCODE: {selectedHospital.hcode} • {selectedHospital.district?.name}, {selectedHospital.province?.name}
                             </p>
