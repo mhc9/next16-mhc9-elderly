@@ -20,7 +20,7 @@ export default function ScreeningFunnel({ data = [] }: { data?: any[] }) {
                 </div>
             </div>
             <div className="py-6 px-4">
-                <div className="h-[350px] w-full">
+                <div className="h-[350px] w-full border">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={data} layout="vertical" margin={{ left: 20, right: 40 }}>
                             <XAxis type="number" hide />
@@ -30,15 +30,30 @@ export default function ScreeningFunnel({ data = [] }: { data?: any[] }) {
                                 axisLine={false} 
                                 tickLine={false} 
                                 width={100}
-                                tick={{ fontSize: 12, fontWeight: 600, fill: "var(--foreground)" }}
+                                tick={{
+                                    fontSize: 12,
+                                    fontWeight: 600,
+                                    fill: "var(--foreground)"
+                                }}
                             />
                             <Tooltip 
-                                cursor={{ fill: "var(--muted)", opacity: 0.4 }}
-                                contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1)", padding: "12px" }}
+                                cursor={{
+                                    fill: "var(--muted)",
+                                    opacity: 0.4
+                                }}
+                                contentStyle={{
+                                    borderRadius: "12px",
+                                    border: "none",
+                                    boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1)",
+                                    padding: "12px"
+                                }}
                             />
                             <Bar dataKey="value" radius={[0, 8, 8, 0]} barSize={40}>
                                 {data.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    <Cell
+                                        key={`cell-${index}`}
+                                        fill={COLORS[index % COLORS.length]}
+                                    />
                                 ))}
                             </Bar>
                         </BarChart>

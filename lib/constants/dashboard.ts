@@ -1,2 +1,2 @@
-export const COLORS = ["#0d9488", "#0ea5e9", "#6366f1", "#8b5cf6", "#d946ef", "#f43f5e"];
+export const COLORS = ["#B0B0B0", "#4cbb55", "#ff4d4d", "#f4c300", "#5cc8d6", "#f78a4d", "#9b59b6", "#e67e22", "#2ecc71", "#e74c3c"];
 export const RISK_COLORS = { normal: "#0d9488", risk: "#f43f5e" };
