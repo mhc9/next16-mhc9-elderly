@@ -8,7 +8,7 @@ import { COLORS } from "@/lib/constants/dashboard";
 export default function CareDistribution({ data = [] }: { data?: any[] }) {
     return (
         <div className="lg:col-span-4 bg-card rounded-2xl shadow-sm border border-border flex flex-col">
-            <div className="p-6 border-b border-border">
+            <div className="p-4 border-b border-border">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
                         <PieChartIcon size={20} />

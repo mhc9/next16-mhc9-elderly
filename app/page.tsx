@@ -10,14 +10,16 @@ import RegionalPerformance from "@/components/dashboard/RegionalPerformance";
 import { Loader2, AlertCircle } from "lucide-react";
 
 export default function Dashboard() {
+    const [selectedYear, setSelectedYear] = useState<number>(2569);
     const [data, setData] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
 
     useEffect(() => {
         async function fetchDashboardData() {
+            setIsLoading(true);
             try {
-                const res = await fetch("/api/reports/summary/fetch?year=2569");
+                const res = await fetch(`/api/reports/summary/fetch?year=${selectedYear}`);
                 const json = await res.json();
                 if (!res.ok) throw new Error(json.error || "Failed to fetch dashboard data");
                 setData(json.data);
@@ -28,7 +30,7 @@ export default function Dashboard() {
             }
         }
         fetchDashboardData();
-    }, []);
+    }, [selectedYear]);
 
     if (isLoading) {
         return (
@@ -52,17 +54,17 @@ export default function Dashboard() {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
-            <DashboardHeader />
+            <DashboardHeader selectedYear={selectedYear} onYearChange={setSelectedYear} />
             <SummaryCards data={data?.summary} />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <ScreeningFunnel data={data?.funnel} />
                 <CareDistribution data={data?.careTypes} />
-                <AssessmentRisk data={data?.assessments} />
             </div>
 
-            <div>
-                <RegionalPerformance data={data?.districts} provinces={data?.provinces} year={2569} />
+            <div className="grid grid-cols-1 gap-8">
+                <AssessmentRisk data={data?.assessments} />
+                <RegionalPerformance data={data?.districts} provinces={data?.provinces} year={selectedYear} />
             </div>
         </div>
     );

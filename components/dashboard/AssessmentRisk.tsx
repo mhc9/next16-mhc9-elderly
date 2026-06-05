@@ -6,8 +6,8 @@ import { Activity } from "lucide-react";
 
 export default function AssessmentRisk({ data = [] }: { data?: any[] }) {
     return (
-        <div className="lg:col-span-5 bg-card rounded-2xl shadow-sm border border-border">
-            <div className="p-6 border-b border-border">
+        <div className="bg-card rounded-2xl shadow-sm border border-border">
+            <div className="p-4 border-b border-border">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-rose-50 text-rose-600 rounded-lg">
                         <Activity size={20} />
@@ -18,7 +18,7 @@ export default function AssessmentRisk({ data = [] }: { data?: any[] }) {
                     </div>
                 </div>
             </div>
-            <div className="p-6">
+            <div className="py-8 px-4">
                 <div className="h-[300px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={data}>

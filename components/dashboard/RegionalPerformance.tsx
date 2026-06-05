@@ -47,7 +47,7 @@ export default function RegionalPerformance({
 
     return (
         <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
-            <div className="p-6 border-b border-border flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="p-4 border-b border-border flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-amber-50 text-amber-600 rounded-lg">
                         <MapPin size={20} />

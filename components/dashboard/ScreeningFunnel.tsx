@@ -8,7 +8,7 @@ import { COLORS } from "@/lib/constants/dashboard";
 export default function ScreeningFunnel({ data = [] }: { data?: any[] }) {
     return (
         <div className="lg:col-span-8 bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
-            <div className="p-6 border-b border-border flex items-center justify-between">
+            <div className="p-4 border-b border-border flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-primary/10 text-primary rounded-lg">
                         <BarChart3 size={20} />
@@ -19,7 +19,7 @@ export default function ScreeningFunnel({ data = [] }: { data?: any[] }) {
                     </div>
                 </div>
             </div>
-            <div className="p-6">
+            <div className="py-6 px-4">
                 <div className="h-[350px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={data} layout="vertical" margin={{ left: 20, right: 40 }}>
