@@ -44,8 +44,8 @@ export default function TopPerformers({ data = [] }: { data?: TopHospital[] }) {
                 </div>
             </div>
 
-            <div className="flex-1 py-6 px-4">
-                <div className="space-y-4">
+            <div className="flex-1 p-6">
+                <div className="space-y-5">
                     {data.length > 0 ? (
                         data.map((h, idx) => (
                             <div key={h.hcode} className="flex items-center gap-4 group">
