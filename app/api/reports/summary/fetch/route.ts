@@ -96,6 +96,20 @@ export async function GET(req: Request) {
         const districts = Array.from(districtMap.values());
         const provinces = Array.from(provinceSet).sort();
 
+        // 6. Top 5 Hospitals by Coverage
+        const topScreenings = reports
+            .map(report => ({
+                hcode: report.hcode,
+                name: report.hospital?.name || "ไม่ระบุ",
+                district: report.hospital?.district?.name || "ไม่ระบุ",
+                province: report.hospital?.province?.name || "ไม่ระบุ",
+                target: report.target_population,
+                screened: report.screened_total,
+                coverage: report.target_population > 0 ? (report.screened_total / report.target_population * 100) : 0
+            }))
+            .sort((a, b) => b.coverage - a.coverage)
+            .slice(0, 5);
+
         return NextResponse.json({
             data: {
                 summary: [
@@ -108,7 +122,8 @@ export async function GET(req: Request) {
                 assessments,
                 careTypes,
                 districts,
-                provinces
+                provinces,
+                topScreenings
             }
         });
 

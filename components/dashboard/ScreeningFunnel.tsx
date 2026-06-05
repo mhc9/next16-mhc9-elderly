@@ -30,7 +30,7 @@ export default function ScreeningFunnel({ data = [] }: { data?: any[] }) {
             const barColor = getBarColor(percentageNum);
 
             return (
-                <div className="bg-card border border-border p-3 rounded-xl shadow-xl space-y-1">
+                <div className="lg:col-span-6 bg-card border border-border p-3 rounded-xl shadow-xl space-y-1">
                     <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{label}</p>
                     <div className="flex flex-col">
                         <span className="text-lg font-black text-foreground">

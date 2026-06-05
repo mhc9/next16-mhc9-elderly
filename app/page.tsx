@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { Loader2, AlertCircle } from "lucide-react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import SummaryCards from "@/components/dashboard/SummaryCards";
 import ScreeningFunnel from "@/components/dashboard/ScreeningFunnel";
 import CareDistribution from "@/components/dashboard/CareDistribution";
 import AssessmentRisk from "@/components/dashboard/AssessmentRisk";
 import RegionalPerformance from "@/components/dashboard/RegionalPerformance";
-import { Loader2, AlertCircle } from "lucide-react";
+import TopPerformers from "@/components/dashboard/TopPerformers";
 
 export default function Dashboard() {
     const [selectedYear, setSelectedYear] = useState<number>(2569);
@@ -62,9 +63,17 @@ export default function Dashboard() {
                 <CareDistribution data={data?.careTypes} />
             </div>
 
-            <div className="grid grid-cols-1 gap-8">
+            <div className="grid grid-cols-2 gap-8">
                 <AssessmentRisk data={data?.assessments} />
-                <RegionalPerformance data={data?.districts} provinces={data?.provinces} year={selectedYear} />
+                <TopPerformers data={data?.topScreenings} />
+            </div>
+
+            <div className="grid grid-cols-1 gap-8">
+                <RegionalPerformance
+                    data={data?.districts}
+                    provinces={data?.provinces}
+                    year={selectedYear}
+                />
             </div>
         </div>
     );
