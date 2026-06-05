@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { FileText, Search, Filter, Calendar, Building2, MapPin, ChevronRight, ChevronLeft, Loader2, AlertCircle, Plus } from "lucide-react";
 
 interface SummaryReport {
@@ -19,14 +20,19 @@ interface SummaryReport {
     };
 }
 
-export default function SummaryReportsPage() {
+function SummaryReportsContent() {
+    const searchParams = useSearchParams();
+    const initialDistrict = searchParams.get("district") || "all";
+    const initialProvince = searchParams.get("province") || "all";
+    const initialYear = searchParams.get("year") || "all";
+
     const [reports, setReports] = useState<SummaryReport[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
-    const [yearFilter, setYearFilter] = useState<string>("all");
-    const [provinceFilter, setProvinceFilter] = useState<string>("all");
-    const [districtFilter, setDistrictFilter] = useState<string>("all");
+    const [yearFilter, setYearFilter] = useState<string>(initialYear);
+    const [provinceFilter, setProvinceFilter] = useState<string>(initialProvince);
+    const [districtFilter, setDistrictFilter] = useState<string>(initialDistrict);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
@@ -49,11 +55,6 @@ export default function SummaryReportsPage() {
         fetchReports();
     }, []);
 
-    // Reset to first page when any filter changes
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [searchQuery, yearFilter, provinceFilter, districtFilter]);
-
     // Derived data for filters
     const years = Array.from(new Set(reports.map(r => r.year))).sort((a, b) => b - a);
     const provinces = Array.from(new Set(reports.map(r => r.hospital.province?.name).filter(Boolean))).sort();
@@ -66,12 +67,17 @@ export default function SummaryReportsPage() {
             .filter(Boolean)
     )).sort();
 
+    // Reset to first page when any filter changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, yearFilter, provinceFilter, districtFilter]);
+
     // Reset district if it's no longer in the valid list for the selected province
     useEffect(() => {
-        if (districtFilter !== "all" && !districts.includes(districtFilter)) {
+        if (districtFilter !== "all" && !districts.includes(districtFilter) && districtFilter !== initialDistrict) {
             setDistrictFilter("all");
         }
-    }, [provinceFilter, districts, districtFilter]);
+    }, [provinceFilter, districts, districtFilter, initialDistrict]);
 
     const filteredReports = reports.filter(report => {
         const matchesSearch = 
@@ -343,6 +349,19 @@ export default function SummaryReportsPage() {
                 )}
             </div>
         </div>
+    );
+}
+
+export default function SummaryReportsPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+                <Loader2 className="animate-spin text-primary" size={40} />
+                <p className="text-muted-foreground animate-pulse">Initializing...</p>
+            </div>
+        }>
+            <SummaryReportsContent />
+        </Suspense>
     );
 }
 

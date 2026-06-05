@@ -20,13 +20,14 @@ export async function GET(req: Request) {
                 hospital: {
                     select: {
                         name: true,
-                        district: { select: { name: true } }
+                        district: { select: { name: true } },
+                        province: { select: { name: true } }
                     }
                 }
             }
         });
 
-        // 1. Calculate Summary Cards Data
+        // ... (Summary Cards, Funnel, Assessments, Care Distribution remain the same)
         const totalTarget = reports.reduce((acc, curr) => acc + curr.target_population, 0);
         const totalScreened = reports.reduce((acc, curr) => acc + curr.screened_total, 0);
         const totalRisk = reports.reduce((acc, curr) => acc + curr.screened_risk, 0);
@@ -36,7 +37,6 @@ export async function GET(req: Request) {
         const riskDetectionRate = totalScreened > 0 ? (totalRisk / totalScreened) * 100 : 0;
         const careDeliveryRate = totalRisk > 0 ? (totalCare / totalRisk) * 100 : 0;
 
-        // 2. Screening Funnel
         const funnel = [
             { name: "เป้าหมาย", value: totalTarget },
             { name: "คัดกรองแล้ว", value: totalScreened },
@@ -44,7 +44,6 @@ export async function GET(req: Request) {
             { name: "ได้รับดูแล", value: totalCare },
         ];
 
-        // 3. Assessment Risks
         const total9QNormal = reports.reduce((acc, curr) => acc + curr.assess_9q_normal, 0);
         const total9QRisk = reports.reduce((acc, curr) => acc + curr.assess_9q_risk, 0);
         const total8QNormal = reports.reduce((acc, curr) => acc + curr.assess_8q_normal, 0);
@@ -55,7 +54,6 @@ export async function GET(req: Request) {
             { name: "8Q (ความเสี่ยงฆ่าตัวตาย)", normal: total8QNormal, risk: total8QRisk },
         ];
 
-        // 4. Care Distribution
         const totalCounseling = reports.reduce((acc, curr) => acc + curr.care_counseling, 0);
         const totalReferral = reports.reduce((acc, curr) => acc + curr.care_referral, 0);
         
@@ -65,20 +63,30 @@ export async function GET(req: Request) {
         ];
 
         // 5. Regional (District) Performance
-        // Group by district
+        // Group by district AND include province
         const districtMap = new Map();
+        const provinceSet = new Set<string>();
+
         reports.forEach(report => {
             const districtName = report.hospital?.district?.name || "ไม่ระบุ";
-            if (!districtMap.has(districtName)) {
-                districtMap.set(districtName, {
+            const provinceName = report.hospital?.province?.name || "ไม่ระบุ";
+            
+            if (report.hospital?.province?.name) {
+                provinceSet.add(report.hospital.province.name);
+            }
+
+            const key = `${provinceName}-${districtName}`;
+            if (!districtMap.has(key)) {
+                districtMap.set(key, {
                     name: districtName,
+                    province: provinceName,
                     target: 0,
                     screened: 0,
                     risk: 0,
                     care: 0
                 });
             }
-            const d = districtMap.get(districtName);
+            const d = districtMap.get(key);
             d.target += report.target_population;
             d.screened += report.screened_total;
             d.risk += report.screened_risk;
@@ -86,6 +94,7 @@ export async function GET(req: Request) {
         });
 
         const districts = Array.from(districtMap.values());
+        const provinces = Array.from(provinceSet).sort();
 
         return NextResponse.json({
             data: {
@@ -98,7 +107,8 @@ export async function GET(req: Request) {
                 funnel,
                 assessments,
                 careTypes,
-                districts
+                districts,
+                provinces
             }
         });
 

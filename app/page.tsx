@@ -62,7 +62,7 @@ export default function Dashboard() {
             </div>
 
             <div>
-                <RegionalPerformance data={data?.districts} />
+                <RegionalPerformance data={data?.districts} provinces={data?.provinces} year={2569} />
             </div>
         </div>
     );
