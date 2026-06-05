@@ -15,8 +15,8 @@ export default function CareDistribution() {
                         <PieChartIcon size={20} />
                     </div>
                     <div>
-                        <h2 className="text-lg font-bold text-foreground">Care Types</h2>
-                        <p className="text-xs text-muted-foreground">Distribution of assistance</p>
+                        <h2 className="text-lg font-bold text-foreground">ประเภทการดูแล</h2>
+                        <p className="text-xs text-muted-foreground">สัดส่วนการให้ความช่วยเหลือ</p>
                     </div>
                 </div>
             </div>

@@ -29,7 +29,7 @@ export default function SummaryCards() {
                             {item.icon === "HeartPulse" && <HeartPulse size={22} />}
                         </div>
                         <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-muted px-2 py-1 rounded-md">
-                            Updated Today
+                            อัปเดตวันนี้
                         </span>
                     </div>
                     
@@ -45,7 +45,7 @@ export default function SummaryCards() {
                         <span className="flex items-center text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
                             +2.4%
                         </span>
-                        <span className="text-[10px] text-muted-foreground font-medium">vs last month</span>
+                        <span className="text-[10px] text-muted-foreground font-medium">เทียบกับเดือนที่แล้ว</span>
                     </div>
                 </div>
             ))}

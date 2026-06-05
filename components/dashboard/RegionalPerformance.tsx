@@ -13,22 +13,22 @@ export default function RegionalPerformance() {
                         <MapPin size={20} />
                     </div>
                     <div>
-                        <h2 className="text-lg font-bold text-foreground">Regional Performance</h2>
-                        <p className="text-xs text-muted-foreground">Metrics across different districts</p>
+                        <h2 className="text-lg font-bold text-foreground">ผลการดำเนินงานรายพื้นที่</h2>
+                        <p className="text-xs text-muted-foreground">ข้อมูลแยกตามรายอำเภอ</p>
                     </div>
                 </div>
                 <button className="text-primary text-xs font-bold hover:underline flex items-center gap-1">
-                    View All <ChevronRight size={14} />
+                    ดูทั้งหมด <ChevronRight size={14} />
                 </button>
             </div>
             <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
                     <thead>
                         <tr className="bg-muted/30 text-muted-foreground font-bold border-b border-border">
-                            <th className="px-6 py-4">District</th>
-                            <th className="px-6 py-4">Target</th>
-                            <th className="px-6 py-4">Coverage</th>
-                            <th className="px-6 py-4 text-right">Care</th>
+                            <th className="px-6 py-4">อำเภอ</th>
+                            <th className="px-6 py-4">เป้าหมาย</th>
+                            <th className="px-6 py-4">ความครอบคลุม</th>
+                            <th className="px-6 py-4 text-right">การดูแล</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
@@ -36,7 +36,7 @@ export default function RegionalPerformance() {
                             <tr key={i} className="hover:bg-muted/20 transition-colors">
                                 <td className="px-6 py-4">
                                     <div className="font-bold text-foreground">{d.name}</div>
-                                    <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">Region Alpha</div>
+                                    <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">เขตสุขภาพที่ 9</div>
                                 </td>
                                 <td className="px-6 py-4 text-muted-foreground font-medium">{d.target.toLocaleString()}</td>
                                 <td className="px-6 py-4">

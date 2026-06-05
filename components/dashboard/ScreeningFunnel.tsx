@@ -15,8 +15,8 @@ export default function ScreeningFunnel() {
                         <BarChart3 size={20} />
                     </div>
                     <div>
-                        <h2 className="text-lg font-bold text-foreground">Screening Performance</h2>
-                        <p className="text-xs text-muted-foreground">Detailed breakdown of the screening funnel</p>
+                        <h2 className="text-lg font-bold text-foreground">ประสิทธิภาพการคัดกรอง</h2>
+                        <p className="text-xs text-muted-foreground">รายละเอียดขั้นตอนการคัดกรองและดูแล</p>
                     </div>
                 </div>
             </div>

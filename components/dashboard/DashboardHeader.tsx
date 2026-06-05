@@ -8,10 +8,10 @@ export default function DashboardHeader() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
                 <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
-                    Executive Summary
+                    สรุปผลการดำเนินงาน
                 </h1>
                 <p className="text-muted-foreground mt-1 text-lg">
-                    Fiscal Year 2569 Performance Report
+                    รายงานผลการดำเนินงาน ประจำปีงบประมาณ 2569
                 </p>
             </div>
             <div className="flex items-center gap-3">
@@ -26,7 +26,7 @@ export default function DashboardHeader() {
                     </div>
                 </div>
                 <button className="bg-primary text-primary-foreground px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-all flex items-center gap-2">
-                    Export Report <ArrowUpRight size={16} />
+                    ส่งออกรายงาน <ArrowUpRight size={16} />
                 </button>
             </div>
         </div>

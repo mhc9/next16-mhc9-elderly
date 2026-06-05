@@ -14,8 +14,8 @@ export default function AssessmentRisk() {
                         <Activity size={20} />
                     </div>
                     <div>
-                        <h2 className="text-lg font-bold text-foreground">Risk Assessment</h2>
-                        <p className="text-xs text-muted-foreground">Comparison of clinical findings</p>
+                        <h2 className="text-lg font-bold text-foreground">การประเมินความเสี่ยง</h2>
+                        <p className="text-xs text-muted-foreground">เปรียบเทียบผลการประเมินทางคลินิก</p>
                     </div>
                 </div>
             </div>
@@ -30,8 +30,8 @@ export default function AssessmentRisk() {
                                 contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1)" }}
                             />
                             <Legend iconType="circle" wrapperStyle={{ paddingTop: "20px" }} />
-                            <Bar dataKey="normal" fill="var(--primary)" radius={[4, 4, 0, 0]} barSize={40} name="Normal" />
-                            <Bar dataKey="risk" fill="#f43f5e" radius={[4, 4, 0, 0]} barSize={40} name="At Risk" />
+                            <Bar dataKey="normal" fill="var(--primary)" radius={[4, 4, 0, 0]} barSize={40} name="ปกติ" />
+                            <Bar dataKey="risk" fill="#f43f5e" radius={[4, 4, 0, 0]} barSize={40} name="กลุ่มเสี่ยง" />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
