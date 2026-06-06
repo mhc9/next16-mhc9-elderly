@@ -79,7 +79,7 @@ export async function POST(req: Request) {
         const body = await req.json();
         const { 
             cid, firstname, lastname, birth_date, 
-            address, moo, subdistrict_id, district_id, province_id,
+            address, moo, road, zipcode, subdistrict_id, district_id, province_id,
             telephone, mobile, email, hcode
         } = body;
 
@@ -110,6 +110,8 @@ export async function POST(req: Request) {
                 birth_date: birth_date ? new Date(birth_date) : null,
                 address,
                 moo: moo ? parseInt(moo) : null,
+                road,
+                zipcode,
                 subdistrict_id: subdistrict_id ? parseInt(subdistrict_id) : null,
                 district_id: district_id ? parseInt(district_id) : null,
                 province_id: province_id ? parseInt(province_id) : null,
@@ -126,4 +128,3 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }
-

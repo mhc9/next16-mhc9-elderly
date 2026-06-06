@@ -18,6 +18,8 @@ interface HospitalSearchProps {
     icon?: React.ReactNode;
     error?: string;
     placeholder?: string;
+    provinceId?: string;
+    districtId?: string;
 }
 
 export function HospitalSearch({
@@ -27,7 +29,9 @@ export function HospitalSearch({
     label = "Health Center",
     icon,
     error,
-    placeholder = "Search health center by name or code..."
+    placeholder = "Search health center by name or code...",
+    provinceId,
+    districtId
 }: HospitalSearchProps) {
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState<Hospital[]>([]);
@@ -63,7 +67,11 @@ export function HospitalSearch({
         searchTimeoutRef.current = setTimeout(async () => {
             setIsSearching(true);
             try {
-                const res = await fetch(`/api/hospitals/search?q=${encodeURIComponent(searchQuery)}`);
+                let url = `/api/hospitals/search?q=${encodeURIComponent(searchQuery)}`;
+                if (provinceId) url += `&province_id=${provinceId}`;
+                if (districtId) url += `&district_id=${districtId}`;
+
+                const res = await fetch(url);
                 const json = await res.json();
                 setSearchResults(json.data ?? []);
                 setShowDropdown(true);
@@ -78,7 +86,7 @@ export function HospitalSearch({
         return () => {
             if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
         };
-    }, [searchQuery, selectedHospital]);
+    }, [searchQuery, selectedHospital, provinceId, districtId]);
 
     const handleSelect = (hospital: Hospital) => {
         onSelect(hospital);

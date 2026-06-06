@@ -387,11 +387,13 @@ export default function NewPersonPage() {
                             onClear={() => setSelectedHospital(null)}
                             label="ค้นหาหน่วยบริการต้นสังกัด"
                             placeholder="พิมพ์ชื่อหรือรหัส 5 หลักเพื่อค้นหา..."
+                            provinceId={formData.province_id}
+                            districtId={formData.district_id}
                         />
                     </div>
                 )}
 
-                <div className="flex items-center justify-end gap-4 pt-4">
+                <div className="flex items-center justify-end gap-4">
                     <button
                         type="button"
                         onClick={() => router.back()}
