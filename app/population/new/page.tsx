@@ -1,0 +1,390 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { 
+    Users, ArrowLeft, Save, Loader2, AlertCircle, 
+    User, CreditCard, Calendar, Phone, Mail, 
+    MapPin, Building2, Home
+} from "lucide-react";
+import { useSession } from "next-auth/react";
+import { HospitalSearch, Hospital } from "@/components/ui/forms/HospitalSearch";
+
+interface LocationOption {
+    id: number;
+    name: string;
+}
+
+export default function NewPersonPage() {
+    const router = useRouter();
+    const { data: session } = useSession();
+    const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "SUPERADMIN";
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState("");
+    
+    // Form State
+    const [formData, setFormData] = useState({
+        cid: "",
+        firstname: "",
+        lastname: "",
+        birth_date: "",
+        telephone: "",
+        mobile: "",
+        email: "",
+        address: "",
+        moo: "",
+        province_id: "",
+        district_id: "",
+        subdistrict_id: "",
+        hcode: ""
+    });
+
+    const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(null);
+
+    // Location Data State
+    const [provinces, setProvinces] = useState<LocationOption[]>([]);
+    const [districts, setDistricts] = useState<LocationOption[]>([]);
+    const [subdistricts, setSubdistricts] = useState<LocationOption[]>([]);
+
+    useEffect(() => {
+        async function fetchProvinces() {
+            try {
+                const res = await fetch("/api/locations/provinces");
+                const json = await res.json();
+                setProvinces(json.data || []);
+            } catch (err) {
+                console.error("Failed to fetch provinces");
+            }
+        }
+        fetchProvinces();
+    }, []);
+
+    useEffect(() => {
+        async function fetchDistricts() {
+            if (!formData.province_id) {
+                setDistricts([]);
+                return;
+            }
+            try {
+                const res = await fetch(`/api/locations/districts/${formData.province_id}`);
+                const json = await res.json();
+                setDistricts(json.data || []);
+                setFormData(prev => ({ ...prev, district_id: "", subdistrict_id: "" }));
+            } catch (err) {
+                console.error("Failed to fetch districts");
+            }
+        }
+        fetchDistricts();
+    }, [formData.province_id]);
+
+    useEffect(() => {
+        async function fetchSubdistricts() {
+            if (!formData.district_id) {
+                setSubdistricts([]);
+                return;
+            }
+            try {
+                const res = await fetch(`/api/locations/subdistricts/${formData.district_id}`);
+                const json = await res.json();
+                setSubdistricts(json.data || []);
+                setFormData(prev => ({ ...prev, subdistrict_id: "" }));
+            } catch (err) {
+                console.error("Failed to fetch subdistricts");
+            }
+        }
+        fetchSubdistricts();
+    }, [formData.district_id]);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError("");
+
+        const payload = {
+            ...formData,
+            hcode: isAdmin ? selectedHospital?.hcode : session?.user?.hcode
+        };
+
+        if (!payload.hcode) {
+            setError("กรุณาเลือกหน่วยบริการ");
+            setIsLoading(false);
+            return;
+        }
+
+        try {
+            const res = await fetch("/api/population", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            const json = await res.json();
+            if (!res.ok) throw new Error(json.error || "เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+
+            router.push("/population");
+            router.refresh();
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <div className="p-6 max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="space-y-1">
+                    <button 
+                        onClick={() => router.back()}
+                        className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-2 cursor-pointer group"
+                    >
+                        <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+                        <span className="text-sm font-medium">ย้อนกลับ</span>
+                    </button>
+                    <h1 className="text-3xl font-extrabold text-foreground tracking-tight flex items-center gap-3">
+                        <div className="p-2 bg-primary/10 text-primary rounded-xl">
+                            <User size={32} />
+                        </div>
+                        ลงทะเบียนผู้สูงอายุใหม่
+                    </h1>
+                </div>
+            </div>
+
+            {error && (
+                <div className="p-4 bg-rose-50 border border-rose-100 text-rose-600 rounded-2xl flex items-center gap-3 animate-in slide-in-from-top-2">
+                    <AlertCircle size={20} />
+                    <p className="text-sm font-bold">{error}</p>
+                </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-8">
+                {/* 1. ข้อมูลส่วนบุคคล */}
+                <div className="bg-card border border-border rounded-3xl p-8 shadow-sm space-y-6">
+                    <div className="flex items-center gap-3 border-b border-border pb-4 mb-6">
+                        <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                            <User size={20} />
+                        </div>
+                        <h2 className="text-xl font-bold text-foreground">ข้อมูลส่วนบุคคล</h2>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="md:col-span-1 space-y-1.5">
+                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 flex items-center gap-2">
+                                <CreditCard size={14} /> เลขบัตรประชาชน
+                            </label>
+                            <input
+                                type="text"
+                                name="cid"
+                                value={formData.cid}
+                                onChange={handleInputChange}
+                                placeholder="เลขบัตรประชาชน 13 หลัก"
+                                className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono"
+                                maxLength={13}
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">ชื่อ</label>
+                            <input
+                                type="text"
+                                name="firstname"
+                                value={formData.firstname}
+                                onChange={handleInputChange}
+                                required
+                                placeholder="ระบุชื่อ"
+                                className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">นามสกุล</label>
+                            <input
+                                type="text"
+                                name="lastname"
+                                value={formData.lastname}
+                                onChange={handleInputChange}
+                                required
+                                placeholder="ระบุนามสกุล"
+                                className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="space-y-1.5">
+                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 flex items-center gap-2">
+                                <Calendar size={14} /> วันเกิด
+                            </label>
+                            <input
+                                type="date"
+                                name="birth_date"
+                                value={formData.birth_date}
+                                onChange={handleInputChange}
+                                className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 flex items-center gap-2">
+                                <Phone size={14} /> เบอร์โทรศัพท์มือถือ
+                            </label>
+                            <input
+                                type="tel"
+                                name="mobile"
+                                value={formData.mobile}
+                                onChange={handleInputChange}
+                                placeholder="0xx-xxx-xxxx"
+                                className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 flex items-center gap-2">
+                                <Mail size={14} /> อีเมล (ถ้ามี)
+                            </label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                placeholder="example@email.com"
+                                className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* 2. ที่อยู่ปัจจุบัน */}
+                <div className="bg-card border border-border rounded-3xl p-8 shadow-sm space-y-6">
+                    <div className="flex items-center gap-3 border-b border-border pb-4 mb-6">
+                        <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
+                            <Home size={20} />
+                        </div>
+                        <h2 className="text-xl font-bold text-foreground">ที่อยู่ปัจจุบัน</h2>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div className="md:col-span-3 space-y-1.5">
+                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">ที่อยู่ (บ้านเลขที่/ถนน)</label>
+                            <input
+                                type="text"
+                                name="address"
+                                value={formData.address}
+                                onChange={handleInputChange}
+                                placeholder="เช่น 123/45 หมู่บ้าน..."
+                                className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">หมู่ที่</label>
+                            <input
+                                type="number"
+                                name="moo"
+                                value={formData.moo}
+                                onChange={handleInputChange}
+                                placeholder="ระบุตัวเลข"
+                                className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="space-y-1.5">
+                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">จังหวัด</label>
+                            <select
+                                name="province_id"
+                                value={formData.province_id}
+                                onChange={handleInputChange}
+                                className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
+                            >
+                                <option value="">เลือกจังหวัด</option>
+                                {provinces.map(p => (
+                                    <option key={p.id} value={p.id}>{p.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">อำเภอ</label>
+                            <select
+                                name="district_id"
+                                value={formData.district_id}
+                                onChange={handleInputChange}
+                                disabled={!formData.province_id}
+                                className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer disabled:opacity-50"
+                            >
+                                <option value="">เลือกอำเภอ</option>
+                                {districts.map(d => (
+                                    <option key={d.id} value={d.id}>{d.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">ตำบล</label>
+                            <select
+                                name="subdistrict_id"
+                                value={formData.subdistrict_id}
+                                onChange={handleInputChange}
+                                disabled={!formData.district_id}
+                                className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer disabled:opacity-50"
+                            >
+                                <option value="">เลือกตำบล</option>
+                                {subdistricts.map(s => (
+                                    <option key={s.id} value={s.id}>{s.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 3. ข้อมูลหน่วยบริการ (Admin Only) */}
+                {isAdmin && (
+                    <div className="bg-card border border-border rounded-3xl p-8 shadow-sm space-y-6">
+                        <div className="flex items-center gap-3 border-b border-border pb-4 mb-6">
+                            <div className="p-2 bg-purple-50 text-purple-600 rounded-lg">
+                                <Building2 size={20} />
+                            </div>
+                            <h2 className="text-xl font-bold text-foreground">ข้อมูลหน่วยบริการ</h2>
+                        </div>
+                        
+                        <HospitalSearch 
+                            selectedHospital={selectedHospital}
+                            onSelect={setSelectedHospital}
+                            onClear={() => setSelectedHospital(null)}
+                            label="ค้นหาหน่วยบริการต้นสังกัด"
+                            placeholder="พิมพ์ชื่อหรือรหัส 5 หลักเพื่อค้นหา..."
+                        />
+                    </div>
+                )}
+
+                <div className="flex items-center justify-end gap-4 pt-4">
+                    <button
+                        type="button"
+                        onClick={() => router.back()}
+                        className="px-8 py-3 rounded-2xl border border-border text-sm font-bold text-muted-foreground hover:bg-muted hover:text-foreground transition-all cursor-pointer"
+                    >
+                        ยกเลิก
+                    </button>
+                    <button
+                        type="submit"
+                        disabled={isLoading}
+                        className="flex items-center gap-2 px-10 py-3 bg-primary text-white rounded-2xl font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                        {isLoading ? (
+                            <>
+                                <Loader2 size={18} className="animate-spin" />
+                                กำลังบันทึก...
+                            </>
+                        ) : (
+                            <>
+                                <Save size={18} />
+                                บันทึกข้อมูล
+                            </>
+                        )}
+                    </button>
+                </div>
+            </form>
+        </div>
+    );
+}

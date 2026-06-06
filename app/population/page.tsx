@@ -79,10 +79,13 @@ export default function PopulationPage() {
                         รายชื่อผู้สูงอายุที่ลงทะเบียนในระบบ
                     </p>
                 </div>
-                <button className="flex items-center gap-2 px-6 py-3 bg-primary text-white font-bold rounded-2xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 shrink-0 cursor-pointer">
+                <Link 
+                    href="/population/new"
+                    className="flex items-center gap-2 px-6 py-3 bg-primary text-white font-bold rounded-2xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 shrink-0 cursor-pointer"
+                >
                     <UserPlus size={18} />
                     ลงทะเบียนใหม่
-                </button>
+                </Link>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -118,12 +121,12 @@ export default function PopulationPage() {
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm">
                         <thead>
-                            <tr className="bg-muted/30 text-muted-foreground font-black uppercase tracking-widest text-[10px] border-b border-border">
-                                <th className="px-6 py-5">ข้อมูลทั่วไป</th>
-                                <th className="px-6 py-5">บัตรประชาชน / อายุ</th>
-                                <th className="px-6 py-5">หน่วยบริการ</th>
-                                <th className="px-6 py-5">ที่อยู่</th>
-                                <th className="px-6 py-5 text-right">จัดการ</th>
+                            <tr className="bg-muted/30 text-muted-foreground font-black uppercase tracking-widest text-xs border-b border-border">
+                                <th className="px-6 py-4">ข้อมูลทั่วไป</th>
+                                <th className="px-6 py-4">บัตรประชาชน / อายุ</th>
+                                <th className="px-6 py-4">หน่วยบริการ</th>
+                                <th className="px-6 py-4">ที่อยู่</th>
+                                <th className="px-6 py-4 text-right">จัดการ</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border">
