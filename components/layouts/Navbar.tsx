@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { ChartPie, LayoutDashboard, Users, Settings, LogOut, Bell, Search, CircleUser, ShieldUser } from "lucide-react";
+import { ChartPie, LayoutDashboard, Users, Settings, LogOut, Bell, Search, CircleUser, ShieldUser, ChevronDown, ListChecks } from "lucide-react";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import { usePathname } from "next/navigation";
 
@@ -45,8 +45,26 @@ export default function Navbar() {
                 {isLoggedIn && (
                     <div className="hidden lg:flex items-center gap-1">
                         <NavLink href="/" icon={<LayoutDashboard size={18} />} label="แดชบอร์ด" active={pathname === "/"} />
-                        <NavLink href="/population" icon={<Users size={18} />} label="ประชากร" active={pathname === "/population"} />
-                        <NavLink href="/population/screening" icon={<ShieldUser size={18} />} label="คัดกรอง" active={pathname === "/population/screening"} />
+                        
+                        <NavDropdown 
+                            label="ประชากร" 
+                            icon={<Users size={18} />} 
+                            active={pathname.startsWith("/population")}
+                        >
+                            <MenuLink 
+                                href="/population" 
+                                icon={<Users size={16} />} 
+                                label="รายชื่อประชากร" 
+                                active={pathname === "/population"}
+                            />
+                            <MenuLink 
+                                href="/population/screening" 
+                                icon={<ShieldUser size={16} />} 
+                                label="การคัดกรอง" 
+                                active={pathname === "/population/screening"}
+                            />
+                        </NavDropdown>
+
                         <NavLink href="/summary/reports" icon={<ChartPie size={18} />} label="รายงาน" active={pathname === "/summary/reports"} />
                         {(user?.role === "ADMIN" || user?.role === "SUPERADMIN") && (
                             <NavLink href="/admin/users" icon={<CircleUser size={18} />} label="ผู้ใช้งาน" active={pathname === "/admin/users"} />
@@ -120,6 +138,59 @@ export default function Navbar() {
     );
 }
 
+function NavDropdown({ 
+    label, 
+    icon, 
+    active = false, 
+    children 
+}: { 
+    label: string, 
+    icon: React.ReactNode, 
+    active?: boolean, 
+    children: React.ReactNode 
+}) {
+    const [isOpen, setIsOpen] = useState(false);
+    const ref = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        function handleClick(e: MouseEvent) {
+            if (ref.current && !ref.current.contains(e.target as Node)) {
+                setIsOpen(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClick);
+        return () => document.removeEventListener("mousedown", handleClick);
+    }, []);
+
+    return (
+        <div className="relative" ref={ref}>
+            <button 
+                onClick={() => setIsOpen(!isOpen)}
+                className={`
+                    flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer
+                    ${active 
+                        ? "bg-primary/10 text-primary" 
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    }
+                `}
+            >
+                {icon}
+                <span>{label}</span>
+                <ChevronDown size={14} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {isOpen && (
+                <div 
+                    className="absolute left-0 mt-2 w-48 bg-card rounded-xl shadow-xl border border-border py-2 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200"
+                    onClick={() => setIsOpen(false)}
+                >
+                    {children}
+                </div>
+            )}
+        </div>
+    );
+}
+
 function NavLink({ href, icon, label, active = false }: { href: string, icon: React.ReactNode, label: string, active?: boolean }) {
     return (
         <Link 
@@ -138,15 +209,32 @@ function NavLink({ href, icon, label, active = false }: { href: string, icon: Re
     );
 }
 
-function MenuLink({ href, icon, label, variant = "default" }: { href: string, icon: React.ReactNode, label: string, variant?: "default" | "danger" }) {
+function MenuLink({ 
+    href, 
+    icon, 
+    label, 
+    variant = "default", 
+    active = false,
+    onClick 
+}: { 
+    href: string, 
+    icon: React.ReactNode, 
+    label: string, 
+    variant?: "default" | "danger",
+    active?: boolean,
+    onClick?: () => void
+}) {
     return (
         <Link 
             href={href} 
+            onClick={onClick}
             className={`
                 flex items-center gap-3 px-4 py-2.5 text-sm transition-colors cursor-pointer
                 ${variant === "danger"
                     ? "text-red-500 hover:bg-red-50" 
-                    : "text-foreground hover:bg-muted/50"
+                    : active
+                        ? "bg-primary/5 text-primary font-bold"
+                        : "text-foreground hover:bg-muted/50"
                 }
             `}
         >
