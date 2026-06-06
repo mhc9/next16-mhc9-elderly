@@ -126,7 +126,7 @@ export default function LoginPage() {
                                         if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
                                     }}
                                     placeholder="admin@elderlycare.go.th"
-                                    className={`w-full bg-muted/50 border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 transition-all ${
+                                    className={`w-full bg-muted/30 border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 transition-all ${
                                         errors.email 
                                             ? 'border-rose-500 focus:ring-rose-500/20' 
                                             : 'border-border focus:ring-primary/20 focus:border-primary'
@@ -153,7 +153,7 @@ export default function LoginPage() {
                                         if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
                                     }}
                                     placeholder="••••••••"
-                                    className={`w-full bg-muted/50 border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 transition-all ${
+                                    className={`w-full bg-muted/30 border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 transition-all ${
                                         errors.password 
                                             ? 'border-rose-500 focus:ring-rose-500/20' 
                                             : 'border-border focus:ring-primary/20 focus:border-primary'

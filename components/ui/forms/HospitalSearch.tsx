@@ -103,7 +103,7 @@ export function HospitalSearch({
     return (
         <div className="space-y-1.5 relative" ref={dropdownRef}>
             {label && (
-                <label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2 pl-1">
+                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2 pl-1">
                     {icon && <span>{icon}</span>}
                     {label}
                 </label>
@@ -120,7 +120,7 @@ export function HospitalSearch({
                         onChange={e => setSearchQuery(e.target.value)}
                         onFocus={() => searchResults.length > 0 && setShowDropdown(true)}
                         placeholder={placeholder}
-                        className={`w-full bg-muted/50 border rounded-xl py-3 pl-10 pr-10 text-sm focus:outline-none focus:ring-2 transition-all ${
+                        className={`w-full bg-muted/30 border rounded-xl py-3 pl-10 pr-10 text-sm focus:outline-none focus:ring-2 transition-all ${
                             error 
                                 ? 'border-rose-500 focus:ring-rose-500/20' 
                                 : 'border-border focus:ring-primary/20 focus:border-primary'

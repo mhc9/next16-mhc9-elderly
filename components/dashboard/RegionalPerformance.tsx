@@ -66,7 +66,7 @@ export default function RegionalPerformance({
                         <select
                             value={selectedProvince}
                             onChange={(e) => handleProvinceChange(e.target.value)}
-                            className="w-full bg-muted/50 border border-border rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer font-medium"
+                            className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
                         >
                             <option value="all">ทุกจังหวัด</option>
                             {provinces.map(province => (

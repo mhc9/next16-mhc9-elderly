@@ -183,7 +183,7 @@ export default function NewReportPage() {
                                 onChange={handleInputChange}
                                 required
                                 placeholder="2569"
-                                className="w-full bg-muted/30 border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono font-bold"
+                                className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono font-bold"
                             />
                         </div>
 
@@ -199,7 +199,7 @@ export default function NewReportPage() {
                                 onChange={handleInputChange}
                                 required
                                 placeholder="0"
-                                className="w-full bg-muted/30 border border-border rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono font-bold"
+                                className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono font-bold"
                             />
                         </div>
                     </div>

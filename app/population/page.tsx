@@ -69,13 +69,11 @@ export default function PopulationPage() {
         <div className="p-6 space-y-6 animate-in fade-in duration-700">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-foreground flex items-center gap-3 tracking-tight">
-                        <div className="p-2 bg-primary/10 text-primary rounded-xl">
-                            <Users size={32} />
-                        </div>
+                    <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
+                        <Users className="text-primary" />
                         ข้อมูลประชากร
                     </h1>
-                    <p className="text-muted-foreground mt-1 text-sm font-medium">
+                    <p className="text-base text-muted-foreground mt-1">
                         รายชื่อผู้สูงอายุที่ลงทะเบียนในระบบ
                     </p>
                 </div>
@@ -101,7 +99,7 @@ export default function PopulationPage() {
                             setSearchQuery(e.target.value);
                             setCurrentPage(1);
                         }}
-                        className="w-full bg-card border border-border rounded-2xl py-3.5 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
+                        className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                     />
                 </div>
                 <div className="bg-muted/50 rounded-2xl border border-border px-6 flex items-center justify-center gap-2 text-sm font-bold text-muted-foreground">

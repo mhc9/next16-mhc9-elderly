@@ -208,7 +208,7 @@ export default function RegisterPage() {
                                     value={formData.name}
                                     onChange={handleChange}
                                     placeholder="John Doe"
-                                    className={`w-full bg-muted/50 border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 transition-all ${
+                                    className={`w-full bg-muted/30 border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 transition-all ${
                                         errors.name 
                                             ? 'border-rose-500 focus:ring-rose-500/20' 
                                             : 'border-border focus:ring-primary/20 focus:border-primary'
@@ -233,7 +233,7 @@ export default function RegisterPage() {
                                     value={formData.email}
                                     onChange={handleChange}
                                     placeholder="admin@elderlycare.go.th"
-                                    className={`w-full bg-muted/50 border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 transition-all ${
+                                    className={`w-full bg-muted/30 border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 transition-all ${
                                         errors.email 
                                             ? 'border-rose-500 focus:ring-rose-500/20' 
                                             : 'border-border focus:ring-primary/20 focus:border-primary'
@@ -261,7 +261,7 @@ export default function RegisterPage() {
                                     }}
                                     onFocus={() => searchResults.length > 0 && setShowDropdown(true)}
                                     placeholder="Search health center by name or code..."
-                                    className={`w-full bg-muted/50 border rounded-xl py-3 pl-10 pr-10 text-sm focus:outline-none focus:ring-2 transition-all ${
+                                    className={`w-full bg-muted/30 border rounded-xl py-3 pl-10 pr-10 text-sm focus:outline-none focus:ring-2 transition-all ${
                                         errors.hcode 
                                             ? 'border-rose-500 focus:ring-rose-500/20' 
                                             : 'border-border focus:ring-primary/20 focus:border-primary'
@@ -291,7 +291,7 @@ export default function RegisterPage() {
                                                 <li
                                                     key={center.hcode}
                                                     onClick={() => handleSelectCenter(center)}
-                                                    className="flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-muted/50 text-sm transition-colors"
+                                                    className="flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-muted/30 text-sm transition-colors"
                                                 >
                                                     <Building size={16} className="text-muted-foreground shrink-0" />
                                                     <div className="flex flex-col">
@@ -326,7 +326,7 @@ export default function RegisterPage() {
                                     value={formData.password}
                                     onChange={handleChange}
                                     placeholder="••••••••"
-                                    className={`w-full bg-muted/50 border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 transition-all ${
+                                    className={`w-full bg-muted/30 border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 transition-all ${
                                         errors.password 
                                             ? 'border-rose-500 focus:ring-rose-500/20' 
                                             : 'border-border focus:ring-primary/20 focus:border-primary'
@@ -355,7 +355,7 @@ export default function RegisterPage() {
                                         }
                                     }}
                                     placeholder="••••••••"
-                                    className={`w-full bg-muted/50 border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 transition-all ${
+                                    className={`w-full bg-muted/30 border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 transition-all ${
                                         errors.confirmPassword 
                                             ? 'border-rose-500 focus:ring-rose-500/20' 
                                             : 'border-border focus:ring-primary/20 focus:border-primary'

@@ -30,7 +30,7 @@ export default function DashboardHeader({ selectedYear, onYearChange }: Dashboar
                     <select
                         value={selectedYear}
                         onChange={(e) => onYearChange(parseInt(e.target.value))}
-                        className="w-full bg-card border border-border rounded-xl py-2 pl-10 pr-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
+                        className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-10 pr-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
                     >
                         {years.map(y => (
                             <option key={y} value={y}>ปีงบประมาณ {y}</option>

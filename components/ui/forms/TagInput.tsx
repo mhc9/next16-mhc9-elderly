@@ -77,14 +77,14 @@ const TagInput: React.FC<TagInputProps> = ({
             <div
                 onClick={() => !disabled && setIsOpen(!isOpen)}
                 className={cn(
-                    "min-h-[42px] w-full px-2 py-1 border rounded-lg flex flex-wrap gap-2 items-center transition-all cursor-pointer",
-                    disabled ? "bg-gray-100 cursor-not-allowed opacity-60" : "bg-white hover:border-teal-400",
-                    isOpen ? "ring-2 ring-teal-500/20 border-teal-500 shadow-sm" : "border-gray-300",
+                    "min-h-[42px] w-full px-3 py-1.5 border rounded-xl flex flex-wrap gap-2 items-center transition-all cursor-pointer",
+                    disabled ? "bg-muted/30 cursor-not-allowed opacity-60" : "bg-muted/30 hover:border-primary",
+                    isOpen ? "ring-2 ring-primary/20 border-primary shadow-sm" : "border-border",
                     error ? "border-rose-500 ring-rose-500/20" : ""
                 )}
             >
                 {value.length === 0 && (
-                    <span className="text-sm text-gray-400 pl-2">{placeholder}</span>
+                    <span className="text-sm text-muted-foreground pl-2">{placeholder}</span>
                 )}
                 {value.length > 0 && value.map((v) => {
                     const label = options.find(opt => opt.value === v)?.label || v;
@@ -92,7 +92,7 @@ const TagInput: React.FC<TagInputProps> = ({
                     return (
                         <span
                             key={v}
-                            className="inline-flex items-center gap-1 px-2 py-1 bg-teal-50 text-teal-700 text-sm font-medium rounded-lg border border-teal-100 animate-in fade-in zoom-in-95 duration-200"
+                            className="inline-flex items-center gap-1 px-2 py-1 bg-primary/10 text-primary text-sm font-medium rounded-lg border border-primary/20 animate-in fade-in zoom-in-95 duration-200"
                         >
                             {label}
                             <button
@@ -113,17 +113,17 @@ const TagInput: React.FC<TagInputProps> = ({
                     onKeyDown={handleAddCustomTag}
                     placeholder={value.length === 0 ? placeholder : ""}
                     disabled={disabled}
-                    className="flex-1 min-w-[120px] bg-transparent outline-none text-sm text-gray-700 placeholder:text-gray-400"
+                    className="flex-1 min-w-[120px] bg-transparent outline-none text-sm text-foreground placeholder:text-muted-foreground"
                 />
 
-                <div className="ml-auto pl-2 flex items-center gap-1 text-gray-400">
+                <div className="ml-auto pl-2 flex items-center gap-1 text-muted-foreground">
                     <ChevronDown size={18} className={cn("transition-transform duration-200", isOpen ? "rotate-180" : "")} />
                 </div>
             </div>
 
             {/* Dropdown Options */}
             {isOpen && (filteredOptions.length > 0 || inputValue.trim()) && (
-                <div className="absolute z-9999 w-full mt-2 bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="absolute z-9999 w-full mt-2 bg-card border border-border rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                     <div className="max-h-60 overflow-y-auto py-1">
                         {filteredOptions.map((option) => (
                             <button
@@ -133,10 +133,10 @@ const TagInput: React.FC<TagInputProps> = ({
                                     toggleOption(option.value);
                                     setInputValue('');
                                 }}
-                                className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 transition-colors flex items-center justify-between"
+                                className="w-full text-left px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors flex items-center justify-between"
                             >
                                 {option.label}
-                                {value.includes(option.value) && <Check size={16} className="text-teal-500" />}
+                                {value.includes(option.value) && <Check size={16} className="text-primary" />}
                             </button>
                         ))}
                         
@@ -147,7 +147,7 @@ const TagInput: React.FC<TagInputProps> = ({
                                     onChange([...value, inputValue.trim()]);
                                     setInputValue('');
                                 }}
-                                className="w-full text-left px-4 py-2.5 text-sm text-teal-600 hover:bg-teal-50 font-medium transition-colors flex items-center gap-2"
+                                className="w-full text-left px-4 py-2.5 text-sm text-primary hover:bg-muted font-medium transition-colors flex items-center gap-2"
                             >
                                 <Plus size={16} />
                                 เพิ่ม "{inputValue}"
@@ -157,7 +157,7 @@ const TagInput: React.FC<TagInputProps> = ({
                 </div>
             )}
             
-            {error && <p className="mt-1 text-xs text-rose-500 pl-1">{error}</p>}
+            {error && <p className="mt-1 text-xs text-rose-500 font-medium pl-1">{error}</p>}
         </div>
     );
 };

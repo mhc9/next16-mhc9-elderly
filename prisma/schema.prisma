@@ -191,7 +191,7 @@ model Person {
     birth_date         DateTime?    @db.Date
     address            String?      @db.Text
     moo                Int?
-    road               Int?        
+    road               String?      @db.Text  
     subdistrict_id     Int?
     district_id        Int?
     province_id        Int? 

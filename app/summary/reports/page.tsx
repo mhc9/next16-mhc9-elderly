@@ -143,7 +143,7 @@ function SummaryReportsContent() {
                         placeholder="ค้นหาชื่อหน่วยบริการ..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-card border border-border rounded-xl py-2.5 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                        className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                     />
                 </div>
 
@@ -154,7 +154,7 @@ function SummaryReportsContent() {
                     <select
                         value={provinceFilter}
                         onChange={(e) => setProvinceFilter(e.target.value)}
-                        className="w-full bg-card border border-border rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
+                        className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
                     >
                         <option value="all">ทุกจังหวัด</option>
                         {provinces.map(p => (
@@ -171,7 +171,7 @@ function SummaryReportsContent() {
                         value={districtFilter}
                         onChange={(e) => setDistrictFilter(e.target.value)}
                         disabled={districts.length === 0}
-                        className="w-full bg-card border border-border rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer disabled:opacity-50"
+                        className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer disabled:opacity-50"
                     >
                         <option value="all">ทุกอำเภอ</option>
                         {districts.map(d => (
@@ -187,7 +187,7 @@ function SummaryReportsContent() {
                     <select
                         value={yearFilter}
                         onChange={(e) => setYearFilter(e.target.value)}
-                        className="w-full bg-card border border-border rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
+                        className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
                     >
                         <option value="all">ทุกปีงบประมาณ</option>
                         {years.map(y => (

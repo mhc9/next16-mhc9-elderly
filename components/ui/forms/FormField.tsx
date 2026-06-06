@@ -25,7 +25,7 @@ export function FormField({
 }: FormFieldProps) {
     return (
         <div className="space-y-1.5">
-            <label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-widest flex items-center gap-2 pl-1">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2 pl-1">
                 {icon && <span>{icon}</span>}
                 {label}
             </label>
@@ -36,7 +36,7 @@ export function FormField({
                 onChange={onChange}
                 placeholder={placeholder}
                 required={required}
-                className={`w-full bg-muted/20 border border-border/60 rounded-xl py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-mono font-bold ${color}`}
+                className={`w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono font-bold ${color}`}
             />
         </div>
     );
