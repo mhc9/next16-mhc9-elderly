@@ -389,40 +389,40 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
   // Theme styles
   const themeStyles = {
     primary: {
-      ring: 'ring-brand-500/30',
-      border: 'border-brand-500',
-      selected: 'bg-brand-50 dark:bg-brand-500/15 text-brand-700 dark:text-brand-600',
-      hover: 'hover:bg-brand-50/50 dark:hover:bg-brand-500/10',
-      highlighted: 'bg-brand-100/70 dark:bg-brand-500/20',
-      check: 'text-brand-600',
-      indicator: 'bg-brand-500',
+      ring: 'ring-primary/20',
+      border: 'border-primary',
+      selected: 'bg-primary/10 text-primary font-bold',
+      hover: 'hover:bg-muted/50',
+      highlighted: 'bg-muted',
+      check: 'text-primary',
+      indicator: 'bg-primary',
     },
     gray: {
-      ring: 'ring-slate-400/30',
-      border: 'border-slate-400',
-      selected: 'bg-slate-100 dark:bg-slate-600/20 text-slate-700 dark:text-slate-200',
-      hover: 'hover:bg-slate-50 dark:hover:bg-slate-700/50',
-      highlighted: 'bg-slate-100 dark:bg-slate-700/70',
-      check: 'text-slate-600 dark:text-slate-400',
-      indicator: 'bg-slate-500',
+      ring: 'ring-muted-foreground/20',
+      border: 'border-muted-foreground',
+      selected: 'bg-muted text-foreground font-bold',
+      hover: 'hover:bg-muted/50',
+      highlighted: 'bg-muted',
+      check: 'text-muted-foreground',
+      indicator: 'bg-muted-foreground',
     },
     success: {
-      ring: 'ring-emerald-500/30',
+      ring: 'ring-emerald-500/20',
       border: 'border-emerald-500',
-      selected: 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300',
-      hover: 'hover:bg-emerald-50/50 dark:hover:bg-emerald-500/10',
-      highlighted: 'bg-emerald-100/70 dark:bg-emerald-500/20',
+      selected: 'bg-emerald-50 text-emerald-700 font-bold',
+      hover: 'hover:bg-emerald-50/50',
+      highlighted: 'bg-emerald-50/30',
       check: 'text-emerald-500',
       indicator: 'bg-emerald-500',
     },
     danger: {
-      ring: 'ring-red-500/30',
-      border: 'border-red-500',
-      selected: 'bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-300',
-      hover: 'hover:bg-red-50/50 dark:hover:bg-red-500/10',
-      highlighted: 'bg-red-100/70 dark:bg-red-500/20',
-      check: 'text-red-500',
-      indicator: 'bg-red-500',
+      ring: 'ring-rose-500/20',
+      border: 'border-rose-500',
+      selected: 'bg-rose-50 text-rose-700 font-bold',
+      hover: 'hover:bg-rose-50/50',
+      highlighted: 'bg-rose-50/30',
+      check: 'text-rose-500',
+      indicator: 'bg-rose-500',
     },
   };
 
@@ -464,27 +464,25 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
       data-select-dropdown
       className="
         w-full overflow-hidden
-        bg-white
-        border border-slate-200
-        rounded-xl
-        shadow-xl shadow-slate-900/10 dark:shadow-black/40
+        bg-card
+        border border-border
+        rounded-2xl
+        shadow-2xl shadow-slate-900/10
         ring-1 ring-black/5
         animate-in fade-in-0 zoom-in-95 slide-in-from-top-2
         duration-200
       "
     >
-      {/* dark:bg-slate-800 dark:border-slate-700 dark:ring-white/5 */}
       {/* Header */}
       {(dropdownTitle || label) && (
-        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-slate-100/50">
-          {/* dark:border-slate-700/50 dark:from-slate-800 dark:to-slate-800/50  */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30">
           <div className="flex items-center gap-2">
             <div className={`size-2 rounded-full ${colors.indicator}`} />
-            <span className="font-medium text-sm text-slate-700 dark:text-slate-200">
+            <span className="font-bold text-xs text-muted-foreground uppercase tracking-wider">
               {dropdownTitle || label}
             </span>
             {filteredOptions.length > 0 && (
-              <span className="text-xs text-slate-400 dark:text-slate-500 tabular-nums">
+              <span className="text-[10px] font-black text-primary/60 tabular-nums">
                 ({filteredOptions.length})
               </span>
             )}
@@ -492,9 +490,8 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
           <button
             type="button"
             onClick={closeDropdown}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/70 transition-colors"
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
-            {/* dark:hover:bg-slate-700/70 dark:hover:text-slate-300  */}
             <X size={16} />
           </button>
         </div>
@@ -502,14 +499,12 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
 
       {/* Separate Search (when typeToSearch is false) */}
       {searchable && !typeToSearch && (
-        <div className="p-2 border-b border-slate-100">
-          {/*  dark:border-slate-700/50 */}
+        <div className="p-2 border-b border-border">
           <div className="relative">
             <Search
               size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             />
-            {/*  dark:text-slate-500 */}
             <input
               type="text"
               value={searchQuery}
@@ -518,40 +513,39 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
               className="
                 w-full h-9 pl-9 pr-3
                 text-sm
-                bg-slate-50
-                border border-slate-200
-                rounded-lg
-                placeholder:text-slate-400
-                focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500
-                transition-colors
+                bg-muted/50
+                border border-border
+                rounded-xl
+                placeholder:text-muted-foreground
+                focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary
+                transition-colors font-medium
               "
               autoFocus
             />
-            {/* dark:border-slate-700 dark:bg-slate-900/50 dark:placeholder:text-slate-500 */}
           </div>
         </div>
       )}
 
       {/* Options */}
-      <div ref={optionsRef} className="overflow-y-auto overscroll-contain" style={{ maxHeight: optionsMaxHeight }}>
+      <div ref={optionsRef} className="overflow-y-auto overscroll-contain custom-scrollbar" style={{ maxHeight: optionsMaxHeight }}>
         {loading ? (
           <div className="px-4 py-8 text-center">
-            <Loader2 className="size-6 text-primary-500 animate-spin mx-auto mb-2" />
-            <div className="text-slate-400 dark:text-slate-500 text-sm">กำลังโหลด...</div>
+            <Loader2 className="size-6 text-primary animate-spin mx-auto mb-2" />
+            <div className="text-muted-foreground text-xs font-bold uppercase tracking-widest">กำลังโหลด...</div>
           </div>
         ) : filteredOptions.length === 0 ? (
           <div className="px-4 py-8 text-center">
-            <div className="text-slate-400 dark:text-slate-500 text-sm">
+            <div className="text-muted-foreground text-sm">
               {searchQuery ? (
                 <div className="space-y-2">
-                  <Search size={28} className="mx-auto opacity-40" />
-                  <div>
-                    ไม่พบ "<span className="font-medium text-slate-600 dark:text-slate-300">{searchQuery}</span>"
+                  <Search size={28} className="mx-auto opacity-20" />
+                  <div className="font-medium">
+                    ไม่พบ "<span className="font-bold text-foreground">{searchQuery}</span>"
                   </div>
                   <button
                     type="button"
                     onClick={() => setSearchQuery('')}
-                    className="text-xs text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
+                    className="text-xs font-black text-primary hover:underline uppercase tracking-tighter"
                   >
                     ล้างการค้นหา
                   </button>
@@ -579,7 +573,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
                     flex items-center gap-3
                     ${sizes.option}
                     ${option.disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}
-                    ${isSelected ? colors.selected : 'text-slate-700 dark:text-slate-400'}
+                    ${isSelected ? colors.selected : 'text-foreground font-medium'}
                     ${isHighlighted && !isSelected ? colors.highlighted : ''}
                     ${!isHighlighted && !isSelected ? colors.hover : ''}
                   `}
@@ -591,19 +585,19 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
 
                   {/* Icon */}
                   {option.icon && (
-                    <span className="shrink-0 text-slate-400 dark:text-slate-500">
+                    <span className="shrink-0 text-muted-foreground">
                       {option.icon}
                     </span>
                   )}
 
                   {/* Label & Description */}
                   <span className="flex-1 min-w-0">
-                    <span className={`block truncate ${isSelected ? 'font-medium' : ''}`}>
+                    <span className={`block truncate ${isSelected ? 'font-black' : ''}`}>
                       {/* Highlight matching text */}
                       {searchQuery ? <HighlightText text={option.label} query={searchQuery} /> : option.label}
                     </span>
                     {option.description && (
-                      <span className="block text-xs text-slate-400 dark:text-slate-500 truncate mt-0.5">
+                      <span className="block text-[10px] text-muted-foreground font-bold truncate mt-0.5">
                         {option.description}
                       </span>
                     )}
@@ -612,7 +606,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
                   {/* Check icon */}
                   {isSelected && (
                     <span className={`shrink-0 ${colors.check}`}>
-                      <Check size={sizes.icon} strokeWidth={2.5} />
+                      <Check size={sizes.icon} strokeWidth={3} />
                     </span>
                   )}
                 </button>
@@ -624,8 +618,8 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
 
       {/* Footer hint */}
       {filteredOptions.length > 5 && (
-        <div className="px-3 py-2 border-t border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-900/30">
-          <p className="text-xs text-slate-400 dark:text-slate-500 text-center">
+        <div className="px-3 py-2 border-t border-border bg-muted/20">
+          <p className="text-[10px] font-bold text-muted-foreground text-center uppercase tracking-widest">
             ↑↓ เลื่อน • Enter เลือก • Esc ปิด
           </p>
         </div>
@@ -637,7 +631,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
     <div className={cn(`relative ${isOpen && showBackdrop ? 'z-9999' : ''}`, className)} ref={containerRef}>
       {/* Label */}
       {label && (
-        <label className="block text-sm font-medium text-slate-700 mb-1.5">
+        <label className="block text-[12px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 px-1">
           {label}
         </label>
       )}
@@ -652,18 +646,18 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
           ${sizes.container}
           border transition-all duration-200 cursor-pointer
           ${isOpen && showBackdrop ? 'invisible' : ''}
-          ${disabled || loading ? 'opacity-50 cursor-not-allowed bg-slate-100' : ''}
+          ${disabled || loading ? 'opacity-50 cursor-not-allowed bg-muted/30' : ''}
           ${error
-            ? 'border-red-300 dark:border-red-500/50 bg-red-50/30'
+            ? 'border-rose-300 bg-rose-50/30'
             : isOpen
-              ? `ring-2 ${colors.ring} ${colors.border} bg-white shadow-lg`
-              : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-sm'
+              ? `ring-2 ${colors.ring} ${colors.border} bg-card shadow-lg`
+              : 'bg-muted/30 border-border hover:border-border/80 hover:shadow-sm'
           }
         `}
       >
         {/* Search Icon (when typing) */}
         {typeToSearch && isTyping && (
-          <Search size={16} className="shrink-0 text-slate-400 dark:text-slate-500" />
+          <Search size={16} className="shrink-0 text-muted-foreground" />
         )}
 
         {/* Input Field */}
@@ -681,8 +675,8 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
               flex-1 min-w-0 bg-transparent outline-none
               ${sizes.input}
               ${displayValue && !isTyping && !isOpen
-                ? 'text-slate-900 dark:text-slate-800'
-                : 'text-slate-900 dark:text-slate-500 placeholder:text-slate-400 dark:placeholder:text-slate-500'
+                ? 'text-foreground font-bold'
+                : 'text-foreground font-medium placeholder:text-muted-foreground'
               }
               ${disabled || loading ? 'cursor-not-allowed' : 'cursor-text'}
             `}
@@ -690,7 +684,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
             spellCheck={false}
           />
         ) : (
-          <span className={`flex-1 truncate ${sizes.input} ${displayValue ? 'text-slate-900 dark:text-slate-100' : 'text-slate-400 dark:text-slate-500'}`}>
+          <span className={`flex-1 truncate ${sizes.input} ${displayValue ? 'text-foreground font-bold' : 'text-muted-foreground'}`}>
             {displayValue || placeholder}
           </span>
         )}
@@ -699,7 +693,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
         <div className="flex items-center gap-1 shrink-0">
           {/* Loading */}
           {loading && (
-            <Loader2 size={16} className="text-slate-400 animate-spin" />
+            <Loader2 size={16} className="text-muted-foreground animate-spin" />
           )}
 
           {/* Clear button */}
@@ -707,7 +701,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
             <button
               type="button"
               onClick={handleClear}
-              className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+              className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             >
               <X size={14} />
             </button>
@@ -715,7 +709,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
 
           {/* Chevron */}
           {!loading && (
-            <span className={`text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>
+            <span className={`text-muted-foreground transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>
               <ChevronDown size={sizes.icon} />
             </span>
           )}
@@ -724,8 +718,8 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
 
       {/* Error message */}
       {error && (
-        <p className="mt-1.5 text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
-          <span className="size-1 rounded-full bg-red-500" />
+        <p className="mt-1.5 text-xs text-rose-500 flex items-center gap-1 font-bold">
+          <span className="size-1 rounded-full bg-rose-500" />
           {error}
         </p>
       )}
@@ -748,12 +742,12 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
                 ${sizes.container}
                 border transition-all duration-200
                 ring-2 ${colors.ring} ${colors.border} 
-                bg-white dark:bg-slate-800 shadow-xl
+                bg-card shadow-xl
               `}
             >
               {/* Search Icon (when typing) */}
               {typeToSearch && isTyping && (
-                <Search size={16} className="shrink-0 text-slate-400 dark:text-slate-500" />
+                <Search size={16} className="shrink-0 text-muted-foreground" />
               )}
 
               {/* Input Field */}
@@ -769,8 +763,8 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
                   className={`
                     flex-1 min-w-0 bg-transparent outline-none
                     ${sizes.input}
-                    text-slate-900 dark:text-slate-100 
-                    placeholder:text-slate-400 dark:placeholder:text-slate-500
+                    text-foreground font-bold
+                    placeholder:text-muted-foreground
                   `}
                   autoComplete="off"
                   spellCheck={false}
@@ -779,7 +773,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
                 <span
                   className={`
                     flex-1 truncate ${sizes.input}
-                    ${displayValue ? 'text-slate-900 dark:text-slate-100' : 'text-slate-400 dark:text-slate-500'}
+                    ${displayValue ? 'text-foreground font-bold' : 'text-muted-foreground'}
                   `}
                 >
                   {displayValue || placeholder}
@@ -789,19 +783,19 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
               {/* Actions */}
               <div className="flex items-center gap-1 shrink-0">
                 {loading && (
-                  <Loader2 size={16} className="text-slate-400 animate-spin" />
+                  <Loader2 size={16} className="text-muted-foreground animate-spin" />
                 )}
                 {clearable && value && !disabled && !loading && (
                   <button
                     type="button"
                     onClick={handleClear}
-                    className="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                    className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                   >
                     <X size={14} />
                   </button>
                 )}
                 {!loading && (
-                  <span className="text-slate-400 dark:text-slate-500 rotate-180">
+                  <span className="text-muted-foreground rotate-180">
                     <ChevronDown size={sizes.icon} />
                   </span>
                 )}

@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { HospitalSearch, Hospital } from "@/components/ui/forms/HospitalSearch";
+import DatePicker from "@/components/ui/forms/DatePicker";
+import SearchableSelect from "@/components/ui/forms/SearchableSelect";
 
 interface LocationOption {
     id: number;
@@ -101,6 +103,14 @@ export default function NewPersonPage() {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    const handleDateChange = (date: string) => {
+        setFormData(prev => ({ ...prev, birth_date: date }));
+    };
+
+    const handleSelectChange = (name: string, value: string) => {
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
@@ -189,7 +199,9 @@ export default function NewPersonPage() {
                             />
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">ชื่อ</label>
+                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 flex items-center gap-2">
+                                <User size={14} /> ชื่อ
+                            </label>
                             <input
                                 type="text"
                                 name="firstname"
@@ -201,7 +213,9 @@ export default function NewPersonPage() {
                             />
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">นามสกุล</label>
+                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 flex items-center gap-2">
+                                <Users size={14} /> นามสกุล
+                            </label>
                             <input
                                 type="text"
                                 name="lastname"
@@ -216,15 +230,15 @@ export default function NewPersonPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="space-y-1.5">
-                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 flex items-center gap-2">
-                                <Calendar size={14} /> วันเกิด
-                            </label>
-                            <input
-                                type="date"
-                                name="birth_date"
+                            <DatePicker
                                 value={formData.birth_date}
-                                onChange={handleInputChange}
-                                className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                onChange={handleDateChange}
+                                label="วันเกิด"
+                                placeholder="เลือกวันเกิด"
+                                icon={<Calendar size={14} />}
+                                className="space-y-1.5"
+                                showAge
+                                inputCss="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                             />
                         </div>
                         <div className="space-y-1.5">
@@ -292,48 +306,39 @@ export default function NewPersonPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="space-y-1.5">
-                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">จังหวัด</label>
-                            <select
-                                name="province_id"
+                            <SearchableSelect
+                                label="จังหวัด"
+                                placeholder="เลือกจังหวัด"
+                                options={provinces.map(p => ({ value: p.id.toString(), label: p.name }))}
                                 value={formData.province_id}
-                                onChange={handleInputChange}
-                                className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
-                            >
-                                <option value="">เลือกจังหวัด</option>
-                                {provinces.map(p => (
-                                    <option key={p.id} value={p.id}>{p.name}</option>
-                                ))}
-                            </select>
+                                onChange={(val) => handleSelectChange("province_id", val)}
+                                searchable
+                                clearable
+                            />
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">อำเภอ</label>
-                            <select
-                                name="district_id"
+                            <SearchableSelect
+                                label="อำเภอ"
+                                placeholder="เลือกอำเภอ"
+                                options={districts.map(d => ({ value: d.id.toString(), label: d.name }))}
                                 value={formData.district_id}
-                                onChange={handleInputChange}
+                                onChange={(val) => handleSelectChange("district_id", val)}
                                 disabled={!formData.province_id}
-                                className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer disabled:opacity-50"
-                            >
-                                <option value="">เลือกอำเภอ</option>
-                                {districts.map(d => (
-                                    <option key={d.id} value={d.id}>{d.name}</option>
-                                ))}
-                            </select>
+                                searchable
+                                clearable
+                            />
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">ตำบล</label>
-                            <select
-                                name="subdistrict_id"
+                            <SearchableSelect
+                                label="ตำบล"
+                                placeholder="เลือกตำบล"
+                                options={subdistricts.map(s => ({ value: s.id.toString(), label: s.name }))}
                                 value={formData.subdistrict_id}
-                                onChange={handleInputChange}
+                                onChange={(val) => handleSelectChange("subdistrict_id", val)}
                                 disabled={!formData.district_id}
-                                className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer disabled:opacity-50"
-                            >
-                                <option value="">เลือกตำบล</option>
-                                {subdistricts.map(s => (
-                                    <option key={s.id} value={s.id}>{s.name}</option>
-                                ))}
-                            </select>
+                                searchable
+                                clearable
+                            />
                         </div>
                     </div>
                 </div>
