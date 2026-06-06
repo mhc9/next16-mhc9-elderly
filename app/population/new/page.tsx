@@ -36,6 +36,8 @@ export default function NewPersonPage() {
         email: "",
         address: "",
         moo: "",
+        road: "",
+        zipcode: "",
         province_id: "",
         district_id: "",
         subdistrict_id: "",
@@ -281,13 +283,13 @@ export default function NewPersonPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                         <div className="md:col-span-3 space-y-1.5">
-                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">ที่อยู่ (บ้านเลขที่/ถนน)</label>
+                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">ที่อยู่ (บ้านเลขที่/ซอย/หมู่บ้าน)</label>
                             <input
                                 type="text"
                                 name="address"
                                 value={formData.address}
                                 onChange={handleInputChange}
-                                placeholder="เช่น 123/45 หมู่บ้าน..."
+                                placeholder="เช่น 123/45 ซอย... หมู่บ้าน..."
                                 className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                             />
                         </div>
@@ -299,6 +301,32 @@ export default function NewPersonPage() {
                                 value={formData.moo}
                                 onChange={handleInputChange}
                                 placeholder="ระบุตัวเลข"
+                                className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div className="md:col-span-3 space-y-1.5">
+                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">ถนน</label>
+                            <input
+                                type="text"
+                                name="road"
+                                value={formData.road}
+                                onChange={handleInputChange}
+                                placeholder="ระบุชื่อถนน (ถ้ามี)"
+                                className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">รหัสไปรษณีย์</label>
+                            <input
+                                type="text"
+                                name="zipcode"
+                                value={formData.zipcode}
+                                onChange={handleInputChange}
+                                placeholder="5 หลัก"
+                                maxLength={5}
                                 className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono"
                             />
                         </div>

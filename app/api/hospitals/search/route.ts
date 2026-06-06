@@ -5,18 +5,30 @@ export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url);
         const q = searchParams.get("q")?.trim() ?? "";
+        const provinceId = searchParams.get("province_id");
+        const districtId = searchParams.get("district_id");
 
         if (q.length < 1) {
             return NextResponse.json({ data: [] });
         }
 
+        const where: any = {
+            OR: [
+                { hcode: { contains: q } },
+                { name: { contains: q } },
+            ],
+        };
+
+        if (provinceId) {
+            where.province_id = parseInt(provinceId);
+        }
+
+        if (districtId) {
+            where.district_id = parseInt(districtId);
+        }
+
         const hospitals = await prisma.hospital.findMany({
-            where: {
-                OR: [
-                    { hcode: { contains: q } },
-                    { name: { contains: q } },
-                ],
-            },
+            where,
             select: {
                 hcode: true,
                 name: true,
