@@ -17,7 +17,8 @@ import {
     Stethoscope,
     HeartPulse,
     Building2,
-    ClipboardPlus
+    ClipboardPlus,
+    ArrowLeft
 } from "lucide-react";
 
 export default function NewReportPage() {
@@ -58,7 +59,7 @@ export default function NewReportPage() {
 
     const fetchSystemData = async () => {
         if (!selectedHospital) {
-            setMessage({ type: "error", text: "Please select a hospital first" });
+            setMessage({ type: "error", text: "กรุณาเลือกหน่วยบริการก่อน" });
             return;
         }
 
@@ -69,17 +70,17 @@ export default function NewReportPage() {
             const res = await fetch(`/api/reports/summary/fetch?hcode=${selectedHospital.hcode}&year=${formData.year}`);
             const json = await res.json();
 
-            if (!res.ok) throw new Error(json.error || "Failed to fetch data");
+            if (!res.ok) throw new Error(json.error || "ไม่สามารถดึงข้อมูลได้");
 
             setFormData(prev => ({
                 ...prev,
                 ...json.data
             }));
-            setMessage({ type: "success", text: "Data fetched from system successfully!" });
+            setMessage({ type: "success", text: "ดึงข้อมูลจากระบบสำเร็จ" });
         } catch (err) {
             setMessage({ 
                 type: "error", 
-                text: err instanceof Error ? err.message : "Failed to fetch data" 
+                text: err instanceof Error ? err.message : "ไม่สามารถดึงข้อมูลได้"
             });
         } finally {
             setIsFetching(false);
@@ -89,7 +90,7 @@ export default function NewReportPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedHospital) {
-            setMessage({ type: "error", text: "Please select a hospital first" });
+            setMessage({ type: "error", text: "กรุณาเลือกหน่วยบริการก่อน" });
             return;
         }
 
@@ -108,18 +109,18 @@ export default function NewReportPage() {
 
             const json = await res.json();
 
-            if (!res.ok) throw new Error(json.error || "Failed to save report");
+            if (!res.ok) throw new Error(json.error || "ไม่สามารถบันทึกรายงานได้");
 
-            setMessage({ type: "success", text: "Report saved successfully!" });
+            setMessage({ type: "success", text: "บันทึกรายงานสำเร็จ" });
             setTimeout(() => {
-                router.push("/dashboard/reports");
+                router.push("/summary/reports");
                 router.refresh();
             }, 1500);
 
         } catch (err) {
             setMessage({ 
                 type: "error", 
-                text: err instanceof Error ? err.message : "Failed to save report" 
+                text: err instanceof Error ? err.message : "ไม่สามารถบันทึกรายงานได้"
             });
         } finally {
             setIsLoading(false);
@@ -127,23 +128,24 @@ export default function NewReportPage() {
     };
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="p-6 max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500">
             {/* Header */}
             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <Link 
-                        href="/dashboard/reports"
-                        className="p-2.5 rounded-xl bg-card border border-border hover:bg-muted transition-all cursor-pointer"
+                <div className="space-y-1">
+                    <button 
+                        onClick={() => router.back()}
+                        className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-2 cursor-pointer group"
                     >
-                        <ChevronLeft size={20} />
-                    </Link>
-                    <div>
-                        <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
-                            <ClipboardPlus className="text-primary" />
-                            Create New Report
-                        </h1>
-                        <p className="text-sm text-muted-foreground">Add annual screening statistics for a healthcare facility</p>
-                    </div>
+                        <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+                        <span className="text-sm font-medium">ย้อนกลับ</span>
+                    </button>
+                    <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
+                        <ClipboardPlus className="text-primary" />
+                        สร้างรายงานใหม่
+                    </h1>
+                    <p className="text-sm text-muted-foreground">
+                        บันทึกข้อมูลสถิติการคัดกรองประจำปีของหน่วยบริการ
+                    </p>
                 </div>
             </div>
 
@@ -167,7 +169,7 @@ export default function NewReportPage() {
                         selectedHospital={selectedHospital}
                         onSelect={setSelectedHospital}
                         onClear={() => setSelectedHospital(null)}
-                        placeholder="Search by hospital name or HCODE..."
+                        placeholder="ค้นหาด้วยชื่อหน่วยบริการหรือรหัส 5 หลัก..."
                     />
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -254,21 +256,19 @@ export default function NewReportPage() {
                             <FormField label="ส่งต่อ (ราย)" name="care_referral" value={formData.care_referral} onChange={handleInputChange} />
                         </div>
 
-                        <div>
-                            {/* Sub Section Header */}
-                            <div className="flex items-center gap-1 pb-1">
-                                <div className="p-2 rounded-lg text-orange-500">
-                                    <Stethoscope size={16} />
-                                </div>
-                                <h2 className="font-semibold text-sm">การประเมิน 9Q และ 8Q</h2>
+                        {/* Section Header */}
+                        <div className="flex items-center gap-1 pb-2 border-b border-border/50">
+                            <div className="p-2 rounded-lg bg-orange-500/10 text-orange-500">
+                                <Stethoscope size={20} />
                             </div>
+                            <h2 className="font-bold text-lg">การประเมิน 9Q และ 8Q</h2>
+                        </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <FormField label="9Q ปกติ (ราย)" name="assess_9q_normal" value={formData.assess_9q_normal} onChange={handleInputChange} color="text-emerald-600" />
-                                <FormField label="9Q เสี่ยง (>=7) (ราย)" name="assess_9q_risk" value={formData.assess_9q_risk} onChange={handleInputChange} color="text-rose-600" />
-                                <FormField label="8Q ปกติ (ราย)" name="assess_8q_normal" value={formData.assess_8q_normal} onChange={handleInputChange} color="text-emerald-600" />
-                                <FormField label="8Q เสี่ยง (>=1) (ราย)" name="assess_8q_risk" value={formData.assess_8q_risk} onChange={handleInputChange} color="text-rose-600" />
-                            </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <FormField label="9Q ปกติ (ราย)" name="assess_9q_normal" value={formData.assess_9q_normal} onChange={handleInputChange} color="text-emerald-600" />
+                            <FormField label="9Q เสี่ยง (>=7) (ราย)" name="assess_9q_risk" value={formData.assess_9q_risk} onChange={handleInputChange} color="text-rose-600" />
+                            <FormField label="8Q ปกติ (ราย)" name="assess_8q_normal" value={formData.assess_8q_normal} onChange={handleInputChange} color="text-emerald-600" />
+                            <FormField label="8Q เสี่ยง (>=1) (ราย)" name="assess_8q_risk" value={formData.assess_8q_risk} onChange={handleInputChange} color="text-rose-600" />
                         </div>
                     </div>
                 </div>
@@ -299,7 +299,7 @@ export default function NewReportPage() {
                 <div className="w-full p-0 bg-background/80 backdrop-blur-md">
                     <div className="mx-auto flex items-center justify-end gap-4">
                         <Link 
-                            href="/dashboard/reports"
+                            href="/summary/reports"
                             className="px-6 py-2.5 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                         >
                             ยกเลิก

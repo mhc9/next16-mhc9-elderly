@@ -5,7 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { 
     User, Mail, Shield, Building2, MapPin, 
     ArrowLeft, Loader2, AlertCircle, Calendar, 
-    Key, Edit2, CheckCircle2
+    Key, Edit2, CheckCircle2,
+    CircleUser
 } from "lucide-react";
 
 interface UserData {
@@ -94,11 +95,12 @@ export default function UserProfilePage() {
                         <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
                         <span className="text-sm font-medium">ย้อนกลับ</span>
                     </button>
-                    <h1 className="text-3xl font-extrabold text-foreground tracking-tight">
+                    <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
+                        <CircleUser className="text-primary" />
                         โปรไฟล์ผู้ใช้งาน
                     </h1>
                 </div>
-                
+
                 <div className="flex items-center gap-3">
                     <button className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all cursor-pointer">
                         <Edit2 size={18} />
@@ -124,7 +126,7 @@ export default function UserProfilePage() {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <h2 className="text-2xl font-bold text-foreground mb-1">{user.name || "ไม่ระบุชื่อ"}</h2>
                         <p className="text-muted-foreground text-sm flex items-center gap-1.5 mb-6">
                             <Mail size={14} />
@@ -150,8 +152,9 @@ export default function UserProfilePage() {
                     </div>
 
                     <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
-                        <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
-                            <Key size={16} className="text-primary" />
+                        {/* Section Header */}
+                        <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
+                            <Shield size={20} className="text-primary" />
                             ข้อมูลความปลอดภัย
                         </h3>
                         <div className="space-y-4">
@@ -172,26 +175,27 @@ export default function UserProfilePage() {
                 {/* Right Column: Detailed Info */}
                 <div className="lg:col-span-2 space-y-6">
                     <div className="bg-card border border-border rounded-3xl p-8 shadow-sm">
-                        <h3 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
-                            <Building2 size={24} className="text-primary" />
+                        {/* Section Header */}
+                        <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+                            <Building2 size={20} className="text-primary" />
                             ข้อมูลหน่วยบริการ
                         </h3>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div className="space-y-4">
                                 <div>
-                                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block mb-1">ชื่อหน่วยบริการ</label>
+                                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest block mb-1">ชื่อหน่วยบริการ</label>
                                     <p className="text-base font-bold text-foreground">{user.hospital?.name || "ไม่ระบุ"}</p>
                                 </div>
                                 <div>
-                                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block mb-1">HCODE</label>
+                                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest block mb-1">HCODE</label>
                                     <p className="font-mono text-sm bg-muted inline-block px-2 py-0.5 rounded border border-border">{user.hcode || "N/A"}</p>
                                 </div>
                             </div>
 
-                            <div className="space-y-4">
+                            <div className="space-y-4 md:col-span-2">
                                 <div>
-                                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block mb-1">ที่ตั้งหน่วยบริการ</label>
+                                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest block mb-1">ที่ตั้งหน่วยบริการ</label>
                                     <div className="flex items-start gap-2 text-sm text-foreground">
                                         <MapPin size={16} className="text-primary shrink-0 mt-0.5" />
                                         <div className="space-y-1">
@@ -209,11 +213,12 @@ export default function UserProfilePage() {
                     </div>
 
                     <div className="bg-card border border-border rounded-3xl p-8 shadow-sm">
-                        <h3 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
-                            <Calendar size={24} className="text-primary" />
+                        {/* Section Header */}
+                        <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+                            <Calendar size={20} className="text-primary" />
                             ประวัติการเข้าใช้งาน
                         </h3>
-                        
+
                         <div className="flex flex-col items-center justify-center py-10 text-center space-y-3">
                             <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center text-muted-foreground">
                                 <Calendar size={24} />

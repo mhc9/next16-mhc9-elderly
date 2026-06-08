@@ -149,7 +149,7 @@ export default function NewPersonPage() {
     };
 
     return (
-        <div className="p-6 max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500">
+        <div className="p-6 max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="space-y-1">
                     <button 
@@ -159,10 +159,8 @@ export default function NewPersonPage() {
                         <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
                         <span className="text-sm font-medium">ย้อนกลับ</span>
                     </button>
-                    <h1 className="text-3xl font-extrabold text-foreground tracking-tight flex items-center gap-3">
-                        <div className="p-2 bg-primary/10 text-primary rounded-xl">
-                            <User size={32} />
-                        </div>
+                    <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
+                        <User className="text-primary" />
                         ลงทะเบียนผู้สูงอายุใหม่
                     </h1>
                 </div>
@@ -178,11 +176,12 @@ export default function NewPersonPage() {
             <form onSubmit={handleSubmit} className="space-y-8">
                 {/* 1. ข้อมูลส่วนบุคคล */}
                 <div className="bg-card border border-border rounded-3xl p-8 shadow-sm space-y-6">
+                    {/* Section Header */}
                     <div className="flex items-center gap-3 border-b border-border pb-4 mb-6">
                         <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
                             <User size={20} />
                         </div>
-                        <h2 className="text-xl font-bold text-foreground">ข้อมูลส่วนบุคคล</h2>
+                        <h2 className="text-lg font-bold text-foreground">ข้อมูลส่วนบุคคล</h2>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -274,11 +273,12 @@ export default function NewPersonPage() {
 
                 {/* 2. ที่อยู่ปัจจุบัน */}
                 <div className="bg-card border border-border rounded-3xl p-8 shadow-sm space-y-6">
+                    {/* Section Header */}
                     <div className="flex items-center gap-3 border-b border-border pb-4 mb-6">
                         <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
                             <Home size={20} />
                         </div>
-                        <h2 className="text-xl font-bold text-foreground">ที่อยู่ปัจจุบัน</h2>
+                        <h2 className="text-lg font-bold text-foreground">ที่อยู่ปัจจุบัน</h2>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -374,11 +374,12 @@ export default function NewPersonPage() {
                 {/* 3. ข้อมูลหน่วยบริการ (Admin Only) */}
                 {isAdmin && (
                     <div className="bg-card border border-border rounded-3xl p-8 shadow-sm space-y-6">
+                        {/* Section Header */}
                         <div className="flex items-center gap-3 border-b border-border pb-4 mb-6">
                             <div className="p-2 bg-purple-50 text-purple-600 rounded-lg">
                                 <Building2 size={20} />
                             </div>
-                            <h2 className="text-xl font-bold text-foreground">ข้อมูลหน่วยบริการ</h2>
+                            <h2 className="text-lg font-bold text-foreground">ข้อมูลหน่วยบริการ</h2>
                         </div>
                         
                         <HospitalSearch 
