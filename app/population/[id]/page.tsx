@@ -133,7 +133,7 @@ export default function PersonDetailPage() {
                         แก้ไขข้อมูล
                     </Link>
                     <Link 
-                        href={`/summary/reports/new?pid=${person.pid}`}
+                        href={`/screening/new?pid=${person.pid}`}
                         className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all cursor-pointer"
                     >
                         <Plus size={18} />
@@ -247,9 +247,20 @@ export default function PersonDetailPage() {
                                 <History size={20} className="text-primary" />
                                 ประวัติการคัดกรอง
                             </h3>
-                            <span className="text-xs font-bold text-muted-foreground px-3 py-1 bg-muted rounded-full">
-                                ทั้งหมด {person.screenings.length} ครั้ง
-                            </span>
+                            <div className="flex items-center gap-4">
+                                <span className="text-xs font-bold text-muted-foreground px-3 py-1 bg-muted rounded-full">
+                                    ทั้งหมด {person.screenings.length} ครั้ง
+                                </span>
+                                {person.screenings.length > 0 && (
+                                    <Link 
+                                        href={`/screening?pid=${person.pid}`}
+                                        className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
+                                    >
+                                        ดูทั้งหมด
+                                        <ChevronRight size={14} />
+                                    </Link>
+                                )}
+                            </div>
                         </div>
 
                         {person.screenings.length > 0 ? (
@@ -306,7 +317,7 @@ export default function PersonDetailPage() {
                                     <p className="text-base font-bold text-foreground">ยังไม่มีประวัติการคัดกรอง</p>
                                     <p className="text-xs text-muted-foreground mb-6">เริ่มการคัดกรองครั้งแรกเพื่อติดตามสุขภาพจิต</p>
                                     <Link 
-                                        href={`/summary/reports/new?pid=${person.pid}`}
+                                        href={`/screening/new?pid=${person.pid}`}
                                         className="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all cursor-pointer"
                                     >
                                         <Plus size={18} />

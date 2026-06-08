@@ -58,10 +58,10 @@ export default function Navbar() {
                                 active={pathname === "/population"}
                             />
                             <MenuLink 
-                                href="/population/screening" 
+                                href="/screening" 
                                 icon={<ShieldUser size={16} />} 
                                 label="การคัดกรอง" 
-                                active={pathname === "/population/screening"}
+                                active={pathname === "/screening"}
                             />
                         </NavDropdown>
 

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { createPortal } from "react-dom";
-import { Users, Search, MapPin, Building2, ChevronRight, ChevronLeft, Loader2, AlertCircle, UserPlus, CreditCard, Calendar, MoreVertical, Eye, Edit2, Trash2 } from "lucide-react";
+import { Users, Search, MapPin, Building2, ChevronRight, ChevronLeft, ClipboardCheck, AlertCircle, UserPlus, CreditCard, Calendar, MoreVertical, Eye, Edit2, Trash2 } from "lucide-react";
 import { calculateAge } from "@/lib/utils/calculation";
 
 interface Person {
@@ -325,6 +325,14 @@ export default function PopulationPage() {
                     >
                         <Edit2 size={16} className="text-amber-500" />
                         Edit
+                    </Link>
+                    <Link 
+                        href={`/screening/new?pid=${selectedPerson.pid}`} 
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-foreground hover:bg-muted transition-colors border-t border-border/50"
+                        onClick={() => { setOpenMenuId(null); setMenuPosition(null); }}
+                    >
+                        <ClipboardCheck size={16} className="text-emerald-500" />
+                        Screening
                     </Link>
                     <button 
                         onClick={() => {
