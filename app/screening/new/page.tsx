@@ -5,15 +5,20 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { 
     ArrowLeft, Save, Loader2, AlertCircle, 
     User, Calendar, ClipboardCheck, Brain, 
-    HeartPulse, Activity, MessageSquare, CheckCircle2
+    HeartPulse, Activity, MessageSquare, CheckCircle2,
+    Search, X, UserSearch
 } from "lucide-react";
 import Link from "next/link";
+import { PersonSelectModal } from "@/components/ui/forms/PersonSelectModal";
 
 interface PersonOption {
     pid: number;
     firstname: string;
     lastname: string;
     cid: string | null;
+    birth_date?: string | null;
+    hcode?: string;
+    hospital?: { name: string };
 }
 
 export default function NewScreeningPage() {
@@ -25,9 +30,9 @@ export default function NewScreeningPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     // Person State
-    const [persons, setPersons] = useState<PersonOption[]>([]);
     const [selectedPerson, setSelectedPerson] = useState<PersonOption | null>(null);
 
     // Form State
@@ -44,22 +49,28 @@ export default function NewScreeningPage() {
     });
 
     useEffect(() => {
-        async function fetchPersons() {
-            try {
-                const res = await fetch("/api/population?limit=1000"); // Simple fetch for selection
-                const json = await res.json();
-                setPersons(json.data || []);
-                
-                if (pidFromUrl) {
-                    const person = (json.data as PersonOption[]).find(p => p.pid === parseInt(pidFromUrl));
-                    if (person) setSelectedPerson(person);
+        if (pidFromUrl) {
+            async function fetchPerson() {
+                try {
+                    const res = await fetch(`/api/population/${pidFromUrl}`);
+                    const json = await res.json();
+                    if (res.ok) {
+                        setSelectedPerson(json);
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch person details");
                 }
-            } catch (err) {
-                console.error("Failed to fetch persons");
             }
+            fetchPerson();
         }
-        fetchPersons();
     }, [pidFromUrl]);
+
+    const handlePersonSelect = (person: any) => {
+        setSelectedPerson(person);
+        setFormData(prev => ({ ...prev, person_id: person.pid.toString() }));
+        setIsModalOpen(false);
+        setError("");
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
@@ -171,25 +182,52 @@ export default function NewScreeningPage() {
                             <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 flex items-center gap-2">
                                 <User size={14} /> ผู้รับบริการ
                             </label>
+                            
                             {pidFromUrl ? (
-                                <div className="w-full bg-muted/50 border border-border rounded-xl py-3 px-4 text-sm font-bold text-foreground">
-                                    {selectedPerson ? `${selectedPerson.firstname} ${selectedPerson.lastname}` : "กำลังโหลด..."}
+                                <div className="w-full bg-muted/50 border border-border rounded-xl py-1.5 px-4 text-sm font-bold text-foreground flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs shrink-0">
+                                        {selectedPerson ? `${selectedPerson.firstname[0]}${selectedPerson.lastname[0]}` : "?"}
+                                    </div>
+                                    <span className="truncate">
+                                        {selectedPerson ? `${selectedPerson.firstname} ${selectedPerson.lastname}` : "กำลังโหลด..."}
+                                    </span>
                                 </div>
                             ) : (
-                                <select
-                                    name="person_id"
-                                    value={formData.person_id}
-                                    onChange={handleInputChange}
-                                    required
-                                    className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
-                                >
-                                    <option value="">เลือกผู้รับบริการ</option>
-                                    {persons.map(p => (
-                                        <option key={p.pid} value={p.pid}>
-                                            {p.firstname} {p.lastname} ({p.cid || "ไม่ระบุ CID"})
-                                        </option>
-                                    ))}
-                                </select>
+                                <div className="relative">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsModalOpen(true)}
+                                        className={`w-full flex items-center justify-between bg-muted/30 border rounded-xl py-1.5 px-4 text-sm transition-all cursor-pointer group ${
+                                            selectedPerson ? "border-primary/50 bg-primary/5" : "border-border hover:border-primary/50"
+                                        }`}
+                                    >
+                                        <div className="flex items-center gap-3 min-w-0">
+                                            {selectedPerson ? (
+                                                <>
+                                                    <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs shrink-0 shadow-sm">
+                                                        {selectedPerson.firstname[0]}{selectedPerson.lastname[0]}
+                                                    </div>
+                                                    <div className="flex flex-col text-left truncate">
+                                                        <span className="font-bold text-foreground leading-tight">
+                                                            {selectedPerson.firstname} {selectedPerson.lastname}
+                                                        </span>
+                                                        <span className="text-[10px] text-muted-foreground font-mono">
+                                                            CID: {selectedPerson.cid || "ไม่ระบุ"}
+                                                        </span>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground shrink-0 border border-dashed border-border group-hover:border-primary/50 transition-colors">
+                                                        <UserSearch size={14} />
+                                                    </div>
+                                                    <span className="text-muted-foreground font-medium">กดเพื่อเลือกผู้รับบริการ...</span>
+                                                </>
+                                            )}
+                                        </div>
+                                        <Search size={16} className="text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                                    </button>
+                                </div>
                             )}
                         </div>
                         <div className="space-y-1.5">
@@ -361,6 +399,12 @@ export default function NewScreeningPage() {
                     </button>
                 </div>
             </form>
+
+            <PersonSelectModal 
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSelect={handlePersonSelect}
+            />
         </div>
     );
 }
