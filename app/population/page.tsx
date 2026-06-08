@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Users, Search, MapPin, Building2, ChevronRight, ChevronLeft, Loader2, AlertCircle, UserPlus, CreditCard, Calendar } from "lucide-react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { createPortal } from "react-dom";
+import { Users, Search, MapPin, Building2, ChevronRight, ChevronLeft, Loader2, AlertCircle, UserPlus, CreditCard, Calendar, MoreVertical, Eye, Edit2, Trash2 } from "lucide-react";
+import { calculateAge } from "@/lib/utils/calculation";
 
 interface Person {
     pid: number;
@@ -26,7 +28,40 @@ export default function PopulationPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
+    const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+    const [menuPosition, setMenuPosition] = useState<{ top: number, left: number } | null>(null);
+    const [isMounted, setIsMounted] = useState(false);
     const itemsPerPage = 10;
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    useEffect(() => {
+        const handleClose = () => {
+            setOpenMenuId(null);
+            setMenuPosition(null);
+        };
+
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+            if (!target.closest(".menu-container") && !target.closest(".portal-menu")) {
+                handleClose();
+            }
+        };
+
+        if (openMenuId !== null) {
+            document.addEventListener("mousedown", handleClickOutside);
+            window.addEventListener("scroll", handleClose, true);
+            window.addEventListener("resize", handleClose);
+        }
+        
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+            window.removeEventListener("scroll", handleClose, true);
+            window.removeEventListener("resize", handleClose);
+        };
+    }, [openMenuId]);
 
     useEffect(() => {
         async function fetchPersons() {
@@ -53,20 +88,11 @@ export default function PopulationPage() {
         return () => clearTimeout(debounce);
     }, [currentPage, searchQuery]);
 
-    const calculateAge = (birthDate: string | null) => {
-        if (!birthDate) return "N/A";
-        const today = new Date();
-        const birth = new Date(birthDate);
-        let age = today.getFullYear() - birth.getFullYear();
-        const m = today.getMonth() - birth.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
-            age--;
-        }
-        return age;
-    };
+    const selectedPerson = persons.find(p => p.pid === openMenuId);
 
     return (
         <div className="p-6 space-y-6 animate-in fade-in duration-700">
+            {/* ... rest of the component remains the same ... */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
@@ -115,7 +141,7 @@ export default function PopulationPage() {
                 </div>
             )}
 
-            <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-sm">
+            <div className="bg-card border border-border rounded-3xl shadow-sm">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm">
                         <thead>
@@ -162,7 +188,7 @@ export default function PopulationPage() {
                                                 </div>
                                                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                                     <Calendar size={14} />
-                                                    <span>อายุ {calculateAge(person.birth_date)} ปี</span>
+                                                    <span>อายุ {calculateAge(person.birth_date!)} ปี</span>
                                                 </div>
                                             </div>
                                         </td>
@@ -181,9 +207,28 @@ export default function PopulationPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <button className="p-2 rounded-xl bg-muted hover:bg-primary hover:text-white transition-all shadow-sm cursor-pointer group-hover:scale-105 active:scale-95">
-                                                <ChevronRight size={18} />
-                                            </button>
+                                            <div className="relative menu-container flex justify-end">
+                                                <button 
+                                                    onClick={(e) => {
+                                                        if (openMenuId === person.pid) {
+                                                            setOpenMenuId(null);
+                                                            setMenuPosition(null);
+                                                        } else {
+                                                            const rect = e.currentTarget.getBoundingClientRect();
+                                                            setOpenMenuId(person.pid);
+                                                            setMenuPosition({
+                                                                top: rect.bottom + 8,
+                                                                left: rect.right - 192
+                                                            });
+                                                        }
+                                                    }}
+                                                    className={`p-2 rounded-xl transition-all shadow-sm cursor-pointer hover:scale-105 active:scale-95 ${
+                                                        openMenuId === person.pid ? "bg-primary text-white" : "bg-muted hover:bg-primary hover:text-white"
+                                                    }`}
+                                                >
+                                                    <MoreVertical size={18} />
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
@@ -256,6 +301,47 @@ export default function PopulationPage() {
                     </div>
                 )}
             </div>
+
+            {isMounted && openMenuId !== null && menuPosition && selectedPerson && createPortal(
+                <div 
+                    className="fixed z-[999] w-48 bg-card border border-border rounded-2xl shadow-2xl py-2 animate-in fade-in zoom-in duration-200 origin-top-right portal-menu" 
+                    style={{ 
+                        top: `${menuPosition.top}px`, 
+                        left: `${menuPosition.left}px` 
+                    }}
+                >
+                    <Link 
+                        href={`/population/${selectedPerson.pid}`} 
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-foreground hover:bg-muted transition-colors"
+                        onClick={() => { setOpenMenuId(null); setMenuPosition(null); }}
+                    >
+                        <Eye size={16} className="text-primary" />
+                        View
+                    </Link>
+                    <Link 
+                        href={`/population/edit/${selectedPerson.pid}`} 
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-foreground hover:bg-muted transition-colors border-t border-border/50"
+                        onClick={() => { setOpenMenuId(null); setMenuPosition(null); }}
+                    >
+                        <Edit2 size={16} className="text-amber-500" />
+                        Edit
+                    </Link>
+                    <button 
+                        onClick={() => {
+                            if (confirm("คุณต้องการลบข้อมูลนี้ใช่หรือไม่?")) {
+                                console.log("Delete pid:", selectedPerson.pid);
+                            }
+                            setOpenMenuId(null);
+                            setMenuPosition(null);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-rose-600 hover:bg-rose-50 transition-colors border-t border-border/50 cursor-pointer"
+                    >
+                        <Trash2 size={16} />
+                        Delete
+                    </button>
+                </div>,
+                document.body
+            )}
         </div>
     );
 }
