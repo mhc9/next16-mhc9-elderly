@@ -2,15 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import { 
-    ClipboardCheck, Search, Calendar, User, 
-    Building2, ChevronRight, ChevronLeft, 
-    Loader2, AlertCircle, Plus, Filter,
-    Activity, Brain, HeartPulse, ArrowLeft
+    ClipboardCheck, Search, Building2, ChevronRight, ChevronLeft, 
+    Loader2, AlertCircle, Plus, Activity, Brain, HeartPulse, ArrowLeft,
+    Eye, Trash2, Edit2
 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import moment from "moment";
 import "moment/locale/th";
+import { ActionMenu, MenuItem } from "@/components/ui/ActionMenu";
 
 interface Screening {
     id: number;
@@ -77,6 +77,29 @@ export default function ScreeningListPage() {
 
         return () => clearTimeout(debounce);
     }, [currentPage, searchQuery, pid]);
+
+    const getScreeningActions = (s: Screening): MenuItem[] => [
+        {
+            label: "ดูรายละเอียด",
+            icon: <Eye size={16} className="text-primary" />,
+            href: `/screening/${s.id}`
+        },
+        {
+            label: "แก้ไขข้อมูล",
+            icon: <Edit2 size={16} className="text-amber-500" />,
+            onClick: () => alert("ฟีเจอร์นี้กำลังพัฒนา...")
+        },
+        {
+            label: "ลบข้อมูล",
+            icon: <Trash2 size={16} />,
+            variant: "danger",
+            onClick: () => {
+                if (confirm("คุณต้องการลบข้อมูลการคัดกรองนี้ใช่หรือไม่?")) {
+                    console.log("Delete screening id:", s.id);
+                }
+            }
+        }
+    ];
 
     return (
         <div className="p-6 space-y-6 animate-in fade-in duration-700">
@@ -147,7 +170,7 @@ export default function ScreeningListPage() {
                                 <th className="px-6 py-4">ผล 2Q plus</th>
                                 <th className="px-6 py-4">คะแนน 9Q / 8Q</th>
                                 <th className="px-6 py-4">หน่วยบริการ</th>
-                                <th className="px-6 py-4 text-right">รายละเอียด</th>
+                                <th className="px-6 py-4 text-right">จัดการ</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border">
@@ -221,12 +244,7 @@ export default function ScreeningListPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <Link 
-                                                href={`/population/${s.person_id}`}
-                                                className="inline-flex p-2 rounded-xl bg-muted hover:bg-primary hover:text-white transition-all shadow-sm cursor-pointer group-hover:scale-105 active:scale-95"
-                                            >
-                                                <ChevronRight size={18} />
-                                            </Link>
+                                            <ActionMenu items={getScreeningActions(s)} />
                                         </td>
                                     </tr>
                                 ))

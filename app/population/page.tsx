@@ -61,22 +61,22 @@ export default function PopulationPage() {
 
     const getPersonActions = (person: Person): MenuItem[] => [
         {
-            label: "View",
+            label: "ดูรายละเอียด",
             icon: <Eye size={16} className="text-primary" />,
             href: `/population/${person.pid}`
         },
         {
-            label: "Edit",
+            label: "แก้ไขข้อมูล",
             icon: <Edit2 size={16} className="text-amber-500" />,
             href: `/population/edit/${person.pid}`
         },
         {
-            label: "Screening",
+            label: "ข้อมูลคัดกรอง",
             icon: <ClipboardCheck size={16} className="text-emerald-500" />,
             href: `/screening/new?pid=${person.pid}`
         },
         {
-            label: "Delete",
+            label: "ลบข้อมูล",
             icon: <Trash2 size={16} />,
             variant: "danger",
             onClick: () => {
