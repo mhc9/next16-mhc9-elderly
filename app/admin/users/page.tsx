@@ -84,6 +84,13 @@ export default function UsersPage() {
                         จัดการและตรวจสอบข้อมูลผู้ใช้งานทั้งหมดในระบบ
                     </p>
                 </div>
+                <Link 
+                    href="/admin/users/new"
+                    className="flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all cursor-pointer"
+                >
+                    <Users size={18} />
+                    เพิ่มผู้ใช้งานใหม่
+                </Link>
             </div>
 
             {/* Filters */}
