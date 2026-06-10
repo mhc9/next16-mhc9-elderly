@@ -270,7 +270,7 @@ export default function PersonDetailPage() {
                                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                             <div className="flex items-center gap-4">
                                                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-sm ${
-                                                    s.q2_result ? "bg-rose-100 text-rose-600" : "bg-emerald-100 text-emerald-600"
+                                                    s.q2_result === "NORMAL" ? "bg-emerald-100 text-emerald-600" : "bg-rose-100 text-rose-600"
                                                 }`}>
                                                     <ClipboardCheck size={24} />
                                                 </div>
@@ -286,8 +286,9 @@ export default function PersonDetailPage() {
                                                     <div className="flex items-center gap-4 mt-1">
                                                         <div className="flex items-center gap-1.5">
                                                             <span className="text-xs text-muted-foreground">ผล 2Q plus:</span>
-                                                            <span className={`text-xs font-bold ${s.q2_result ? "text-rose-600" : "text-emerald-600"}`}>
-                                                                {s.q2_result ? "เสี่ยง" : "ปกติ"}
+                                                            <span className={`text-xs font-bold ${s.q2_result === "NORMAL" ? "text-emerald-600" : "text-rose-600"}`}>
+                                                                {s.q2_result === "NORMAL" ? "ปกติ" : 
+                                                                 s.q2_result === "RISK_Q12" ? "เสี่ยง Q1/Q2" : "เสี่ยง Q3"}
                                                             </span>
                                                         </div>
                                                         {(s.q9_score !== null) && (

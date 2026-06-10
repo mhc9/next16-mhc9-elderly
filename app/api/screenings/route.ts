@@ -98,7 +98,7 @@ export async function POST(req: Request) {
         const screening = await prisma.screening.create({
             data: {
                 person_id: parseInt(person_id),
-                q2_result: !!q2_result,
+                q2_result: q2_result, // Now a string
                 q9_score: q9_score !== null ? parseInt(q9_score) : null,
                 q9_result: q9_result !== null ? !!q9_result : null,
                 q8_score: q8_score !== null ? parseInt(q8_score) : null,

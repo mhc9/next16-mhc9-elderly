@@ -191,12 +191,15 @@ export default function ScreeningDetailPage() {
                     {/* Results Overview */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className={`p-6 rounded-3xl border flex flex-col items-center justify-center text-center gap-2 shadow-sm ${
-                            screening.q2_result ? "bg-rose-50 border-rose-100 text-rose-600" : "bg-emerald-50 border-emerald-100 text-emerald-600"
+                            screening.q2_result === "NORMAL" ? "bg-emerald-50 border-emerald-100 text-emerald-600" : "bg-rose-50 border-rose-100 text-rose-600"
                         }`}>
                             <Activity size={24} />
                             <div>
                                 <p className="text-[10px] font-black uppercase tracking-widest opacity-70">ผล 2Q plus</p>
-                                <p className="text-lg font-black">{screening.q2_result ? "เสี่ยง" : "ปกติ"}</p>
+                                <p className="text-lg font-black">
+                                    {screening.q2_result === "NORMAL" ? "ปกติ" : 
+                                     screening.q2_result === "RISK_Q12" ? "เสี่ยง Q1/Q2" : "เสี่ยง Q3"}
+                                </p>
                             </div>
                         </div>
 

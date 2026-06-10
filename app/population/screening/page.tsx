@@ -213,11 +213,14 @@ export default function ScreeningListPage() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                                                s.q2_result 
-                                                    ? "bg-rose-100 text-rose-600 border border-rose-200" 
-                                                    : "bg-emerald-100 text-emerald-600 border border-emerald-200"
+                                                s.q2_result === "NORMAL" 
+                                                    ? "bg-emerald-100 text-emerald-600 border border-emerald-200"
+                                                    : s.q2_result === "RISK_Q12"
+                                                        ? "bg-rose-100 text-rose-600 border border-rose-200"
+                                                        : "bg-orange-100 text-orange-600 border border-orange-200"
                                             }`}>
-                                                {s.q2_result ? "เสี่ยง (Risk)" : "ปกติ (Normal)"}
+                                                {s.q2_result === "NORMAL" ? "ปกติ" : 
+                                                 s.q2_result === "RISK_Q12" ? "เสี่ยง Q1/Q2" : "เสี่ยง Q3"}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">

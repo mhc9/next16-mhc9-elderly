@@ -39,9 +39,11 @@ export default function NewScreeningPage() {
     const [formData, setFormData] = useState({
         person_id: pidFromUrl || "",
         year: new Date().getFullYear() + 543,
-        q2_result: false,
+        q2_result: "NORMAL",
+        use_9q: false,
         q9_score: "",
         q9_result: false,
+        use_8q: false,
         q8_score: "",
         q8_result: false,
         care_type: "Counseling",
@@ -109,8 +111,10 @@ export default function NewScreeningPage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     ...formData,
-                    q9_score: formData.q9_score === "" ? null : parseInt(formData.q9_score),
-                    q8_score: formData.q8_score === "" ? null : parseInt(formData.q8_score),
+                    q9_score: formData.use_9q && formData.q9_score !== "" ? parseInt(formData.q9_score) : null,
+                    q9_result: formData.use_9q ? formData.q9_result : null,
+                    q8_score: formData.use_8q && formData.q8_score !== "" ? parseInt(formData.q8_score) : null,
+                    q8_result: formData.use_8q ? formData.q8_result : null,
                     year: parseInt(formData.year.toString())
                 })
             });
@@ -144,6 +148,7 @@ export default function NewScreeningPage() {
 
     return (
         <div className="p-6 max-w-4xl mx-auto space-y-6 animate-in fade-in duration-500">
+            {/* Page Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="space-y-1">
                     <button 
@@ -255,93 +260,64 @@ export default function NewScreeningPage() {
                         <h2 className="text-lg font-bold text-foreground">แบบคัดกรอง 2Q plus</h2>
                     </div>
 
-                    <div className="flex items-center gap-4 p-4 bg-muted/30 rounded-2xl border border-border">
-                        <div className="flex-1">
-                            <p className="text-sm font-bold text-foreground">ผลการคัดกรองเบื้องต้น</p>
-                            <p className="text-xs text-muted-foreground">ติ๊กเมื่อพบความเสี่ยงจากการคัดกรอง 2Q plus</p>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                            <input 
-                                type="checkbox" 
-                                name="q2_result"
-                                checked={formData.q2_result}
-                                onChange={handleInputChange}
-                                className="sr-only peer"
-                            />
-                            <div className="w-14 h-7 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
-                            <span className={`ml-3 text-sm font-black uppercase tracking-widest ${formData.q2_result ? "text-rose-600" : "text-emerald-600"}`}>
-                                {formData.q2_result ? "เสี่ยง" : "ปกติ"}
-                            </span>
-                        </label>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <button
+                            type="button"
+                            onClick={() => setFormData(prev => ({ ...prev, q2_result: "NORMAL" }))}
+                            className={`p-4 rounded-2xl border transition-all text-center flex flex-col items-center gap-2 cursor-pointer ${
+                                formData.q2_result === "NORMAL" 
+                                    ? "bg-emerald-50 border-emerald-500 text-emerald-700 shadow-sm" 
+                                    : "bg-muted/30 border-border text-muted-foreground hover:bg-muted/50"
+                            }`}
+                        >
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${formData.q2_result === "NORMAL" ? "bg-emerald-500 text-white" : "bg-muted text-muted-foreground"}`}>
+                                <CheckCircle2 size={24} />
+                            </div>
+                            <span className="text-sm font-bold">ปกติ</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => setFormData(prev => ({ ...prev, q2_result: "RISK_Q12" }))}
+                            className={`p-4 rounded-2xl border transition-all text-center flex flex-col items-center gap-2 cursor-pointer ${
+                                formData.q2_result === "RISK_Q12" 
+                                    ? "bg-rose-50 border-rose-500 text-rose-700 shadow-sm" 
+                                    : "bg-muted/30 border-border text-muted-foreground hover:bg-muted/50"
+                            }`}
+                        >
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${formData.q2_result === "RISK_Q12" ? "bg-rose-500 text-white" : "bg-muted text-muted-foreground"}`}>
+                                <AlertCircle size={24} />
+                            </div>
+                            <span className="text-sm font-bold">เสี่ยงข้อ 1 และหรือข้อ 2</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => setFormData(prev => ({ ...prev, q2_result: "RISK_Q3" }))}
+                            className={`p-4 rounded-2xl border transition-all text-center flex flex-col items-center gap-2 cursor-pointer ${
+                                formData.q2_result === "RISK_Q3" 
+                                    ? "bg-orange-50 border-orange-500 text-orange-700 shadow-sm" 
+                                    : "bg-muted/30 border-border text-muted-foreground hover:bg-muted/50"
+                            }`}
+                        >
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${formData.q2_result === "RISK_Q3" ? "bg-orange-500 text-white" : "bg-muted text-muted-foreground"}`}>
+                                <AlertCircle size={24} />
+                            </div>
+                            <span className="text-sm font-bold">เสี่ยงเฉพาะข้อ 3</span>
+                        </button>
                     </div>
                 </div>
 
-                {/* 3. การประเมิน 9Q และ 8Q */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-card border border-border rounded-3xl p-8 shadow-sm space-y-6">
-                        <div className="flex items-center gap-3 border-b border-border pb-4 mb-4">
-                            <div className="p-2 bg-purple-50 text-purple-600 rounded-lg">
-                                <Brain size={20} />
-                            </div>
-                            <h2 className="text-lg font-bold text-foreground">แบบประเมิน 9Q</h2>
-                        </div>
-                        <div className="space-y-4">
-                            <div className="space-y-1.5">
-                                <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">คะแนนรวม</label>
-                                <input
-                                    type="number"
-                                    name="q9_score"
-                                    value={formData.q9_score}
-                                    onChange={handleInputChange}
-                                    placeholder="0-27"
-                                    className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono font-bold"
-                                />
-                            </div>
-                            <div className={`p-3 rounded-xl border text-center text-xs font-black uppercase tracking-widest ${
-                                formData.q9_result ? "bg-rose-50 border-rose-100 text-rose-600" : "bg-emerald-50 border-emerald-100 text-emerald-600"
-                            }`}>
-                                {formData.q9_result ? "เสี่ยง (คะแนน >= 7)" : "ปกติ (คะแนน < 7)"}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="bg-card border border-border rounded-3xl p-8 shadow-sm space-y-6">
-                        <div className="flex items-center gap-3 border-b border-border pb-4 mb-4">
-                            <div className="p-2 bg-amber-50 text-amber-600 rounded-lg">
-                                <HeartPulse size={20} />
-                            </div>
-                            <h2 className="text-lg font-bold text-foreground">แบบประเมิน 8Q</h2>
-                        </div>
-                        <div className="space-y-4">
-                            <div className="space-y-1.5">
-                                <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">คะแนนรวม</label>
-                                <input
-                                    type="number"
-                                    name="q8_score"
-                                    value={formData.q8_score}
-                                    onChange={handleInputChange}
-                                    placeholder="0-52"
-                                    className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono font-bold"
-                                />
-                            </div>
-                            <div className={`p-3 rounded-xl border text-center text-xs font-black uppercase tracking-widest ${
-                                formData.q8_result ? "bg-rose-50 border-rose-100 text-rose-600" : "bg-emerald-50 border-emerald-100 text-emerald-600"
-                            }`}>
-                                {formData.q8_result ? "เสี่ยง (คะแนน >= 1)" : "ปกติ (คะแนน < 1)"}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* 4. การดูแลช่วยเหลือ */}
-                <div className="bg-card border border-border rounded-3xl p-8 shadow-sm space-y-6">
-                    <div className="flex items-center gap-3 border-b border-border pb-4 mb-6">
+                {/* 3. การดูแลช่วยเหลือและการประเมินเพิ่มเติม */}
+                <div className="bg-card border border-border rounded-3xl p-8 shadow-sm space-y-8">
+                    <div className="flex items-center gap-3 border-b border-border pb-4 mb-2">
                         <div className="p-2 bg-teal-50 text-teal-600 rounded-lg">
                             <MessageSquare size={20} />
                         </div>
-                        <h2 className="text-lg font-bold text-foreground">การดูแลช่วยเหลือ</h2>
+                        <h2 className="text-lg font-bold text-foreground">การดูแลช่วยเหลือและการประเมินเพิ่มเติม</h2>
                     </div>
 
+                    {/* Care Selection */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-1.5">
                             <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">รูปแบบการดูแล</label>
@@ -367,6 +343,94 @@ export default function NewScreeningPage() {
                                 rows={1}
                                 className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
                             ></textarea>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+                        {/* 9Q Optional Assessment */}
+                        <div className={`p-6 rounded-3xl border transition-all ${formData.use_9q ? 'bg-card border-purple-200 shadow-sm' : 'bg-muted/10 border-dashed border-border'}`}>
+                            <div className="flex items-center justify-between mb-6">
+                                <div className="flex items-center gap-3">
+                                    <div className={`p-2 rounded-lg ${formData.use_9q ? 'bg-purple-100 text-purple-600' : 'bg-muted text-muted-foreground'}`}>
+                                        <Brain size={20} />
+                                    </div>
+                                    <h3 className={`font-bold ${formData.use_9q ? 'text-foreground' : 'text-muted-foreground'}`}>แบบประเมิน 9Q</h3>
+                                </div>
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input 
+                                        type="checkbox" 
+                                        name="use_9q"
+                                        checked={formData.use_9q}
+                                        onChange={handleInputChange}
+                                        className="sr-only peer"
+                                    />
+                                    <div className="w-11 h-6 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                </label>
+                            </div>
+
+                            {formData.use_9q && (
+                                <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                    <div className="space-y-1.5">
+                                        <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">คะแนนรวม (0-27)</label>
+                                        <input
+                                            type="number"
+                                            name="q9_score"
+                                            value={formData.q9_score}
+                                            onChange={handleInputChange}
+                                            placeholder="ระบุคะแนน"
+                                            className="w-full bg-background border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-500 transition-all font-mono font-bold"
+                                        />
+                                    </div>
+                                    <div className={`p-3 rounded-xl border text-center text-[10px] font-black uppercase tracking-widest ${
+                                        formData.q9_result ? "bg-rose-50 border-rose-100 text-rose-600" : "bg-emerald-50 border-emerald-100 text-emerald-600"
+                                    }`}>
+                                        {formData.q9_result ? "เสี่ยง (คะแนน >= 7)" : "ปกติ (คะแนน < 7)"}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* 8Q Optional Assessment */}
+                        <div className={`p-6 rounded-3xl border transition-all ${formData.use_8q ? 'bg-card border-amber-200 shadow-sm' : 'bg-muted/10 border-dashed border-border'}`}>
+                            <div className="flex items-center justify-between mb-6">
+                                <div className="flex items-center gap-3">
+                                    <div className={`p-2 rounded-lg ${formData.use_8q ? 'bg-amber-100 text-amber-600' : 'bg-muted text-muted-foreground'}`}>
+                                        <HeartPulse size={20} />
+                                    </div>
+                                    <h3 className={`font-bold ${formData.use_8q ? 'text-foreground' : 'text-muted-foreground'}`}>แบบประเมิน 8Q</h3>
+                                </div>
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input 
+                                        type="checkbox" 
+                                        name="use_8q"
+                                        checked={formData.use_8q}
+                                        onChange={handleInputChange}
+                                        className="sr-only peer"
+                                    />
+                                    <div className="w-11 h-6 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
+                                </label>
+                            </div>
+
+                            {formData.use_8q && (
+                                <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                    <div className="space-y-1.5">
+                                        <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">คะแนนรวม (0-52)</label>
+                                        <input
+                                            type="number"
+                                            name="q8_score"
+                                            value={formData.q8_score}
+                                            onChange={handleInputChange}
+                                            placeholder="ระบุคะแนน"
+                                            className="w-full bg-background border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-500 transition-all font-mono font-bold"
+                                        />
+                                    </div>
+                                    <div className={`p-3 rounded-xl border text-center text-[10px] font-black uppercase tracking-widest ${
+                                        formData.q8_result ? "bg-rose-50 border-rose-100 text-rose-600" : "bg-emerald-50 border-emerald-100 text-emerald-600"
+                                    }`}>
+                                        {formData.q8_result ? "เสี่ยง (คะแนน >= 1)" : "ปกติ (คะแนน < 1)"}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -219,7 +219,7 @@ model Screening {
     screen_date        DateTime   @default(now())
 
     // 2Q plus
-    q2_result          Boolean    @default(false) // false=Normal, true=Risk
+    q2_result          String     @default("NORMAL") @db.VarChar(50)
 
     // 9Q & 8Q Details
     q9_score           Int?
