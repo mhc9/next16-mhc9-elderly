@@ -73,7 +73,7 @@ export default function PopulationPage() {
         {
             label: "ข้อมูลคัดกรอง",
             icon: <ClipboardCheck size={16} className="text-emerald-500" />,
-            href: `/screening/new?pid=${person.pid}`
+            href: `/population/screening/new?pid=${person.pid}`
         },
         {
             label: "ลบข้อมูล",

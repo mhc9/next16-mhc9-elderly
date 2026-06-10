@@ -4,7 +4,8 @@ import React, { useState, useEffect } from "react";
 import { 
     ClipboardCheck, Search, Building2, ChevronRight, ChevronLeft, 
     Loader2, AlertCircle, Plus, Activity, Brain, HeartPulse, ArrowLeft,
-    Eye, Trash2, Edit2
+    Eye, Trash2, FileText,
+    Edit2
 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -82,15 +83,15 @@ export default function ScreeningListPage() {
         {
             label: "ดูรายละเอียด",
             icon: <Eye size={16} className="text-primary" />,
-            href: `/screening/${s.id}`
+            href: `/population/screening/${s.id}`
         },
         {
-            label: "แก้ไขข้อมูล",
+            label: "แก้ไขข้อมูลคัดกรอง",
             icon: <Edit2 size={16} className="text-amber-500" />,
             onClick: () => alert("ฟีเจอร์นี้กำลังพัฒนา...")
         },
         {
-            label: "ลบข้อมูล",
+            label: "ลบข้อมูลคัดกรอง",
             icon: <Trash2 size={16} />,
             variant: "danger",
             onClick: () => {
@@ -123,7 +124,7 @@ export default function ScreeningListPage() {
                     </p>
                 </div>
                 <Link 
-                    href="/screening/new"
+                    href="/population/screening/new"
                     className="flex items-center gap-2 px-6 py-3 bg-primary text-white font-bold rounded-2xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 shrink-0 cursor-pointer"
                 >
                     <Plus size={18} />

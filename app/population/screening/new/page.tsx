@@ -120,7 +120,7 @@ export default function NewScreeningPage() {
 
             setSuccess(true);
             setTimeout(() => {
-                router.push(pidFromUrl ? `/population/${pidFromUrl}` : "/screening");
+                router.push(pidFromUrl ? `/population/${pidFromUrl}` : "/population/screening");
                 router.refresh();
             }, 1500);
         } catch (err) {
