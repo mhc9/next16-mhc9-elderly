@@ -6,11 +6,12 @@ import {
     ClipboardCheck, User, Calendar, Activity, 
     Brain, HeartPulse, MessageSquare, ArrowLeft, 
     Loader2, AlertCircle, Building2, MapPin,
-    Clock, CheckCircle2, XCircle
+    Clock, CheckCircle2, XCircle, Edit
 } from "lucide-react";
 import Link from "next/link";
 import moment from "moment";
 import "moment/locale/th";
+import { ActionMenu } from "@/components/ui/ActionMenu";
 
 interface ScreeningData {
     id: number;
@@ -25,6 +26,8 @@ interface ScreeningData {
     care_detail: string | null;
     care_date: string | null;
     remark: string | null;
+    q2_result_2: string | null;
+    screen_date_2: string | null;
     year: number;
     person: {
         firstname: string;
@@ -323,8 +326,61 @@ export default function ScreeningDetailPage() {
                         </div>
                     </div>
 
+                    {/* Round 2 Result (If exists) */}
+                    {screening.q2_result_2 && (
+                        <div className="bg-card border border-border rounded-3xl p-8 shadow-sm">
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                                    <Activity size={20} className="text-blue-500" />
+                                    ผลการคัดกรองรอบที่ 2 (ติดตาม)
+                                </h3>
+                                <ActionMenu 
+                                    items={[
+                                        {
+                                            label: "แก้ไขผลการติดตาม",
+                                            icon: <Edit size={16} />,
+                                            href: `/population/screening/follow-up/${screening.id}`
+                                        }
+                                    ]}
+                                />
+                            </div>
+                            
+                            <div className="flex flex-col md:flex-row items-center gap-6">
+                                <div className={`px-8 py-4 rounded-2xl border flex items-center gap-4 ${
+                                    screening.q2_result_2 === "NORMAL" ? "bg-emerald-50 border-emerald-100 text-emerald-600" : "bg-rose-50 border-rose-100 text-rose-600"
+                                }`}>
+                                    <CheckCircle2 size={32} />
+                                    <div>
+                                        <p className="text-[10px] font-black uppercase tracking-widest opacity-70">ผลลัพธ์รอบที่ 2</p>
+                                        <p className="text-xl font-black">
+                                            {screening.q2_result_2 === "NORMAL" ? "ปกติ" : 
+                                             screening.q2_result_2 === "RISK_Q12" ? "เสี่ยง Q1/Q2" : "เสี่ยง Q3"}
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div className="flex items-center gap-3 text-muted-foreground">
+                                    <Calendar size={20} />
+                                    <div>
+                                        <p className="text-[10px] font-bold uppercase tracking-tighter">วันที่คัดกรองรอบที่ 2</p>
+                                        <p className="font-bold">{moment(screening.screen_date_2).format("D MMMM YYYY")}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Actions */}
                     <div className="flex items-center justify-end gap-4">
+                        {!screening.q2_result_2 && (
+                            <Link 
+                                href={`/population/screening/follow-up/${screening.id}`}
+                                className="px-8 py-3 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-2xl font-bold transition-all cursor-pointer flex items-center gap-2"
+                            >
+                                <Activity size={18} />
+                                ติดตามผลรอบที่ 2
+                            </Link>
+                        )}
                         <Link 
                             href={`/population/screening/edit/${screening.id}`}
                             className="px-8 py-3 bg-muted hover:bg-muted/80 text-foreground rounded-2xl font-bold transition-all cursor-pointer"

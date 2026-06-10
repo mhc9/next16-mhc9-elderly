@@ -88,19 +88,19 @@ export async function PATCH(
         const updated = await prisma.screening.update({
             where: { id: parseInt(id) },
             data: {
-                q2_result: q2_result,
-                screen_date: screen_date ? new Date(screen_date) : undefined,
-                q2_result_2: q2_result_2,
-                screen_date_2: screen_date_2 ? new Date(screen_date_2) : null,
-                q9_score: q9_score !== undefined ? q9_score : undefined,
-                q9_result: q9_result !== undefined ? q9_result : undefined,
-                q8_score: q8_score !== undefined ? q8_score : undefined,
-                q8_result: q8_result !== undefined ? q8_result : undefined,
-                care_type,
-                care_detail,
-                care_date: care_date ? new Date(care_date) : null,
-                remark,
-                year: year ? parseInt(year) : undefined,
+                ...(q2_result !== undefined && { q2_result }),
+                ...(screen_date !== undefined && { screen_date: new Date(screen_date) }),
+                ...(q2_result_2 !== undefined && { q2_result_2 }),
+                ...(screen_date_2 !== undefined && { screen_date_2: screen_date_2 ? new Date(screen_date_2) : null }),
+                ...(q9_score !== undefined && { q9_score }),
+                ...(q9_result !== undefined && { q9_result }),
+                ...(q8_score !== undefined && { q8_score }),
+                ...(q8_result !== undefined && { q8_result }),
+                ...(care_type !== undefined && { care_type }),
+                ...(care_detail !== undefined && { care_detail }),
+                ...(care_date !== undefined && { care_date: care_date ? new Date(care_date) : null }),
+                ...(remark !== undefined && { remark }),
+                ...(year !== undefined && { year: parseInt(year) }),
             }
         });
 

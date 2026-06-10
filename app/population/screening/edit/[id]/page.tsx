@@ -42,8 +42,6 @@ export default function EditScreeningPage() {
         q8_result: false,
         care_date: moment().format("YYYY-MM-DD"),
         remark: "",
-        q2_result_2: "NORMAL",
-        screen_date_2: moment().format("YYYY-MM-DD"),
         care_selections: {
             Counseling: { active: false, detail: "" },
             Referral: { active: false, detail: "" },
@@ -107,8 +105,6 @@ export default function EditScreeningPage() {
                     q8_result: s.q8_result ?? false,
                     care_date: s.care_date ? moment(s.care_date).format("YYYY-MM-DD") : moment().format("YYYY-MM-DD"),
                     remark: s.remark || "",
-                    q2_result_2: s.q2_result_2 || "NORMAL",
-                    screen_date_2: s.screen_date_2 ? moment(s.screen_date_2).format("YYYY-MM-DD") : moment().format("YYYY-MM-DD"),
                     care_selections: newCareSelections
                 });
             } catch (err) {
@@ -218,8 +214,6 @@ export default function EditScreeningPage() {
                     care_detail: careDetails,
                     care_date: formData.care_date,
                     remark: formData.remark,
-                    q2_result_2: (selectedPerson as any)?.screenings?.length > 0 ? formData.q2_result_2 : null,
-                    screen_date_2: (selectedPerson as any)?.screenings?.length > 0 ? formData.screen_date_2 : null
                 })
             });
 
@@ -589,82 +583,6 @@ export default function EditScreeningPage() {
                         </div>
                     </div>
                 </div>
-
-                {/* 4. แบบคัดกรอง 2Q plus (รอบที่ 2) - Conditional */}
-                {((selectedPerson as any)?.screenings?.length > 1 || formData.q2_result_2 !== "NORMAL" || moment(formData.screen_date_2).isAfter(formData.screen_date)) && (
-                    <div className="bg-card border border-border rounded-3xl p-8 shadow-sm space-y-6 animate-in zoom-in-95 duration-500">
-                        <div className="flex items-center gap-3 border-b border-border pb-4 mb-2">
-                            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
-                                <Activity size={20} />
-                            </div>
-                            <h2 className="text-lg font-bold text-foreground">แบบคัดกรอง 2Q plus (รอบที่ 2)</h2>
-                        </div>
-
-                        <div className="pt-4">
-                            <DatePicker
-                                value={formData.screen_date_2}
-                                onChange={(date) => setFormData(prev => ({ ...prev, screen_date_2: date }))}
-                                label="วันที่คัดกรองรอบที่ 2"
-                                placeholder="เลือกวันที่"
-                                icon={<Calendar size={14} />}
-                                className="max-w-xs"
-                            />
-                        </div>
-
-                        <div className="space-y-2 pt-6 border-t border-border/50">
-                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 block">
-                                ผลการคัดกรองด้วย 2Q plus (รอบที่ 2)
-                            </label>
-
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <button
-                                    type="button"
-                                    onClick={() => setFormData(prev => ({ ...prev, q2_result_2: "NORMAL" }))}
-                                    className={`p-4 rounded-2xl border transition-all text-center flex flex-col items-center gap-2 cursor-pointer ${
-                                        formData.q2_result_2 === "NORMAL" 
-                                            ? "bg-emerald-50 border-emerald-500 text-emerald-700 shadow-sm" 
-                                            : "bg-muted/30 border-border text-muted-foreground hover:bg-muted/50"
-                                    }`}
-                                >
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${formData.q2_result_2 === "NORMAL" ? "bg-emerald-500 text-white" : "bg-muted text-muted-foreground"}`}>
-                                        <CheckCircle2 size={24} />
-                                    </div>
-                                    <span className="text-sm font-bold">ปกติ</span>
-                                </button>
-
-                                <button
-                                    type="button"
-                                    onClick={() => setFormData(prev => ({ ...prev, q2_result_2: "RISK_Q12" }))}
-                                    className={`p-4 rounded-2xl border transition-all text-center flex flex-col items-center gap-2 cursor-pointer ${
-                                        formData.q2_result_2 === "RISK_Q12" 
-                                            ? "bg-rose-50 border-rose-500 text-rose-700 shadow-sm" 
-                                            : "bg-muted/30 border-border text-muted-foreground hover:bg-muted/50"
-                                    }`}
-                                >
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${formData.q2_result_2 === "RISK_Q12" ? "bg-rose-500 text-white" : "bg-muted text-muted-foreground"}`}>
-                                        <AlertCircle size={24} />
-                                    </div>
-                                    <span className="text-sm font-bold">เสี่ยงข้อ 1 และหรือข้อ 2</span>
-                                </button>
-
-                                <button
-                                    type="button"
-                                    onClick={() => setFormData(prev => ({ ...prev, q2_result_2: "RISK_Q3" }))}
-                                    className={`p-4 rounded-2xl border transition-all text-center flex flex-col items-center gap-2 cursor-pointer ${
-                                        formData.q2_result_2 === "RISK_Q3" 
-                                            ? "bg-orange-50 border-orange-500 text-orange-700 shadow-sm" 
-                                            : "bg-muted/30 border-border text-muted-foreground hover:bg-muted/50"
-                                    }`}
-                                >
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${formData.q2_result_2 === "RISK_Q3" ? "bg-orange-500 text-white" : "bg-muted text-muted-foreground"}`}>
-                                        <AlertCircle size={24} />
-                                    </div>
-                                    <span className="text-sm font-bold">เสี่ยงเฉพาะข้อ 3</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
 
                 {/* Submit Area */}
                 <div className="flex items-center justify-end gap-4">
