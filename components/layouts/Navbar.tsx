@@ -65,9 +65,9 @@ export default function Navbar() {
                             />
                         </NavDropdown>
 
-                        <NavLink href="/summary/reports" icon={<ChartPie size={18} />} label="รายงาน" active={pathname === "/summary/reports"} />
+                        <NavLink href="/summary/reports" icon={<ChartPie size={18} />} label="รายงาน" active={pathname.startsWith("/summary/reports")} />
                         {(user?.role === "ADMIN" || user?.role === "SUPERADMIN") && (
-                            <NavLink href="/admin/users" icon={<CircleUser size={18} />} label="ผู้ใช้งาน" active={pathname === "/admin/users"} />
+                            <NavLink href="/admin/users" icon={<CircleUser size={18} />} label="ผู้ใช้งาน" active={pathname.startsWith("/admin/users")} />
                         )}
                     </div>
                 )}
@@ -191,7 +191,17 @@ function NavDropdown({
     );
 }
 
-function NavLink({ href, icon, label, active = false }: { href: string, icon: React.ReactNode, label: string, active?: boolean }) {
+function NavLink({
+    href,
+    icon,
+    label,
+    active = false
+}: {
+    href: string,
+    icon: React.ReactNode,
+    label: string,
+    active?: boolean
+}) {
     return (
         <Link 
             href={href} 
