@@ -1,18 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { 
     User, Mail, Shield, Building2, 
     ArrowLeft, Loader2, AlertCircle, 
     Save, CircleUser, CheckCircle2,
-    KeyRound, ShieldUser
+    ShieldUser, KeyRound
 } from "lucide-react";
 import { HospitalSearch, Hospital } from "@/components/ui/forms/HospitalSearch";
 
-export default function CreateUserPage() {
+export default function EditUserPage() {
+    const { id } = useParams();
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
 
@@ -26,6 +28,42 @@ export default function CreateUserPage() {
     });
 
     const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(null);
+
+    useEffect(() => {
+        async function fetchUser() {
+            try {
+                const res = await fetch(`/api/users/${id}`);
+                const json = await res.json();
+
+                if (!res.ok) throw new Error(json.error || "ไม่สามารถดึงข้อมูลผู้ใช้งานได้");
+                
+                const user = json.data;
+                setFormData({
+                    name: user.name || "",
+                    email: user.email || "",
+                    password: "",
+                    confirmPassword: "",
+                    role: user.role,
+                    hcode: user.hcode || ""
+                });
+
+                if (user.hospital) {
+                    setSelectedHospital({
+                        hcode: user.hcode,
+                        name: user.hospital.name,
+                        province: user.hospital.province,
+                        district: user.hospital.district
+                    });
+                }
+            } catch (err) {
+                setError(err instanceof Error ? err.message : "ไม่สามารถดึงข้อมูลผู้ใช้งานได้");
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        if (id) fetchUser();
+    }, [id]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -47,40 +85,46 @@ export default function CreateUserPage() {
         setError("");
         
         // Basic validation
-        if (!formData.name || !formData.email || !formData.password || !formData.role) {
+        if (!formData.name || !formData.email || !formData.role) {
             setError("กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน");
             return;
         }
 
-        if (formData.password !== formData.confirmPassword) {
-            setError("รหัสผ่านไม่ตรงกัน");
-            return;
+        if (formData.password) {
+            if (formData.password !== formData.confirmPassword) {
+                setError("รหัสผ่านไม่ตรงกัน");
+                return;
+            }
+            if (formData.password.length < 6) {
+                setError("รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร");
+                return;
+            }
         }
 
-        if (formData.password.length < 6) {
-            setError("รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร");
-            return;
-        }
-
-        setIsLoading(true);
+        setIsSaving(true);
 
         try {
-            const res = await fetch("/api/users", {
-                method: "POST",
+            const payload: any = {
+                name: formData.name,
+                email: formData.email,
+                role: formData.role,
+                hcode: formData.hcode || null
+            };
+
+            if (formData.password) {
+                payload.password = formData.password;
+            }
+
+            const res = await fetch(`/api/users/${id}`, {
+                method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name: formData.name,
-                    email: formData.email,
-                    password: formData.password,
-                    role: formData.role,
-                    hcode: formData.hcode || null
-                })
+                body: JSON.stringify(payload)
             });
 
             const json = await res.json();
 
             if (!res.ok) {
-                throw new Error(json.error || "ไม่สามารถสร้างผู้ใช้งานได้");
+                throw new Error(json.error || "ไม่สามารถบันทึกข้อมูลได้");
             }
 
             setSuccess(true);
@@ -90,9 +134,18 @@ export default function CreateUserPage() {
         } catch (err) {
             setError(err instanceof Error ? err.message : "เกิดข้อผิดพลาดไม่ทราบสาเหตุ");
         } finally {
-            setIsLoading(false);
+            setIsSaving(false);
         }
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+                <Loader2 className="animate-spin text-primary" size={40} />
+                <p className="text-muted-foreground animate-pulse font-medium">กำลังโหลดข้อมูลผู้ใช้...</p>
+            </div>
+        );
+    }
 
     if (success) {
         return (
@@ -100,7 +153,7 @@ export default function CreateUserPage() {
                 <div className="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-100">
                     <CheckCircle2 size={40} />
                 </div>
-                <h2 className="text-2xl font-bold text-foreground">สร้างผู้ใช้งานสำเร็จ</h2>
+                <h2 className="text-2xl font-bold text-foreground">บันทึกข้อมูลสำเร็จ</h2>
                 <p className="text-muted-foreground">กำลังพาท่านกลับไปยังหน้ารายชื่อผู้ใช้งาน...</p>
             </div>
         );
@@ -119,9 +172,9 @@ export default function CreateUserPage() {
                 </button>
                 <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
                     <CircleUser className="text-primary" />
-                    เพิ่มผู้ใช้งานใหม่
+                    แก้ไขข้อมูลผู้ใช้งาน
                 </h1>
-                <p className="text-muted-foreground">สร้างบัญชีผู้ใช้งานใหม่เข้าสู่ระบบ</p>
+                <p className="text-muted-foreground">แก้ไขรายละเอียดบัญชีผู้ใช้งานในระบบ</p>
             </div>
 
             {error && (
@@ -208,7 +261,7 @@ export default function CreateUserPage() {
 
                         <div className="space-y-4">
                             <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1">รหัสผ่าน</label>
+                                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1">เปลี่ยนรหัสผ่าน (ปล่อยว่างไว้หากไม่ต้องการเปลี่ยน)</label>
                                 <div className="relative group">
                                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
                                         <KeyRound size={18} />
@@ -220,13 +273,12 @@ export default function CreateUserPage() {
                                         onChange={handleChange}
                                         placeholder="••••••••"
                                         className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                                        required
                                     />
                                 </div>
                             </div>
 
                             <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1">ยืนยันรหัสผ่านอีกครั้ง</label>
+                                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1">ยืนยันรหัสผ่านใหม่อีกครั้ง</label>
                                 <div className="relative group">
                                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
                                         <KeyRound size={18} />
@@ -238,7 +290,6 @@ export default function CreateUserPage() {
                                         onChange={handleChange}
                                         placeholder="••••••••"
                                         className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                                        required
                                     />
                                 </div>
                             </div>
@@ -247,7 +298,7 @@ export default function CreateUserPage() {
                         <div className="p-4 bg-muted/30 rounded-2xl">
                             <p className="text-[10px] text-muted-foreground leading-relaxed">
                                 <span className="font-bold text-foreground block mb-1">ข้อแนะนำ:</span>
-                                รหัสผ่านควรมีความยาวอย่างน้อย 6 ตัวอักษร และควรประกอบด้วยตัวอักษรพิมพ์ใหญ่ พิมพ์เล็ก และตัวเลขเพื่อความปลอดภัยสูงสุด
+                                หากไม่ต้องการเปลี่ยนรหัสผ่าน ให้ปล่อยช่องรหัสผ่านว่างไว้ ระบบจะใช้รหัสผ่านเดิมที่มีอยู่ในระบบ
                             </p>
                         </div>
                     </div>
@@ -280,10 +331,10 @@ export default function CreateUserPage() {
                     </button>
                     <button
                         type="submit"
-                        disabled={isLoading}
+                        disabled={isSaving}
                         className="flex items-center justify-center gap-2 px-8 py-3 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer min-w-[160px]"
                     >
-                        {isLoading ? (
+                        {isSaving ? (
                             <>
                                 <Loader2 size={18} className="animate-spin" />
                                 <span>กำลังบันทึก...</span>
