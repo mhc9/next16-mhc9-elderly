@@ -86,12 +86,12 @@ export default function ScreeningListPage() {
             href: `/population/screening/${s.id}`
         },
         {
-            label: "แก้ไขข้อมูลคัดกรอง",
+            label: "แก้ไขข้อมูล",
             icon: <Edit2 size={16} className="text-amber-500" />,
             onClick: () => alert("ฟีเจอร์นี้กำลังพัฒนา...")
         },
         {
-            label: "ลบข้อมูลคัดกรอง",
+            label: "ลบข้อมูล",
             icon: <Trash2 size={16} />,
             variant: "danger",
             onClick: () => {
