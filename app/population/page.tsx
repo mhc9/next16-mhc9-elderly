@@ -2,9 +2,13 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { createPortal } from "react-dom";
-import { Users, Search, MapPin, Building2, ChevronRight, ChevronLeft, ClipboardCheck, AlertCircle, UserPlus, CreditCard, Calendar, MoreVertical, Eye, Edit2, Trash2 } from "lucide-react";
+import { 
+    Users, Search, MapPin, Building2, ChevronRight, ChevronLeft, 
+    ClipboardCheck, AlertCircle, UserPlus, CreditCard, Calendar, 
+    Eye, Edit2, Trash2 
+} from "lucide-react";
 import { calculateAge } from "@/lib/utils/calculation";
+import { ActionMenu, MenuItem } from "@/components/ui/ActionMenu";
 
 interface Person {
     pid: number;
@@ -28,40 +32,7 @@ export default function PopulationPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
-    const [openMenuId, setOpenMenuId] = useState<number | null>(null);
-    const [menuPosition, setMenuPosition] = useState<{ top: number, left: number } | null>(null);
-    const [isMounted, setIsMounted] = useState(false);
     const itemsPerPage = 10;
-
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
-
-    useEffect(() => {
-        const handleClose = () => {
-            setOpenMenuId(null);
-            setMenuPosition(null);
-        };
-
-        const handleClickOutside = (event: MouseEvent) => {
-            const target = event.target as HTMLElement;
-            if (!target.closest(".menu-container") && !target.closest(".portal-menu")) {
-                handleClose();
-            }
-        };
-
-        if (openMenuId !== null) {
-            document.addEventListener("mousedown", handleClickOutside);
-            window.addEventListener("scroll", handleClose, true);
-            window.addEventListener("resize", handleClose);
-        }
-        
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-            window.removeEventListener("scroll", handleClose, true);
-            window.removeEventListener("resize", handleClose);
-        };
-    }, [openMenuId]);
 
     useEffect(() => {
         async function fetchPersons() {
@@ -88,11 +59,36 @@ export default function PopulationPage() {
         return () => clearTimeout(debounce);
     }, [currentPage, searchQuery]);
 
-    const selectedPerson = persons.find(p => p.pid === openMenuId);
+    const getPersonActions = (person: Person): MenuItem[] => [
+        {
+            label: "View",
+            icon: <Eye size={16} className="text-primary" />,
+            href: `/population/${person.pid}`
+        },
+        {
+            label: "Edit",
+            icon: <Edit2 size={16} className="text-amber-500" />,
+            href: `/population/edit/${person.pid}`
+        },
+        {
+            label: "Screening",
+            icon: <ClipboardCheck size={16} className="text-emerald-500" />,
+            href: `/screening/new?pid=${person.pid}`
+        },
+        {
+            label: "Delete",
+            icon: <Trash2 size={16} />,
+            variant: "danger",
+            onClick: () => {
+                if (confirm("คุณต้องการลบข้อมูลนี้ใช่หรือไม่?")) {
+                    console.log("Delete pid:", person.pid);
+                }
+            }
+        }
+    ];
 
     return (
         <div className="p-6 space-y-6 animate-in fade-in duration-700">
-            {/* ... rest of the component remains the same ... */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
@@ -207,28 +203,7 @@ export default function PopulationPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <div className="relative menu-container flex justify-end">
-                                                <button 
-                                                    onClick={(e) => {
-                                                        if (openMenuId === person.pid) {
-                                                            setOpenMenuId(null);
-                                                            setMenuPosition(null);
-                                                        } else {
-                                                            const rect = e.currentTarget.getBoundingClientRect();
-                                                            setOpenMenuId(person.pid);
-                                                            setMenuPosition({
-                                                                top: rect.bottom + 8,
-                                                                left: rect.right - 192
-                                                            });
-                                                        }
-                                                    }}
-                                                    className={`p-2 rounded-xl transition-all shadow-sm cursor-pointer hover:scale-105 active:scale-95 ${
-                                                        openMenuId === person.pid ? "bg-primary text-white" : "bg-muted hover:bg-primary hover:text-white"
-                                                    }`}
-                                                >
-                                                    <MoreVertical size={18} />
-                                                </button>
-                                            </div>
+                                            <ActionMenu items={getPersonActions(person)} />
                                         </td>
                                     </tr>
                                 ))
@@ -301,55 +276,6 @@ export default function PopulationPage() {
                     </div>
                 )}
             </div>
-
-            {isMounted && openMenuId !== null && menuPosition && selectedPerson && createPortal(
-                <div 
-                    className="fixed z-[999] w-48 bg-card border border-border rounded-2xl shadow-2xl py-2 animate-in fade-in zoom-in duration-200 origin-top-right portal-menu" 
-                    style={{ 
-                        top: `${menuPosition.top}px`, 
-                        left: `${menuPosition.left}px` 
-                    }}
-                >
-                    <Link 
-                        href={`/population/${selectedPerson.pid}`} 
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-foreground hover:bg-muted transition-colors"
-                        onClick={() => { setOpenMenuId(null); setMenuPosition(null); }}
-                    >
-                        <Eye size={16} className="text-primary" />
-                        View
-                    </Link>
-                    <Link 
-                        href={`/population/edit/${selectedPerson.pid}`} 
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-foreground hover:bg-muted transition-colors border-t border-border/50"
-                        onClick={() => { setOpenMenuId(null); setMenuPosition(null); }}
-                    >
-                        <Edit2 size={16} className="text-amber-500" />
-                        Edit
-                    </Link>
-                    <Link 
-                        href={`/screening/new?pid=${selectedPerson.pid}`} 
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-foreground hover:bg-muted transition-colors border-t border-border/50"
-                        onClick={() => { setOpenMenuId(null); setMenuPosition(null); }}
-                    >
-                        <ClipboardCheck size={16} className="text-emerald-500" />
-                        Screening
-                    </Link>
-                    <button 
-                        onClick={() => {
-                            if (confirm("คุณต้องการลบข้อมูลนี้ใช่หรือไม่?")) {
-                                console.log("Delete pid:", selectedPerson.pid);
-                            }
-                            setOpenMenuId(null);
-                            setMenuPosition(null);
-                        }}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-rose-600 hover:bg-rose-50 transition-colors border-t border-border/50 cursor-pointer"
-                    >
-                        <Trash2 size={16} />
-                        Delete
-                    </button>
-                </div>,
-                document.body
-            )}
         </div>
     );
 }

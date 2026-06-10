@@ -1,8 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Users, Search, Filter, Shield, Building2, Mail, Loader2, AlertCircle, CircleUser } from "lucide-react";
+import { 
+    Users, Search, Filter, Shield, Building2, 
+    Mail, Loader2, AlertCircle, CircleUser, 
+    Eye, Edit2, Trash2 
+} from "lucide-react";
 import Link from "next/link";
+import { ActionMenu, MenuItem } from "@/components/ui/ActionMenu";
 
 interface User {
     id: string;
@@ -51,6 +56,29 @@ export default function UsersPage() {
         
         return matchesSearch && matchesRole;
     });
+
+    const getUserActions = (user: User): MenuItem[] => [
+        {
+            label: "รายละเอียด",
+            icon: <Eye size={16} className="text-primary" />,
+            href: `/admin/users/${user.id}`
+        },
+        {
+            label: "แก้ไขข้อมูล",
+            icon: <Edit2 size={16} className="text-amber-500" />,
+            href: `/admin/users/edit/${user.id}`
+        },
+        {
+            label: "ลบผู้ใช้งาน",
+            icon: <Trash2 size={16} />,
+            variant: "danger",
+            onClick: () => {
+                if (confirm("คุณต้องการลบผู้ใช้งานนี้ใช่หรือไม่?")) {
+                    console.log("Delete user id:", user.id);
+                }
+            }
+        }
+    ];
 
     if (isLoading) {
         return (
@@ -178,13 +206,8 @@ export default function UsersPage() {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center justify-end gap-2">
-                                    <Link 
-                                        href={`/admin/users/${user.id}`}
-                                        className="px-4 py-2 text-xs font-bold text-primary hover:bg-primary/5 rounded-lg transition-all cursor-pointer border border-transparent hover:border-primary/20"
-                                    >
-                                        รายละเอียด
-                                    </Link>
+                                <div className="flex items-center justify-end">
+                                    <ActionMenu items={getUserActions(user)} />
                                 </div>
                             </div>
                         </div>
