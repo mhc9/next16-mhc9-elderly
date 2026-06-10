@@ -88,7 +88,9 @@ export async function POST(req: Request) {
         const body = await req.json();
         const { 
             person_id, q2_result, q9_score, q9_result, 
-            q8_score, q8_result, care_type, care_detail, year 
+            q8_score, q8_result, care_type, care_detail, 
+            year, screen_date, care_date, remark,
+            screen_date_2, q2_result_2 
         } = body;
 
         if (!person_id || year === undefined) {
@@ -98,15 +100,20 @@ export async function POST(req: Request) {
         const screening = await prisma.screening.create({
             data: {
                 person_id: parseInt(person_id),
-                q2_result: q2_result, // Now a string
+                year: parseInt(year),
+                screen_date: screen_date ? new Date(screen_date) : undefined,
+                q2_result: q2_result,
+                screen_date_2: screen_date_2 ? new Date(screen_date_2) : null,
+                q2_result_2: q2_result_2,
                 q9_score: q9_score !== null ? parseInt(q9_score) : null,
-                q9_result: q9_result !== null ? !!q9_result : null,
+                q9_result: q9_result,
                 q8_score: q8_score !== null ? parseInt(q8_score) : null,
-                q8_result: q8_result !== null ? !!q8_result : null,
-                care_type,
-                care_detail,
-                year: parseInt(year)
-            }
+                q8_result: q8_result,
+                care_date: care_date ? new Date(care_date) : null,
+                care_type: care_type,
+                care_detail: care_detail,
+                remark: remark,
+            },
         });
 
         return NextResponse.json({ success: true, data: screening });

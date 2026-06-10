@@ -16,13 +16,15 @@ interface ScreeningData {
     id: number;
     person_id: number;
     screen_date: string;
-    q2_result: boolean;
+    q2_result: string;
     q9_score: number | null;
     q9_result: boolean | null;
     q8_score: number | null;
     q8_result: boolean | null;
     care_type: string | null;
     care_detail: string | null;
+    care_date: string | null;
+    remark: string | null;
     year: number;
     person: {
         firstname: string;
@@ -94,12 +96,8 @@ export default function ScreeningDetailPage() {
     }
 
     const careTypeLabel = (type: string | null) => {
-        switch (type) {
-            case "Counseling": return "ให้คำปรึกษา / ดูแลสังคมจิตใจ";
-            case "Referral": return "ส่งต่อโรงพยาบาล";
-            case "Follow-up": return "ติดตามอาการ";
-            default: return type || "ไม่ระบุ";
-        }
+        if (!type) return "ไม่ระบุ";
+        return type;
     };
 
     return (
@@ -266,16 +264,29 @@ export default function ScreeningDetailPage() {
 
                     {/* Care Details */}
                     <div className="bg-card border border-border rounded-3xl p-8 shadow-sm">
-                        <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-                            <MessageSquare size={20} className="text-primary" />
-                            การดูแลช่วยเหลือ
-                        </h3>
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                                <MessageSquare size={20} className="text-primary" />
+                                การดูแลช่วยเหลือ
+                            </h3>
+                            {screening.care_date && (
+                                <div className="flex items-center gap-2 text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-xl border border-border/50">
+                                    <Calendar size={14} />
+                                    <span className="text-xs font-bold">วันที่ให้บริการ: {moment(screening.care_date).format("D MMM YYYY")}</span>
+                                </div>
+                            )}
+                        </div>
 
                         <div className="space-y-6">
                             <div>
                                 <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block mb-2">รูปแบบการดูแล</label>
-                                <div className="inline-flex px-4 py-2 bg-primary/10 text-primary rounded-xl font-bold">
-                                    {careTypeLabel(screening.care_type)}
+                                <div className="flex flex-wrap gap-2">
+                                    {screening.care_type?.split(", ").map((type, idx) => (
+                                        <div key={idx} className="inline-flex px-4 py-2 bg-primary/10 text-primary rounded-xl font-bold text-xs">
+                                            {type}
+                                        </div>
+                                    ))}
+                                    {!screening.care_type && <span className="text-sm text-muted-foreground italic">ไม่ระบุ</span>}
                                 </div>
                             </div>
 
@@ -294,18 +305,47 @@ export default function ScreeningDetailPage() {
                         </div>
                     </div>
 
+                    {/* Remark Section */}
+                    <div className="bg-card border border-border rounded-3xl p-8 shadow-sm">
+                        <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+                            <AlertCircle size={20} className="text-primary" />
+                            ปัญหา/สาเหตุ
+                        </h3>
+
+                        <div className="p-5 bg-rose-50/30 rounded-2xl border border-rose-100 min-h-[80px]">
+                            {screening.remark ? (
+                                <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+                                    {screening.remark}
+                                </p>
+                            ) : (
+                                <p className="text-sm text-muted-foreground italic">ไม่มีข้อมูลปัญหาหรือสาเหตุเพิ่มเติม</p>
+                            )}
+                        </div>
+                    </div>
+
                     {/* Actions */}
                     <div className="flex items-center justify-end gap-4">
-                        <button 
-                            onClick={() => alert("ฟีเจอร์แก้ไขกำลังพัฒนา...")}
+                        <Link 
+                            href={`/population/screening/edit/${screening.id}`}
                             className="px-8 py-3 bg-muted hover:bg-muted/80 text-foreground rounded-2xl font-bold transition-all cursor-pointer"
                         >
                             แก้ไขข้อมูล
-                        </button>
+                        </Link>
                         <button 
-                            onClick={() => {
+                            onClick={async () => {
                                 if (confirm("คุณต้องการลบข้อมูลการคัดกรองนี้ใช่หรือไม่?")) {
-                                    console.log("Delete screening id:", screening.id);
+                                    try {
+                                        const res = await fetch(`/api/screenings/${screening.id}`, { method: 'DELETE' });
+                                        if (res.ok) {
+                                            router.push('/population/screening');
+                                            router.refresh();
+                                        } else {
+                                            const json = await res.json();
+                                            alert(json.error || "ไม่สามารถลบข้อมูลได้");
+                                        }
+                                    } catch (err) {
+                                        alert("เกิดข้อผิดพลาดในการลบข้อมูล");
+                                    }
                                 }
                             }}
                             className="px-8 py-3 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-2xl font-bold transition-all cursor-pointer"

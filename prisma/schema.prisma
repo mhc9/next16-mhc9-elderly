@@ -216,10 +216,14 @@ model Person {
 model Screening {
     id                 Int        @id @default(autoincrement())
     person_id          Int        
-    screen_date        DateTime   @default(now())
 
-    // 2Q plus
+    // 2Q plus 1
+    screen_date        DateTime   @default(now())
     q2_result          String     @default("NORMAL") @db.VarChar(50)
+
+    // 2Q plus 2
+    screen_date_2      DateTime?
+    q2_result_2        String?    @db.VarChar(50)
 
     // 9Q & 8Q Details
     q9_score           Int?
@@ -230,6 +234,8 @@ model Screening {
     // Care Outcomes
     care_type          String?    @db.VarChar(255) // Counseling, Referral, etc.
     care_detail        String?    @db.Text
+    care_date          DateTime?
+    remark             String?    @db.Text
     year               Int
     created_at         DateTime   @default(now())
     updated_at         DateTime   @updatedAt

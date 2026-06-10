@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { 
     ArrowLeft, Save, Loader2, AlertCircle, 
     User, Calendar, ClipboardCheck, Brain, 
@@ -10,46 +10,35 @@ import {
     Building2,
     Plus
 } from "lucide-react";
+import Link from "next/link";
 import { PersonSelectModal } from "@/components/ui/forms/PersonSelectModal";
 import DatePicker from "@/components/ui/forms/DatePicker";
 import moment from "moment";
 import "moment/locale/th";
 
-interface PersonOption {
-    pid: number;
-    firstname: string;
-    lastname: string;
-    cid: string | null;
-    birth_date?: string | null;
-    hcode?: string;
-    hospital?: { name: string };
-}
-
-export default function NewScreeningPage() {
+export default function EditScreeningPage() {
+    const { id } = useParams();
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const pidFromUrl = searchParams.get("pid");
 
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // Person State
-    const [selectedPerson, setSelectedPerson] = useState<PersonOption | null>(null);
+    // Person State (Read-only in edit mode usually, but we'll show details)
+    const [selectedPerson, setSelectedPerson] = useState<any>(null);
 
     // Form State
     const [formData, setFormData] = useState({
-        person_id: pidFromUrl || "",
-        year: new Date().getFullYear() + 543,
+        person_id: "",
+        year: moment().year() + 543,
         q2_result: "NORMAL",
         screen_date: moment().format("YYYY-MM-DD"),
         use_9q: false,
-        q9_score: "",
+        q9_score: "" as string | number,
         q9_result: false,
         use_8q: false,
-        q8_score: "",
+        q8_score: "" as string | number,
         q8_result: false,
         care_date: moment().format("YYYY-MM-DD"),
         remark: "",
@@ -64,28 +53,73 @@ export default function NewScreeningPage() {
     });
 
     useEffect(() => {
-        if (pidFromUrl) {
-            async function fetchPerson() {
-                try {
-                    const res = await fetch(`/api/population/${pidFromUrl}`);
-                    const json = await res.json();
-                    if (res.ok) {
-                        setSelectedPerson(json);
-                    }
-                } catch (err) {
-                    console.error("Failed to fetch person details");
-                }
-            }
-            fetchPerson();
-        }
-    }, [pidFromUrl]);
+        async function fetchScreening() {
+            try {
+                const res = await fetch(`/api/screenings/${id}`);
+                const json = await res.json();
 
-    const handlePersonSelect = (person: any) => {
-        setSelectedPerson(person);
-        setFormData(prev => ({ ...prev, person_id: person.pid.toString() }));
-        setIsModalOpen(false);
-        setError("");
-    };
+                if (!res.ok) throw new Error(json.error || "ไม่สามารถดึงข้อมูลการคัดกรองได้");
+                
+                const s = json.data;
+                setSelectedPerson(s.person);
+
+                // Parse aggregated care selections
+                const activeCares = (s.care_type || "").split(", ");
+                // care_detail is stored as "Label: detail --- Label: detail"
+                const detailParts = (s.care_detail || "").split("\n---\n");
+                const detailsMap: Record<string, string> = {};
+                detailParts.forEach((part: string) => {
+                    const [label, ...rest] = part.split(": ");
+                    if (label && rest.length > 0) {
+                        detailsMap[label.trim()] = rest.join(": ").trim();
+                    }
+                });
+
+                const newCareSelections = {
+                    Counseling: { 
+                        active: activeCares.includes(getCareLabel("Counseling")), 
+                        detail: detailsMap[getCareLabel("Counseling")] || "" 
+                    },
+                    Referral: { 
+                        active: activeCares.includes(getCareLabel("Referral")), 
+                        detail: detailsMap[getCareLabel("Referral")] || "" 
+                    },
+                    FollowUp: { 
+                        active: activeCares.includes(getCareLabel("FollowUp")), 
+                        detail: detailsMap[getCareLabel("FollowUp")] || "" 
+                    },
+                    Other: { 
+                        active: activeCares.includes(getCareLabel("Other")), 
+                        detail: detailsMap[getCareLabel("Other")] || "" 
+                    }
+                };
+
+                setFormData({
+                    person_id: s.person_id.toString(),
+                    year: s.year,
+                    q2_result: s.q2_result,
+                    screen_date: moment(s.screen_date).format("YYYY-MM-DD"),
+                    use_9q: s.q9_score !== null,
+                    q9_score: s.q9_score ?? "",
+                    q9_result: s.q9_result ?? false,
+                    use_8q: s.q8_score !== null,
+                    q8_score: s.q8_score ?? "",
+                    q8_result: s.q8_result ?? false,
+                    care_date: s.care_date ? moment(s.care_date).format("YYYY-MM-DD") : moment().format("YYYY-MM-DD"),
+                    remark: s.remark || "",
+                    q2_result_2: s.q2_result_2 || "NORMAL",
+                    screen_date_2: s.screen_date_2 ? moment(s.screen_date_2).format("YYYY-MM-DD") : moment().format("YYYY-MM-DD"),
+                    care_selections: newCareSelections
+                });
+            } catch (err) {
+                setError(err instanceof Error ? err.message : "เกิดข้อผิดพลาดในการโหลดข้อมูล");
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        if (id) fetchScreening();
+    }, [id]);
 
     const handleCareToggle = (type: keyof typeof formData.care_selections) => {
         setFormData(prev => ({
@@ -113,7 +147,7 @@ export default function NewScreeningPage() {
         }));
     };
 
-    const getCareLabel = (type: string) => {
+    function getCareLabel(type: string) {
         switch (type) {
             case "Counseling": return "ให้คำปรึกษา / ดูแลสังคมจิตใจ";
             case "Referral": return "ส่งต่อโรงพยาบาล";
@@ -121,7 +155,7 @@ export default function NewScreeningPage() {
             case "Other": return "อื่นๆ";
             default: return type;
         }
-    };
+    }
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
@@ -148,12 +182,6 @@ export default function NewScreeningPage() {
         setIsSubmitting(true);
         setError("");
 
-        if (!formData.person_id) {
-            setError("กรุณาเลือกผู้รับบริการ");
-            setIsSubmitting(false);
-            return;
-        }
-
         // Validation for care details
         const activeCares = Object.entries(formData.care_selections).filter(([_, v]) => v.active);
         if (activeCares.length === 0) {
@@ -175,22 +203,23 @@ export default function NewScreeningPage() {
             const careTypes = activeCares.map(([k]) => getCareLabel(k)).join(", ");
             const careDetails = activeCares.map(([k, v]) => `${getCareLabel(k)}: ${v.detail}`).join("\n---\n");
 
-            const res = await fetch("/api/screenings", {
-                method: "POST",
+            const res = await fetch(`/api/screenings/${id}`, {
+                method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    person_id: formData.person_id,
                     year: parseInt(formData.year.toString()),
                     q2_result: formData.q2_result,
                     screen_date: formData.screen_date,
-                    q9_score: formData.use_9q && formData.q9_score !== "" ? parseInt(formData.q9_score) : null,
+                    q9_score: formData.use_9q && formData.q9_score !== "" ? parseInt(formData.q9_score.toString()) : null,
                     q9_result: formData.use_9q ? formData.q9_result : null,
-                    q8_score: formData.use_8q && formData.q8_score !== "" ? parseInt(formData.q8_score) : null,
+                    q8_score: formData.use_8q && formData.q8_score !== "" ? parseInt(formData.q8_score.toString()) : null,
                     q8_result: formData.use_8q ? formData.q8_result : null,
                     care_type: careTypes,
                     care_detail: careDetails,
                     care_date: formData.care_date,
-                    remark: formData.remark
+                    remark: formData.remark,
+                    q2_result_2: (selectedPerson as any)?.screenings?.length > 0 ? formData.q2_result_2 : null,
+                    screen_date_2: (selectedPerson as any)?.screenings?.length > 0 ? formData.screen_date_2 : null
                 })
             });
 
@@ -199,7 +228,7 @@ export default function NewScreeningPage() {
 
             setSuccess(true);
             setTimeout(() => {
-                router.push(pidFromUrl ? `/population/${pidFromUrl}` : "/population/screening");
+                router.push(`/population/screening/${id}`);
                 router.refresh();
             }, 1500);
         } catch (err) {
@@ -209,13 +238,22 @@ export default function NewScreeningPage() {
         }
     };
 
+    if (isLoading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+                <Loader2 className="animate-spin text-primary" size={40} />
+                <p className="text-muted-foreground animate-pulse font-medium">กำลังโหลดข้อมูลการคัดกรอง...</p>
+            </div>
+        );
+    }
+
     if (success) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 animate-in fade-in duration-500">
                 <div className="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-200/50">
                     <CheckCircle2 size={48} />
                 </div>
-                <h2 className="text-2xl font-bold text-foreground">บันทึกข้อมูลสำเร็จ</h2>
+                <h2 className="text-2xl font-bold text-foreground">แก้ไขข้อมูลสำเร็จ</h2>
                 <p className="text-muted-foreground">กำลังนำคุณกลับ...</p>
             </div>
         );
@@ -235,7 +273,7 @@ export default function NewScreeningPage() {
                     </button>
                     <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
                         <ClipboardCheck className="text-primary" />
-                        แบบคัดกรองสุขภาพจิต
+                        แก้ไขผลการคัดกรอง
                     </h1>
                 </div>
             </div>
@@ -250,12 +288,11 @@ export default function NewScreeningPage() {
             <form onSubmit={handleSubmit} className="space-y-8">
                 {/* 1. ข้อมูลพื้นฐาน */}
                 <div className="bg-card border border-border rounded-3xl p-8 shadow-sm space-y-6">
-                    {/* Section Header */}
                     <div className="flex items-center gap-3 border-b border-border pb-4 mb-6">
                         <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
                             <User size={20} />
                         </div>
-                        <h2 className="text-lg font-bold text-foreground">ข้อมูลพื้นฐาน</h2>
+                        <h2 className="text-lg font-bold text-foreground">ข้อมูลพื้นฐาน (อ่านอย่างเดียว)</h2>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -263,53 +300,14 @@ export default function NewScreeningPage() {
                             <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 flex items-center gap-2">
                                 <User size={14} /> ผู้รับบริการ
                             </label>
-                            
-                            {pidFromUrl ? (
-                                <div className="w-full bg-muted/50 border border-border rounded-xl py-1.5 px-4 text-sm font-bold text-foreground flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs shrink-0">
-                                        {selectedPerson ? `${selectedPerson.firstname[0]}${selectedPerson.lastname[0]}` : "?"}
-                                    </div>
-                                    <span className="truncate">
-                                        {selectedPerson ? `${selectedPerson.firstname} ${selectedPerson.lastname}` : "กำลังโหลด..."}
-                                    </span>
+                            <div className="w-full bg-muted/50 border border-border rounded-xl py-2 px-4 text-sm font-bold text-foreground flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs shrink-0">
+                                    {selectedPerson ? `${selectedPerson.firstname[0]}${selectedPerson.lastname[0]}` : "?"}
                                 </div>
-                            ) : (
-                                <div className="relative">
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsModalOpen(true)}
-                                        className={`w-full flex items-center justify-between bg-muted/30 border rounded-xl py-1.5 px-4 text-sm transition-all cursor-pointer group ${
-                                            selectedPerson ? "border-primary/50 bg-primary/5" : "border-border hover:border-primary/50"
-                                        }`}
-                                    >
-                                        <div className="flex items-center gap-3 min-w-0">
-                                            {selectedPerson ? (
-                                                <>
-                                                    <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs shrink-0 shadow-sm">
-                                                        {selectedPerson.firstname[0]}{selectedPerson.lastname[0]}
-                                                    </div>
-                                                    <div className="flex flex-col text-left truncate">
-                                                        <span className="font-bold text-foreground leading-tight">
-                                                            {selectedPerson.firstname} {selectedPerson.lastname}
-                                                        </span>
-                                                        <span className="text-[10px] text-muted-foreground font-mono">
-                                                            CID: {selectedPerson.cid || "ไม่ระบุ"}
-                                                        </span>
-                                                    </div>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground shrink-0 border border-dashed border-border group-hover:border-primary/50 transition-colors">
-                                                        <UserSearch size={14} />
-                                                    </div>
-                                                    <span className="text-muted-foreground font-medium">กดเพื่อเลือกผู้รับบริการ...</span>
-                                                </>
-                                            )}
-                                        </div>
-                                        <Search size={16} className="text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                                    </button>
-                                </div>
-                            )}
+                                <span className="truncate">
+                                    {selectedPerson ? `${selectedPerson.firstname} ${selectedPerson.lastname}` : "กำลังโหลด..."}
+                                </span>
+                            </div>
                         </div>
                         <div className="space-y-1.5">
                             <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 flex items-center gap-2">
@@ -329,7 +327,6 @@ export default function NewScreeningPage() {
 
                 {/* 2. แบบคัดกรอง 2Q plus */}
                 <div className="bg-card border border-border rounded-3xl p-8 shadow-sm space-y-6">
-                    {/* Section Header */}
                     <div className="flex items-center gap-3 border-b border-border pb-4 mb-2">
                         <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
                             <Activity size={20} />
@@ -404,7 +401,6 @@ export default function NewScreeningPage() {
 
                 {/* 3. การดูแลช่วยเหลือ */}
                 <div className="bg-card border border-border rounded-3xl p-8 shadow-sm space-y-8">
-                    {/* Section Header */}
                     <div className="flex items-center gap-3 border-b border-border pb-4 mb-2">
                         <div className="p-2 bg-teal-50 text-teal-600 rounded-lg">
                             <MessageSquare size={20} />
@@ -503,7 +499,7 @@ export default function NewScreeningPage() {
                                                 value={formData.q8_score}
                                                 onChange={handleInputChange}
                                                 placeholder="ระบุคะแนน"
-                                                className="w-full bg-background border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-500 transition-all font-mono font-bold"
+                                                className="w-full bg-background border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-500 transition-all font-mono font-bold"
                                             />
                                         </div>
                                         <div className={`p-3 rounded-xl border text-center text-[10px] font-black uppercase tracking-widest ${
@@ -594,6 +590,82 @@ export default function NewScreeningPage() {
                     </div>
                 </div>
 
+                {/* 4. แบบคัดกรอง 2Q plus (รอบที่ 2) - Conditional */}
+                {((selectedPerson as any)?.screenings?.length > 1 || formData.q2_result_2 !== "NORMAL" || moment(formData.screen_date_2).isAfter(formData.screen_date)) && (
+                    <div className="bg-card border border-border rounded-3xl p-8 shadow-sm space-y-6 animate-in zoom-in-95 duration-500">
+                        <div className="flex items-center gap-3 border-b border-border pb-4 mb-2">
+                            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                                <Activity size={20} />
+                            </div>
+                            <h2 className="text-lg font-bold text-foreground">แบบคัดกรอง 2Q plus (รอบที่ 2)</h2>
+                        </div>
+
+                        <div className="pt-4">
+                            <DatePicker
+                                value={formData.screen_date_2}
+                                onChange={(date) => setFormData(prev => ({ ...prev, screen_date_2: date }))}
+                                label="วันที่คัดกรองรอบที่ 2"
+                                placeholder="เลือกวันที่"
+                                icon={<Calendar size={14} />}
+                                className="max-w-xs"
+                            />
+                        </div>
+
+                        <div className="space-y-2 pt-6 border-t border-border/50">
+                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 block">
+                                ผลการคัดกรองด้วย 2Q plus (รอบที่ 2)
+                            </label>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData(prev => ({ ...prev, q2_result_2: "NORMAL" }))}
+                                    className={`p-4 rounded-2xl border transition-all text-center flex flex-col items-center gap-2 cursor-pointer ${
+                                        formData.q2_result_2 === "NORMAL" 
+                                            ? "bg-emerald-50 border-emerald-500 text-emerald-700 shadow-sm" 
+                                            : "bg-muted/30 border-border text-muted-foreground hover:bg-muted/50"
+                                    }`}
+                                >
+                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${formData.q2_result_2 === "NORMAL" ? "bg-emerald-500 text-white" : "bg-muted text-muted-foreground"}`}>
+                                        <CheckCircle2 size={24} />
+                                    </div>
+                                    <span className="text-sm font-bold">ปกติ</span>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData(prev => ({ ...prev, q2_result_2: "RISK_Q12" }))}
+                                    className={`p-4 rounded-2xl border transition-all text-center flex flex-col items-center gap-2 cursor-pointer ${
+                                        formData.q2_result_2 === "RISK_Q12" 
+                                            ? "bg-rose-50 border-rose-500 text-rose-700 shadow-sm" 
+                                            : "bg-muted/30 border-border text-muted-foreground hover:bg-muted/50"
+                                    }`}
+                                >
+                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${formData.q2_result_2 === "RISK_Q12" ? "bg-rose-500 text-white" : "bg-muted text-muted-foreground"}`}>
+                                        <AlertCircle size={24} />
+                                    </div>
+                                    <span className="text-sm font-bold">เสี่ยงข้อ 1 และหรือข้อ 2</span>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData(prev => ({ ...prev, q2_result_2: "RISK_Q3" }))}
+                                    className={`p-4 rounded-2xl border transition-all text-center flex flex-col items-center gap-2 cursor-pointer ${
+                                        formData.q2_result_2 === "RISK_Q3" 
+                                            ? "bg-orange-50 border-orange-500 text-orange-700 shadow-sm" 
+                                            : "bg-muted/30 border-border text-muted-foreground hover:bg-muted/50"
+                                    }`}
+                                >
+                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${formData.q2_result_2 === "RISK_Q3" ? "bg-orange-500 text-white" : "bg-muted text-muted-foreground"}`}>
+                                        <AlertCircle size={24} />
+                                    </div>
+                                    <span className="text-sm font-bold">เสี่ยงเฉพาะข้อ 3</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Submit Area */}
                 <div className="flex items-center justify-end gap-4">
                     <button
@@ -616,18 +688,12 @@ export default function NewScreeningPage() {
                         ) : (
                             <>
                                 <Save size={18} />
-                                บันทึกผลการคัดกรอง
+                                บันทึกผลการแก้ไข
                             </>
                         )}
                     </button>
                 </div>
             </form>
-
-            <PersonSelectModal 
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onSelect={handlePersonSelect}
-            />
         </div>
     );
 }
