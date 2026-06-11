@@ -51,7 +51,7 @@ export default function NewScreeningPage() {
         use_8q: false,
         q8_score: "",
         q8_result: false,
-        care_date: moment().format("YYYY-MM-DD"),
+        care_date: "",
         remark: "",
         q2_result_2: "NORMAL",
         screen_date_2: moment().format("YYYY-MM-DD"),
@@ -156,14 +156,14 @@ export default function NewScreeningPage() {
 
         // Validation for care details
         const activeCares = Object.entries(formData.care_selections).filter(([_, v]) => v.active);
-        if (activeCares.length === 0) {
+        if (formData.q2_result !== "NORMAL" && activeCares.length === 0) {
             setError("กรุณาเลือกรูปแบบการดูแลอย่างน้อย 1 รายการ");
             setIsSubmitting(false);
             return;
         }
 
         for (const [key, val] of activeCares) {
-            if (!val.detail.trim()) {
+            if (formData.q2_result !== "NORMAL" && !val.detail.trim()) {
                 setError(`กรุณาระบุรายละเอียดสำหรับ: ${getCareLabel(key)}`);
                 setIsSubmitting(false);
                 return;
@@ -402,8 +402,9 @@ export default function NewScreeningPage() {
                     </div>
                 </div>
 
-                {/* 3. การดูแลช่วยเหลือ */}
-                <div className="bg-card border border-border rounded-3xl p-8 shadow-sm space-y-8">
+                {/* 3. การดูแลช่วยเหลือ - แสดงก็ต่อเมื่อ 2Q plus มีผลเสี่ยง */}
+                {formData.q2_result !== "NORMAL" && (
+                    <div className="bg-card border border-border rounded-3xl p-8 shadow-sm space-y-8 animate-in fade-in slide-in-from-top-2 duration-300">
                     {/* Section Header */}
                     <div className="flex items-center gap-3 border-b border-border pb-4 mb-2">
                         <div className="p-2 bg-teal-50 text-teal-600 rounded-lg">
@@ -593,6 +594,7 @@ export default function NewScreeningPage() {
                         </div>
                     </div>
                 </div>
+                )}
 
                 {/* Submit Area */}
                 <div className="flex items-center justify-end gap-4">
