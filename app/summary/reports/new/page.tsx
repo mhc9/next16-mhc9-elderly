@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { HospitalSearch, Hospital } from "@/components/ui/forms/HospitalSearch";
 import { FormField } from "@/components/ui/forms/FormField";
@@ -18,11 +19,15 @@ import {
     HeartPulse,
     Building2,
     ClipboardPlus,
-    ArrowLeft
+    ArrowLeft,
+    Home
 } from "lucide-react";
 
 export default function NewReportPage() {
     const router = useRouter();
+    const { data: session } = useSession();
+    const user = session?.user;
+    
     const [isLoading, setIsLoading] = useState(false);
     const [isFetching, setIsFetching] = useState(false);
     const [message, setMessage] = useState({ type: "", text: "" });
@@ -48,6 +53,26 @@ export default function NewReportPage() {
         followup_risk_q12: 0,
         followup_risk_q3: 0,
     });
+
+    // Auto-select hospital for USER role
+    useEffect(() => {
+        if (user?.role === "USER" && user?.hcode && !selectedHospital) {
+            const fetchUserHospital = async () => {
+                try {
+                    const res = await fetch(`/api/hospitals/search?q=${user.hcode}`);
+                    const json = await res.json();
+                    if (json.data && json.data.length > 0) {
+                        // Find exact match for hcode
+                        const match = json.data.find((h: Hospital) => h.hcode === user.hcode);
+                        if (match) setSelectedHospital(match);
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch user hospital:", err);
+                }
+            };
+            fetchUserHospital();
+        }
+    }, [user, selectedHospital]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -163,6 +188,14 @@ export default function NewReportPage() {
             <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Section 1: Hospital Selection */}
                 <div className="bg-card border border-border rounded-3xl p-6 shadow-sm space-y-6">
+                    {/* Section Header */}
+                    <div className="flex items-center gap-1 pb-2 border-b border-border/50">
+                        <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500">
+                            <Home size={20} />
+                        </div>
+                        <h2 className="font-bold text-lg">ข้อมูลหน่วยบริการ และ กลุ่มเป้าหมาย</h2>
+                    </div>
+
                     <HospitalSearch 
                         label="หน่วยบริการ"
                         icon={<Building2 size={18} className="text-primary" />}
@@ -170,6 +203,7 @@ export default function NewReportPage() {
                         onSelect={setSelectedHospital}
                         onClear={() => setSelectedHospital(null)}
                         placeholder="ค้นหาด้วยชื่อหน่วยบริการหรือรหัส 5 หลัก..."
+                        disabled={user?.role === "USER"}
                     />
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

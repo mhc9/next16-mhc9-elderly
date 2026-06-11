@@ -20,6 +20,7 @@ interface HospitalSearchProps {
     placeholder?: string;
     provinceId?: string;
     districtId?: string;
+    disabled?: boolean;
 }
 
 export function HospitalSearch({
@@ -31,7 +32,8 @@ export function HospitalSearch({
     error,
     placeholder = "Search health center by name or code...",
     provinceId,
-    districtId
+    districtId,
+    disabled = false
 }: HospitalSearchProps) {
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState<Hospital[]>([]);
@@ -186,14 +188,16 @@ export function HospitalSearch({
                             </p>
                         </div>
                     </div>
-                    <button
-                        type="button"
-                        onClick={handleClear}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white border border-border text-[10px] font-bold text-rose-600 hover:bg-rose-50 hover:border-rose-200 transition-all shadow-sm uppercase tracking-wider cursor-pointer"
-                    >
-                        <X size={12} />
-                        เปลี่ยน
-                    </button>
+                    {!disabled && (
+                        <button
+                            type="button"
+                            onClick={handleClear}
+                            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white border border-border text-[10px] font-bold text-rose-600 hover:bg-rose-50 hover:border-rose-200 transition-all shadow-sm uppercase tracking-wider cursor-pointer"
+                        >
+                            <X size={12} />
+                            เปลี่ยน
+                        </button>
+                    )}
                 </div>
             )}
             
