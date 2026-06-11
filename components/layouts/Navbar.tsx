@@ -3,13 +3,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { ChartPie, LayoutDashboard, Users, Settings, LogOut, Bell, Search, CircleUser, ShieldUser, ChevronDown, ListChecks } from "lucide-react";
+import { ChartPie, LayoutDashboard, Users, Settings, LogOut, Bell, Search, CircleUser, ShieldUser, ChevronDown, ListChecks, Menu } from "lucide-react";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import { usePathname } from "next/navigation";
+import { useLayout } from "@/lib/contexts/LayoutContext";
 
 export default function Navbar() {
     const { data: session, status } = useSession();
     const pathname = usePathname();
+    const { toggleSidebar } = useLayout();
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement | null>(null);
 
@@ -31,19 +33,29 @@ export default function Navbar() {
 
     return (
         <nav className="h-16 w-full flex items-center justify-between">
-            <div className="flex items-center gap-8">
+            <div className="flex items-center gap-4 lg:gap-8">
+                {isLoggedIn && (
+                    <button 
+                        onClick={toggleSidebar}
+                        className="p-2 -ml-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors md:hidden"
+                        aria-label="Toggle Sidebar"
+                    >
+                        <Menu size={24} />
+                    </button>
+                )}
+
                 <Link href="/" className="flex items-center gap-2">
                     <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
                         <Users size={24} strokeWidth={2.5} />
                     </div>
-                    <div className="flex flex-col">
+                    <div className="hidden md:flex flex-col">
                         <span className="text-base font-bold text-foreground leading-none">Elderly Care</span>
                         <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Dashboard v2.0</span>
                     </div>
                 </Link>
 
                 {isLoggedIn && (
-                    <div className="hidden lg:flex items-center gap-1">
+                    <div className="hidden md:flex items-center gap-1">
                         <NavLink href="/" icon={<LayoutDashboard size={18} />} label="แดชบอร์ด" active={pathname === "/"} />
                         
                         <NavDropdown 
@@ -103,7 +115,7 @@ export default function Navbar() {
                                 <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-teal-700 flex items-center justify-center text-white font-semibold shadow-md">
                                     {userInitials}
                                 </div>
-                                <div className="hidden sm:flex flex-col items-start pr-2">
+                                <div className="hidden md:flex flex-col items-start pr-2">
                                     <span className="text-xs font-bold text-foreground leading-none">{user?.name || "User"}</span>
                                     <span className="text-[10px] text-muted-foreground capitalize">{user?.role?.toLowerCase() || "Guest"}</span>
                                 </div>

@@ -3,6 +3,7 @@ import { Prompt } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layouts/Header";
 import Footer from "@/components/layouts/Footer";
+import Sidebar from "@/components/layouts/Sidebar";
 import { Providers } from "./providers";
 
 const prompt = Prompt({
@@ -25,6 +26,7 @@ export default function RootLayout({
         <html lang="th" className={`${prompt.variable} h-full antialiased`}>
             <body className="min-h-full flex flex-col bg-background font-sans font-medium">
                 <Providers>
+                    <Sidebar />
                     <Header />
 
                     <main className="flex-1">
