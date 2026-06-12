@@ -27,6 +27,7 @@ interface SearchableSelectProps {
   disabled?: boolean;
   className?: string;
   label?: string;
+  icon?: React.ReactNode;
   error?: string;
   searchable?: boolean;
   searchPlaceholder?: string;
@@ -193,6 +194,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
   disabled = false,
   className = '',
   label,
+  icon,
   error,
   searchable = false,
   searchPlaceholder = 'พิมพ์เพื่อค้นหา...',
@@ -628,10 +630,11 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
   );
 
   return (
-    <div className={cn(`relative ${isOpen && showBackdrop ? 'z-9999' : ''}`, className)} ref={containerRef}>
+    <div className={cn(`space-y-1.5 relative ${isOpen && showBackdrop ? 'z-9999' : ''}`, className)} ref={containerRef}>
       {/* Label */}
       {label && (
-        <label className="block text-[12px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 px-1">
+        <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2 pl-1">
+          {icon && <span>{icon}</span>}
           {label}
         </label>
       )}

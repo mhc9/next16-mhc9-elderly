@@ -5,13 +5,16 @@ import { useRouter, useParams } from "next/navigation";
 import { 
     Users, ArrowLeft, Save, Loader2, AlertCircle, 
     User, CreditCard, Calendar, Phone, Mail, 
-    MapPin, Building2, Home, Edit3
+    MapPin, Building2, Home, Edit3,
+    VenusAndMars,
+    CircleUser
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { HospitalSearch, Hospital } from "@/components/ui/forms/HospitalSearch";
 import DatePicker from "@/components/ui/forms/DatePicker";
 import SearchableSelect from "@/components/ui/forms/SearchableSelect";
 import moment from "moment";
+import { SEXES, PREFIXES } from "@/lib/constants/population";
 
 interface LocationOption {
     id: number;
@@ -56,16 +59,6 @@ export default function EditPersonPage() {
     const [districts, setDistricts] = useState<LocationOption[]>([]);
     const [subdistricts, setSubdistricts] = useState<LocationOption[]>([]);
 
-    const prefixOptions = [
-        { value: "นาย", label: "นาย" },
-        { value: "นาง", label: "นาง" },
-        { value: "นางสาว", label: "นางสาว" },
-        { value: "ด.ช.", label: "ด.ช." },
-        { value: "ด.ญ.", label: "ด.ญ." },
-        { value: "พระ", label: "พระ" }
-    ];
-    const sexes = ["ชาย", "หญิง"];
-
     // Fetch Initial Data
     useEffect(() => {
         async function fetchPersonData() {
@@ -74,6 +67,7 @@ export default function EditPersonPage() {
                 const json = await res.json();
 
                 if (!res.ok) throw new Error(json.error || "ไม่สามารถดึงข้อมูลประชากรได้");
+                console.log("Fetched person data:", json);
                 
                 setFormData({
                     cid: json.cid || "",
@@ -276,11 +270,11 @@ export default function EditPersonPage() {
                             />
                         </div>
                         <div className="space-y-1.5 md:col-span-5">
-                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 block">
-                                เพศ
+                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 flex items-center gap-2">
+                                <VenusAndMars size={14} /> เพศ
                             </label>
                             <div className="flex gap-2">
-                                {sexes.map(s => (
+                                {SEXES.map(s => (
                                     <button
                                         key={s}
                                         type="button"
@@ -291,7 +285,7 @@ export default function EditPersonPage() {
                                                 : "bg-muted/30 border-border text-muted-foreground hover:bg-muted/50"
                                         }`}
                                     >
-                                        {s}
+                                        {s === "M" ? "ชาย" : "หญิง"}
                                     </button>
                                 ))}
                             </div>
@@ -303,7 +297,8 @@ export default function EditPersonPage() {
                             <SearchableSelect
                                 label="คำนำหน้า"
                                 placeholder="เลือก"
-                                options={prefixOptions}
+                                icon={<CircleUser size={14} />}
+                                options={PREFIXES}
                                 value={formData.prefix}
                                 onChange={(val) => handleSelectChange("prefix", val)}
                                 clearable={false}
