@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Search, Filter, Calendar, Building2, MapPin, ChevronRight, ChevronLeft, Loader2, AlertCircle, Plus, ChartPie } from "lucide-react";
 
 interface SummaryReport {
@@ -21,6 +22,10 @@ interface SummaryReport {
 }
 
 function SummaryReportsContent() {
+    const { data: session } = useSession();
+    const user = session?.user;
+    const isUser = user?.role === "USER";
+
     const searchParams = useSearchParams();
     const initialDistrict = searchParams.get("district") || "all";
     const initialProvince = searchParams.get("province") || "all";
@@ -133,52 +138,56 @@ function SummaryReportsContent() {
             )}
 
             {/* Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                <div className="relative group lg:col-span-1">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
-                        <Search size={18} />
-                    </div>
-                    <input
-                        type="text"
-                        placeholder="ค้นหาชื่อหน่วยบริการ..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                    />
-                </div>
+            <div className={`grid grid-cols-1 gap-4 ${isUser ? 'md:grid-cols-2' : 'md:grid-cols-2 lg:grid-cols-5'}`}>
+                {!isUser && (
+                    <>
+                        <div className="relative group lg:col-span-1">
+                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
+                                <Search size={18} />
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="ค้นหาชื่อหน่วยบริการ..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                            />
+                        </div>
 
-                <div className="relative group">
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
-                        <MapPin size={18} />
-                    </div>
-                    <select
-                        value={provinceFilter}
-                        onChange={(e) => setProvinceFilter(e.target.value)}
-                        className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
-                    >
-                        <option value="all">ทุกจังหวัด</option>
-                        {provinces.map(p => (
-                            <option key={p} value={p}>{p}</option>
-                        ))}
-                    </select>
-                </div>
+                        <div className="relative group">
+                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
+                                <MapPin size={18} />
+                            </div>
+                            <select
+                                value={provinceFilter}
+                                onChange={(e) => setProvinceFilter(e.target.value)}
+                                className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
+                            >
+                                <option value="all">ทุกจังหวัด</option>
+                                {provinces.map(p => (
+                                    <option key={p} value={p}>{p}</option>
+                                ))}
+                            </select>
+                        </div>
 
-                <div className="relative group">
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
-                        <MapPin size={18} />
-                    </div>
-                    <select
-                        value={districtFilter}
-                        onChange={(e) => setDistrictFilter(e.target.value)}
-                        disabled={districts.length === 0}
-                        className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer disabled:opacity-50"
-                    >
-                        <option value="all">ทุกอำเภอ</option>
-                        {districts.map(d => (
-                            <option key={d} value={d}>{d}</option>
-                        ))}
-                    </select>
-                </div>
+                        <div className="relative group">
+                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
+                                <MapPin size={18} />
+                            </div>
+                            <select
+                                value={districtFilter}
+                                onChange={(e) => setDistrictFilter(e.target.value)}
+                                disabled={districts.length === 0}
+                                className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer disabled:opacity-50"
+                            >
+                                <option value="all">ทุกอำเภอ</option>
+                                {districts.map(d => (
+                                    <option key={d} value={d}>{d}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </>
+                )}
 
                 <div className="relative group">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
@@ -267,9 +276,12 @@ function SummaryReportsContent() {
                                         </div>
 
                                         <div className="flex items-center justify-end">
-                                            <button className="p-2 rounded-xl bg-muted group-hover:bg-primary group-hover:text-white transition-all shadow-sm cursor-pointer">
+                                            <Link 
+                                                href={`/summary/reports/edit/${report.id}`}
+                                                className="p-2 rounded-xl bg-muted group-hover:bg-primary group-hover:text-white transition-all shadow-sm cursor-pointer"
+                                            >
                                                 <ChevronRight size={20} />
-                                            </button>
+                                            </Link>
                                         </div>
                                     </div>
 
