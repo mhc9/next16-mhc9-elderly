@@ -11,6 +11,7 @@ import { calculateAge } from "@/lib/utils/calculation";
 interface Person {
     pid: number;
     cid: string | null;
+    prefix: string | null;
     firstname: string;
     lastname: string;
     birth_date: string | null;
@@ -140,7 +141,7 @@ export function PersonSelectModal({ isOpen, onClose, onSelect }: PersonSelectMod
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="font-bold text-foreground group-hover:text-primary transition-colors flex items-center gap-2">
-                                            {person.firstname} {person.lastname}
+                                            {person.prefix} {person.firstname} {person.lastname}
                                             <span className="text-[10px] bg-muted px-2 py-0.5 rounded-full text-muted-foreground font-black uppercase">PID: {person.pid}</span>
                                         </div>
                                         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">

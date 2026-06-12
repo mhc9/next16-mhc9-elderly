@@ -13,6 +13,7 @@ import { ActionMenu, MenuItem } from "@/components/ui/ActionMenu";
 interface Person {
     pid: number;
     cid: string | null;
+    prefix: string | null;
     firstname: string;
     lastname: string;
     birth_date: string | null;
@@ -168,7 +169,7 @@ export default function PopulationPage() {
                                                 </div>
                                                 <div>
                                                     <div className="font-bold text-foreground group-hover:text-primary transition-colors">
-                                                        {person.firstname} {person.lastname}
+                                                        {person.prefix} {person.firstname} {person.lastname}
                                                     </div>
                                                     <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter mt-0.5">
                                                         PID: {person.pid}

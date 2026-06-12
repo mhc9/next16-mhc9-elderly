@@ -28,6 +28,7 @@ interface Screening {
 interface PersonData {
     pid: number;
     cid: string | null;
+    prefix: string | null;
     firstname: string;
     lastname: string;
     birth_date: string | null;
@@ -151,7 +152,7 @@ export default function PersonDetailPage() {
                         </div>
 
                         <h2 className="text-2xl font-bold text-foreground mb-1">
-                            {person.firstname} {person.lastname}
+                            {person.prefix} {person.firstname} {person.lastname}
                         </h2>
                         <p className="text-muted-foreground text-sm font-mono mb-6">
                             PID: {person.pid}

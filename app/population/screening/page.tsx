@@ -17,7 +17,7 @@ interface Screening {
     id: number;
     person_id: number;
     screen_date: string;
-    q2_result: boolean;
+    q2_result: string;
     q9_score: number | null;
     q9_result: boolean | null;
     q8_score: number | null;
@@ -25,6 +25,7 @@ interface Screening {
     care_type: string | null;
     year: number;
     person: {
+        prefix: string | null;
         firstname: string;
         lastname: string;
         cid: string | null;
@@ -203,7 +204,7 @@ export default function ScreeningListPage() {
                                                 </div>
                                                 <div>
                                                     <div className="font-bold text-foreground group-hover:text-primary transition-colors">
-                                                        {s.person.firstname} {s.person.lastname}
+                                                        {s.person.prefix} {s.person.firstname} {s.person.lastname}
                                                     </div>
                                                     <div className="text-[10px] text-muted-foreground font-mono">
                                                         CID: {s.person.cid || "-"}

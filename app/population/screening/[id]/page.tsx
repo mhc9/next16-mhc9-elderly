@@ -30,6 +30,7 @@ interface ScreeningData {
     screen_date_2: string | null;
     year: number;
     person: {
+        prefix: string | null;
         firstname: string;
         lastname: string;
         cid: string | null;
@@ -142,7 +143,7 @@ export default function ScreeningDetailPage() {
                             <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-2xl font-bold mb-4">
                                 {screening.person.firstname[0]}{screening.person.lastname[0]}
                             </div>
-                            <h4 className="font-bold text-lg">{screening.person.firstname} {screening.person.lastname}</h4>
+                            <h4 className="font-bold text-lg">{screening.person.prefix} {screening.person.firstname} {screening.person.lastname}</h4>
                             <p className="text-xs text-muted-foreground font-mono mt-1">CID: {screening.person.cid || "-"}</p>
                         </div>
 
