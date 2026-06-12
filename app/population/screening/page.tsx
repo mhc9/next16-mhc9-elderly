@@ -5,13 +5,19 @@ import {
     ClipboardCheck, Search, Building2, ChevronRight, ChevronLeft, 
     Loader2, AlertCircle, Plus, Activity, Brain, HeartPulse, ArrowLeft,
     Eye, Trash2, FileText,
-    Edit2
+    Edit2, Filter, X, MapPin
 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import moment from "moment";
 import "moment/locale/th";
 import { ActionMenu, MenuItem } from "@/components/ui/ActionMenu";
+
+interface LocationOption {
+    id: number;
+    name: string;
+}
 
 interface Screening {
     id: number;
@@ -36,6 +42,10 @@ interface Screening {
 }
 
 export default function ScreeningListPage() {
+    const { data: session } = useSession();
+    const user = session?.user;
+    const isAdmin = user?.role === "ADMIN" || user?.role === "SUPERADMIN";
+
     const searchParams = useSearchParams();
     const router = useRouter();
     const pid = searchParams.get("pid");
@@ -44,10 +54,76 @@ export default function ScreeningListPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
+
+    // Filter State
+    const [provinceFilter, setProvinceFilter] = useState("all");
+    const [districtFilter, setDistrictFilter] = useState("all");
+    const [hcodeFilter, setHcodeFilter] = useState("all");
+
+    // Filter Options
+    const [provinces, setProvinces] = useState<LocationOption[]>([]);
+    const [districts, setDistricts] = useState<LocationOption[]>([]);
+    const [hospitals, setHospitals] = useState<{hcode: string, name: string}[]>([]);
+
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
     const itemsPerPage = 10;
+
+    // Load Provinces
+    useEffect(() => {
+        if (isAdmin) {
+            async function fetchProvinces() {
+                try {
+                    const res = await fetch("/api/locations/provinces");
+                    const json = await res.json();
+                    setProvinces(json.data || []);
+                } catch (err) { console.error("Failed to fetch provinces"); }
+            }
+            fetchProvinces();
+        }
+    }, [isAdmin]);
+
+    // Load Districts when province changes
+    useEffect(() => {
+        if (isAdmin && provinceFilter !== "all") {
+            async function fetchDistricts() {
+                try {
+                    const res = await fetch(`/api/locations/districts/${provinceFilter}`);
+                    const json = await res.json();
+                    setDistricts(json.data || []);
+                    setDistrictFilter("all");
+                } catch (err) { console.error("Failed to fetch districts"); }
+            }
+            fetchDistricts();
+        } else {
+            setDistricts([]);
+            setDistrictFilter("all");
+        }
+    }, [isAdmin, provinceFilter]);
+
+    // Load Hospitals based on filters
+    useEffect(() => {
+        if (isAdmin) {
+            async function fetchHospitals() {
+                try {
+                    let url = "/api/hospitals/search?q=";
+                    if (districtFilter !== "all") url += `&districtId=${districtFilter}`;
+                    else if (provinceFilter !== "all") url += `&provinceId=${provinceFilter}`;
+                    
+                    const res = await fetch(url);
+                    const json = await res.json();
+                    setHospitals(json.data || []);
+                } catch (err) { console.error("Failed to fetch hospitals"); }
+            }
+            fetchHospitals();
+        }
+    }, [isAdmin, provinceFilter, districtFilter]);
+
+    // Reset hcode when location changes
+    useEffect(() => {
+        setHcodeFilter("all");
+    }, [provinceFilter, districtFilter]);
 
     useEffect(() => {
         async function fetchScreenings() {
@@ -58,6 +134,12 @@ export default function ScreeningListPage() {
                 url.searchParams.append("limit", itemsPerPage.toString());
                 url.searchParams.append("search", searchQuery);
                 if (pid) url.searchParams.append("pid", pid);
+                
+                if (isAdmin) {
+                    if (provinceFilter !== "all") url.searchParams.append("provinceId", provinceFilter);
+                    if (districtFilter !== "all") url.searchParams.append("districtId", districtFilter);
+                    if (hcodeFilter !== "all") url.searchParams.append("hcode", hcodeFilter);
+                }
 
                 const res = await fetch(url.toString());
                 const json = await res.json();
@@ -78,7 +160,12 @@ export default function ScreeningListPage() {
         }, 300);
 
         return () => clearTimeout(debounce);
-    }, [currentPage, searchQuery, pid]);
+    }, [currentPage, searchQuery, pid, provinceFilter, districtFilter, hcodeFilter, isAdmin]);
+
+    // Reset to page 1 on filter change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, provinceFilter, districtFilter, hcodeFilter]);
 
     const getScreeningActions = (s: Screening): MenuItem[] => [
         {
@@ -133,14 +220,15 @@ export default function ScreeningListPage() {
                 </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="md:col-span-3 relative group">
+            {/* Filters */}
+            <div className={`grid grid-cols-1 gap-4 ${isAdmin ? 'md:grid-cols-2 lg:grid-cols-5' : 'md:grid-cols-4'}`}>
+                <div className={`${isAdmin ? 'lg:col-span-1' : 'md:col-span-3'} relative group`}>
                     <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
                         <Search size={20} />
                     </div>
                     <input
                         type="text"
-                        placeholder="ค้นหาด้วยชื่อผู้รับบริการ หรือ เลขบัตรประชาชน..."
+                        placeholder="ค้นหาด้วยชื่อ, เลขบัตร..."
                         value={searchQuery}
                         onChange={(e) => {
                             setSearchQuery(e.target.value);
@@ -149,9 +237,63 @@ export default function ScreeningListPage() {
                         className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                     />
                 </div>
+
+                {isAdmin && (
+                    <>
+                        <div className="relative group">
+                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
+                                <MapPin size={18} />
+                            </div>
+                            <select
+                                value={provinceFilter}
+                                onChange={(e) => setProvinceFilter(e.target.value)}
+                                className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
+                            >
+                                <option value="all">ทุกจังหวัด</option>
+                                {provinces.map(p => (
+                                    <option key={p.id} value={p.id}>{p.name}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="relative group">
+                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
+                                <MapPin size={18} />
+                            </div>
+                            <select
+                                value={districtFilter}
+                                onChange={(e) => setDistrictFilter(e.target.value)}
+                                disabled={districts.length === 0}
+                                className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer disabled:opacity-50"
+                            >
+                                <option value="all">ทุกอำเภอ</option>
+                                {districts.map(d => (
+                                    <option key={d.id} value={d.id}>{d.name}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="relative group">
+                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
+                                <Building2 size={18} />
+                            </div>
+                            <select
+                                value={hcodeFilter}
+                                onChange={(e) => setHcodeFilter(e.target.value)}
+                                className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
+                            >
+                                <option value="all">ทุกหน่วยบริการ</option>
+                                {hospitals.map(h => (
+                                    <option key={h.hcode} value={h.hcode}>{h.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </>
+                )}
+
                 <div className="bg-muted/50 rounded-2xl border border-border px-6 flex items-center justify-center gap-2 text-sm font-bold text-muted-foreground">
                     <Activity size={16} />
-                    <span>ทั้งหมด {totalItems.toLocaleString()} รายการ</span>
+                    <span className="whitespace-nowrap">ทั้งหมด {totalItems.toLocaleString()} รายการ</span>
                 </div>
             </div>
 

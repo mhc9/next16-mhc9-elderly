@@ -13,6 +13,9 @@ export async function GET(req: Request) {
     const limit = parseInt(searchParams.get("limit") || "10");
     const search = searchParams.get("search") || "";
     const pid = searchParams.get("pid"); // Filter by person id if provided
+    const provinceId = searchParams.get("provinceId");
+    const districtId = searchParams.get("districtId");
+    const hcode = searchParams.get("hcode");
 
     const user = session.user as { role: string; hcode: string };
     const skip = (page - 1) * limit;
@@ -25,6 +28,15 @@ export async function GET(req: Request) {
             where.person = {
                 hcode: user.hcode
             };
+        } else {
+            // Admin filters
+            if (hcode) {
+                where.person = { ...(where.person || {}), hcode };
+            } else if (districtId) {
+                where.person = { ...(where.person || {}), district_id: parseInt(districtId) };
+            } else if (provinceId) {
+                where.person = { ...(where.person || {}), province_id: parseInt(provinceId) };
+            }
         }
 
         // Filter by person if pid is provided

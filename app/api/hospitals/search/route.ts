@@ -5,19 +5,22 @@ export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url);
         const q = searchParams.get("q")?.trim() ?? "";
-        const provinceId = searchParams.get("province_id");
-        const districtId = searchParams.get("district_id");
+        const provinceId = searchParams.get("provinceId") || searchParams.get("province_id");
+        const districtId = searchParams.get("districtId") || searchParams.get("district_id");
 
-        if (q.length < 1) {
+        // If no query and no location filters, return empty
+        if (q.length < 1 && !provinceId && !districtId) {
             return NextResponse.json({ data: [] });
         }
 
-        const where: any = {
-            OR: [
+        const where: any = {};
+
+        if (q.length > 0) {
+            where.OR = [
                 { hcode: { contains: q } },
                 { name: { contains: q } },
-            ],
-        };
+            ];
+        }
 
         if (provinceId) {
             where.province_id = parseInt(provinceId);
