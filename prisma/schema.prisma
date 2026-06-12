@@ -186,8 +186,10 @@ model SummaryReport {
 model Person {
     pid                Int          @id @default(autoincrement())
     cid                String?      @unique @db.VarChar(13) // Thai National ID
+    prefix             String?      @db.VarChar(50)
     firstname          String       @db.VarChar(100)
     lastname           String       @db.VarChar(100)
+    sex                String?      @db.VarChar(10)
     birth_date         DateTime?    @db.Date
     address            String?      @db.Text
     moo                Int?

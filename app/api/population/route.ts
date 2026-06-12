@@ -78,7 +78,7 @@ export async function POST(req: Request) {
     try {
         const body = await req.json();
         const { 
-            cid, firstname, lastname, birth_date, 
+            cid, prefix, firstname, lastname, sex, birth_date, 
             address, moo, road, zipcode, subdistrict_id, district_id, province_id,
             telephone, mobile, email, hcode
         } = body;
@@ -105,8 +105,10 @@ export async function POST(req: Request) {
         const person = await prisma.person.create({
             data: {
                 cid,
+                prefix,
                 firstname,
                 lastname,
+                sex,
                 birth_date: birth_date ? new Date(birth_date) : null,
                 address,
                 moo: moo ? parseInt(moo) : null,

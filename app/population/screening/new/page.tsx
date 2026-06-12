@@ -405,195 +405,195 @@ export default function NewScreeningPage() {
                 {/* 3. การดูแลช่วยเหลือ - แสดงก็ต่อเมื่อ 2Q plus มีผลเสี่ยง */}
                 {formData.q2_result !== "NORMAL" && (
                     <div className="bg-card border border-border rounded-3xl p-8 shadow-sm space-y-8 animate-in fade-in slide-in-from-top-2 duration-300">
-                    {/* Section Header */}
-                    <div className="flex items-center gap-3 border-b border-border pb-4 mb-2">
-                        <div className="p-2 bg-teal-50 text-teal-600 rounded-lg">
-                            <MessageSquare size={20} />
-                        </div>
-                        <h2 className="text-lg font-bold text-foreground">การดูแลช่วยเหลือ</h2>
-                    </div>
-
-                    <div className="pt-4">
-                        <DatePicker
-                            value={formData.care_date}
-                            onChange={(date) => setFormData(prev => ({ ...prev, care_date: date }))}
-                            label="วันที่ให้การดูแลช่วยเหลือ"
-                            placeholder="เลือกวันที่"
-                            icon={<Calendar size={14} />}
-                            className="max-w-xs"
-                        />
-                    </div>
-
-                    <div className="space-y-2 pt-6 border-t border-border/50">
-                        <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 block">
-                            ผลการประเมินด้วย 9Q และ 8Q (ถ้ามี)
-                        </label>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {/* 9Q Optional Assessment */}
-                            <div className={`p-6 rounded-3xl border transition-all ${formData.use_9q ? 'bg-card border-purple-200 shadow-sm' : 'bg-muted/10 border-dashed border-border'}`}>
-                                <div className="flex items-center justify-between mb-6">
-                                    <div className="flex items-center gap-3">
-                                        <div className={`p-2 rounded-lg ${formData.use_9q ? 'bg-purple-100 text-purple-600' : 'bg-muted text-muted-foreground'}`}>
-                                            <Brain size={20} />
-                                        </div>
-                                        <h3 className={`font-bold ${formData.use_9q ? 'text-foreground' : 'text-muted-foreground'}`}>แบบประเมิน 9Q</h3>
-                                    </div>
-                                    <label className="relative inline-flex items-center cursor-pointer">
-                                        <input 
-                                            type="checkbox" 
-                                            name="use_9q"
-                                            checked={formData.use_9q}
-                                            onChange={handleInputChange}
-                                            className="sr-only peer"
-                                        />
-                                        <div className="w-11 h-6 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                                    </label>
-                                </div>
-
-                                {formData.use_9q && (
-                                    <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                                        <div className="space-y-1.5">
-                                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">คะแนนรวม (0-27)</label>
-                                            <input
-                                                type="number"
-                                                name="q9_score"
-                                                value={formData.q9_score}
-                                                onChange={handleInputChange}
-                                                placeholder="ระบุคะแนน"
-                                                className="w-full bg-background border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-500 transition-all font-mono font-bold"
-                                            />
-                                        </div>
-                                        <div className={`p-3 rounded-xl border text-center text-[10px] font-black uppercase tracking-widest ${
-                                            formData.q9_result ? "bg-rose-50 border-rose-100 text-rose-600" : "bg-emerald-50 border-emerald-100 text-emerald-600"
-                                        }`}>
-                                            {formData.q9_result ? "เสี่ยง (คะแนน >= 7)" : "ปกติ (คะแนน < 7)"}
-                                        </div>
-                                    </div>
-                                )}
+                        {/* Section Header */}
+                        <div className="flex items-center gap-3 border-b border-border pb-4 mb-2">
+                            <div className="p-2 bg-teal-50 text-teal-600 rounded-lg">
+                                <MessageSquare size={20} />
                             </div>
-
-                            {/* 8Q Optional Assessment */}
-                            <div className={`p-6 rounded-3xl border transition-all ${formData.use_8q ? 'bg-card border-amber-200 shadow-sm' : 'bg-muted/10 border-dashed border-border'}`}>
-                                <div className="flex items-center justify-between mb-6">
-                                    <div className="flex items-center gap-3">
-                                        <div className={`p-2 rounded-lg ${formData.use_8q ? 'bg-amber-100 text-amber-600' : 'bg-muted text-muted-foreground'}`}>
-                                            <HeartPulse size={20} />
-                                        </div>
-                                        <h3 className={`font-bold ${formData.use_8q ? 'text-foreground' : 'text-muted-foreground'}`}>แบบประเมิน 8Q</h3>
-                                    </div>
-                                    <label className="relative inline-flex items-center cursor-pointer">
-                                        <input 
-                                            type="checkbox" 
-                                            name="use_8q"
-                                            checked={formData.use_8q}
-                                            onChange={handleInputChange}
-                                            className="sr-only peer"
-                                        />
-                                        <div className="w-11 h-6 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
-                                    </label>
-                                </div>
-
-                                {formData.use_8q && (
-                                    <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                                        <div className="space-y-1.5">
-                                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">คะแนนรวม (0-52)</label>
-                                            <input
-                                                type="number"
-                                                name="q8_score"
-                                                value={formData.q8_score}
-                                                onChange={handleInputChange}
-                                                placeholder="ระบุคะแนน"
-                                                className="w-full bg-background border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-500 transition-all font-mono font-bold"
-                                            />
-                                        </div>
-                                        <div className={`p-3 rounded-xl border text-center text-[10px] font-black uppercase tracking-widest ${
-                                            formData.q8_result ? "bg-rose-50 border-rose-100 text-rose-600" : "bg-emerald-50 border-emerald-100 text-emerald-600"
-                                        }`}>
-                                            {formData.q8_result ? "เสี่ยง (คะแนน >= 1)" : "ปกติ (คะแนน < 1)"}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
+                            <h2 className="text-lg font-bold text-foreground">การดูแลช่วยเหลือ</h2>
                         </div>
-                    </div>
 
-                    {/* Multiple Care Selection */}
-                    <div className="space-y-2 pt-6 border-t border-border/50">
-                        <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 block">
-                            รูปแบบการดูแลช่วยเหลือ (เลือกได้มากกว่า 1 รายการ)
-                        </label>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {(Object.keys(formData.care_selections) as Array<keyof typeof formData.care_selections>).map((type) => (
-                                <div 
-                                    key={type}
-                                    className={`p-5 rounded-3xl border transition-all duration-300 ${
-                                        formData.care_selections[type].active 
-                                            ? 'bg-card border-teal-200 shadow-md ring-1 ring-teal-100' 
-                                            : 'bg-muted/10 border-border hover:bg-muted/20'
-                                    }`}
-                                >
-                                    <div className="flex items-center justify-between mb-4">
+                        <div className="pt-4">
+                            <DatePicker
+                                value={formData.care_date}
+                                onChange={(date) => setFormData(prev => ({ ...prev, care_date: date }))}
+                                label="วันที่ให้การดูแลช่วยเหลือ"
+                                placeholder="เลือกวันที่"
+                                icon={<Calendar size={14} />}
+                                className="max-w-xs"
+                            />
+                        </div>
+
+                        <div className="space-y-2 pt-6 border-t border-border/50">
+                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 block">
+                                ผลการประเมินด้วย 9Q และ 8Q (ถ้ามี)
+                            </label>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                {/* 9Q Optional Assessment */}
+                                <div className={`p-6 rounded-3xl border transition-all ${formData.use_9q ? 'bg-card border-purple-200 shadow-sm' : 'bg-muted/10 border-dashed border-border'}`}>
+                                    <div className="flex items-center justify-between mb-6">
                                         <div className="flex items-center gap-3">
-                                            <div className={`p-2 rounded-xl ${formData.care_selections[type].active ? 'bg-teal-100 text-teal-600' : 'bg-muted text-muted-foreground'}`}>
-                                                {type === 'Referral'
-                                                    ? <Building2 size={18} />
-                                                    : type === 'FollowUp' ? <Activity size={18} />
-                                                    : type === 'Other' ? <Plus size={18} />
-                                                    : <MessageSquare size={18} />}
+                                            <div className={`p-2 rounded-lg ${formData.use_9q ? 'bg-purple-100 text-purple-600' : 'bg-muted text-muted-foreground'}`}>
+                                                <Brain size={20} />
                                             </div>
-                                            <span className={`font-bold text-sm ${formData.care_selections[type].active ? 'text-foreground' : 'text-muted-foreground'}`}>
-                                                {getCareLabel(type)}
-                                            </span>
+                                            <h3 className={`font-bold ${formData.use_9q ? 'text-foreground' : 'text-muted-foreground'}`}>แบบประเมิน 9Q</h3>
                                         </div>
                                         <label className="relative inline-flex items-center cursor-pointer">
                                             <input 
                                                 type="checkbox" 
-                                                checked={formData.care_selections[type].active}
-                                                onChange={() => handleCareToggle(type)}
+                                                name="use_9q"
+                                                checked={formData.use_9q}
+                                                onChange={handleInputChange}
                                                 className="sr-only peer"
                                             />
-                                            <div className="w-10 h-5 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-teal-600"></div>
+                                            <div className="w-11 h-6 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
                                         </label>
                                     </div>
 
-                                    {formData.care_selections[type].active && (
-                                        <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                                            <textarea
-                                                value={formData.care_selections[type].detail}
-                                                onChange={(e) => handleCareDetailChange(type, e.target.value)}
-                                                placeholder={`ระบุรายละเอียดสำหรับ${getCareLabel(type)}...`}
-                                                rows={2}
-                                                required
-                                                className="w-full bg-background border border-teal-100 rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-teal-50 focus:border-teal-400 transition-all resize-none font-medium"
-                                            ></textarea>
-                                            <p className="text-[10px] text-teal-600 mt-1.5 font-bold flex items-center gap-1">
-                                                <AlertCircle size={10} /> จำเป็นต้องระบุรายละเอียด
-                                            </p>
+                                    {formData.use_9q && (
+                                        <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                            <div className="space-y-1.5">
+                                                <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">คะแนนรวม (0-27)</label>
+                                                <input
+                                                    type="number"
+                                                    name="q9_score"
+                                                    value={formData.q9_score}
+                                                    onChange={handleInputChange}
+                                                    placeholder="ระบุคะแนน"
+                                                    className="w-full bg-background border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-500 transition-all font-mono font-bold"
+                                                />
+                                            </div>
+                                            <div className={`p-3 rounded-xl border text-center text-[10px] font-black uppercase tracking-widest ${
+                                                formData.q9_result ? "bg-rose-50 border-rose-100 text-rose-600" : "bg-emerald-50 border-emerald-100 text-emerald-600"
+                                            }`}>
+                                                {formData.q9_result ? "เสี่ยง (คะแนน >= 7)" : "ปกติ (คะแนน < 7)"}
+                                            </div>
                                         </div>
                                     )}
                                 </div>
-                            ))}
-                        </div>
-                    </div>
 
-                    <div className="pt-6 border-t border-border/50">
-                        <div className="space-y-1.5">
-                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 flex items-center gap-2">
-                                <MessageSquare size={14} className="text-primary" /> ปัญหา/สาเหตุ
+                                {/* 8Q Optional Assessment */}
+                                <div className={`p-6 rounded-3xl border transition-all ${formData.use_8q ? 'bg-card border-amber-200 shadow-sm' : 'bg-muted/10 border-dashed border-border'}`}>
+                                    <div className="flex items-center justify-between mb-6">
+                                        <div className="flex items-center gap-3">
+                                            <div className={`p-2 rounded-lg ${formData.use_8q ? 'bg-amber-100 text-amber-600' : 'bg-muted text-muted-foreground'}`}>
+                                                <HeartPulse size={20} />
+                                            </div>
+                                            <h3 className={`font-bold ${formData.use_8q ? 'text-foreground' : 'text-muted-foreground'}`}>แบบประเมิน 8Q</h3>
+                                        </div>
+                                        <label className="relative inline-flex items-center cursor-pointer">
+                                            <input 
+                                                type="checkbox" 
+                                                name="use_8q"
+                                                checked={formData.use_8q}
+                                                onChange={handleInputChange}
+                                                className="sr-only peer"
+                                            />
+                                            <div className="w-11 h-6 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
+                                        </label>
+                                    </div>
+
+                                    {formData.use_8q && (
+                                        <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                            <div className="space-y-1.5">
+                                                <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1">คะแนนรวม (0-52)</label>
+                                                <input
+                                                    type="number"
+                                                    name="q8_score"
+                                                    value={formData.q8_score}
+                                                    onChange={handleInputChange}
+                                                    placeholder="ระบุคะแนน"
+                                                    className="w-full bg-background border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-500 transition-all font-mono font-bold"
+                                                />
+                                            </div>
+                                            <div className={`p-3 rounded-xl border text-center text-[10px] font-black uppercase tracking-widest ${
+                                                formData.q8_result ? "bg-rose-50 border-rose-100 text-rose-600" : "bg-emerald-50 border-emerald-100 text-emerald-600"
+                                            }`}>
+                                                {formData.q8_result ? "เสี่ยง (คะแนน >= 1)" : "ปกติ (คะแนน < 1)"}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Multiple Care Selection */}
+                        <div className="space-y-2 pt-6 border-t border-border/50">
+                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 block">
+                                รูปแบบการดูแลช่วยเหลือ (เลือกได้มากกว่า 1 รายการ)
                             </label>
-                            <textarea
-                                name="remark"
-                                value={formData.remark}
-                                onChange={handleInputChange}
-                                placeholder="ระบุปัญหาหรือสาเหตุเพิ่มเติม (ถ้ามี)..."
-                                rows={3}
-                                className="w-full bg-muted/30 border border-border rounded-2xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none font-medium"
-                            ></textarea>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {(Object.keys(formData.care_selections) as Array<keyof typeof formData.care_selections>).map((type) => (
+                                    <div 
+                                        key={type}
+                                        className={`p-5 rounded-3xl border transition-all duration-300 ${
+                                            formData.care_selections[type].active 
+                                                ? 'bg-card border-teal-200 shadow-md ring-1 ring-teal-100' 
+                                                : 'bg-muted/10 border-border hover:bg-muted/20'
+                                        }`}
+                                    >
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`p-2 rounded-xl ${formData.care_selections[type].active ? 'bg-teal-100 text-teal-600' : 'bg-muted text-muted-foreground'}`}>
+                                                    {type === 'Referral'
+                                                        ? <Building2 size={18} />
+                                                        : type === 'FollowUp' ? <Activity size={18} />
+                                                        : type === 'Other' ? <Plus size={18} />
+                                                        : <MessageSquare size={18} />}
+                                                </div>
+                                                <span className={`font-bold text-sm ${formData.care_selections[type].active ? 'text-foreground' : 'text-muted-foreground'}`}>
+                                                    {getCareLabel(type)}
+                                                </span>
+                                            </div>
+                                            <label className="relative inline-flex items-center cursor-pointer">
+                                                <input 
+                                                    type="checkbox" 
+                                                    checked={formData.care_selections[type].active}
+                                                    onChange={() => handleCareToggle(type)}
+                                                    className="sr-only peer"
+                                                />
+                                                <div className="w-10 h-5 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-teal-600"></div>
+                                            </label>
+                                        </div>
+
+                                        {formData.care_selections[type].active && (
+                                            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                                <textarea
+                                                    value={formData.care_selections[type].detail}
+                                                    onChange={(e) => handleCareDetailChange(type, e.target.value)}
+                                                    placeholder={`ระบุรายละเอียดสำหรับ${getCareLabel(type)}...`}
+                                                    rows={2}
+                                                    required
+                                                    className="w-full bg-background border border-teal-100 rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-teal-50 focus:border-teal-400 transition-all resize-none font-medium"
+                                                ></textarea>
+                                                <p className="text-[10px] text-teal-600 mt-1.5 font-bold flex items-center gap-1">
+                                                    <AlertCircle size={10} /> จำเป็นต้องระบุรายละเอียด
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="pt-6 border-t border-border/50">
+                            <div className="space-y-1.5">
+                                <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 flex items-center gap-2">
+                                    <MessageSquare size={14} className="text-primary" /> ปัญหา/สาเหตุ
+                                </label>
+                                <textarea
+                                    name="remark"
+                                    value={formData.remark}
+                                    onChange={handleInputChange}
+                                    placeholder="ระบุปัญหาหรือสาเหตุเพิ่มเติม (ถ้ามี)..."
+                                    rows={3}
+                                    className="w-full bg-muted/30 border border-border rounded-2xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none font-medium"
+                                ></textarea>
+                            </div>
                         </div>
                     </div>
-                </div>
                 )}
 
                 {/* Submit Area */}

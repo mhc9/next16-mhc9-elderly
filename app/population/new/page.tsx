@@ -28,8 +28,10 @@ export default function NewPersonPage() {
     // Form State
     const [formData, setFormData] = useState({
         cid: "",
+        prefix: "นาย",
         firstname: "",
         lastname: "",
+        sex: "M",
         birth_date: "",
         telephone: "",
         mobile: "",
@@ -50,6 +52,16 @@ export default function NewPersonPage() {
     const [provinces, setProvinces] = useState<LocationOption[]>([]);
     const [districts, setDistricts] = useState<LocationOption[]>([]);
     const [subdistricts, setSubdistricts] = useState<LocationOption[]>([]);
+
+    const prefixOptions = [
+        { value: "นาย", label: "นาย" },
+        { value: "นาง", label: "นาง" },
+        { value: "นางสาว", label: "นางสาว" },
+        { value: "ด.ช.", label: "ด.ช." },
+        { value: "ด.ญ.", label: "ด.ญ." },
+        { value: "พระ", label: "พระ" }
+    ];
+    const sexes = ["M", "F"];
 
     useEffect(() => {
         async function fetchProvinces() {
@@ -129,6 +141,8 @@ export default function NewPersonPage() {
             return;
         }
 
+        console.log("payload:", payload);
+
         try {
             const res = await fetch("/api/population", {
                 method: "POST",
@@ -184,8 +198,8 @@ export default function NewPersonPage() {
                         <h2 className="text-lg font-bold text-foreground">ข้อมูลส่วนบุคคล</h2>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="md:col-span-1 space-y-1.5">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                        <div className="space-y-1.5 md:col-span-7">
                             <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 flex items-center gap-2">
                                 <CreditCard size={14} /> เลขบัตรประชาชน
                             </label>
@@ -199,7 +213,42 @@ export default function NewPersonPage() {
                                 maxLength={13}
                             />
                         </div>
-                        <div className="space-y-1.5">
+                        <div className="space-y-1.5 md:col-span-5">
+                            <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 block">
+                                เพศ
+                            </label>
+                            <div className="flex gap-2">
+                                {sexes.map(s => (
+                                    <button
+                                        key={s}
+                                        type="button"
+                                        onClick={() => setFormData(prev => ({ ...prev, sex: s }))}
+                                        className={`flex-1 py-3 rounded-xl border text-sm font-bold transition-all cursor-pointer ${
+                                            formData.sex === s 
+                                                ? "bg-primary text-white border-primary shadow-md" 
+                                                : "bg-muted/30 border-border text-muted-foreground hover:bg-muted/50"
+                                        }`}
+                                    >
+                                        {s === "M" ? "ชาย" : "หญิง"}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                        <div className="space-y-1.5 md:col-span-2">
+                            <SearchableSelect
+                                label="คำนำหน้า"
+                                placeholder="เลือก"
+                                options={prefixOptions}
+                                value={formData.prefix}
+                                onChange={(val) => handleSelectChange("prefix", val)}
+                                clearable={false}
+                                searchable
+                            />
+                        </div>
+                        <div className="space-y-1.5 md:col-span-5">
                             <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 flex items-center gap-2">
                                 <User size={14} /> ชื่อ
                             </label>
@@ -213,7 +262,7 @@ export default function NewPersonPage() {
                                 className="w-full bg-muted/30 border border-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                             />
                         </div>
-                        <div className="space-y-1.5">
+                        <div className="space-y-1.5 md:col-span-5">
                             <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider pl-1 flex items-center gap-2">
                                 <Users size={14} /> นามสกุล
                             </label>
