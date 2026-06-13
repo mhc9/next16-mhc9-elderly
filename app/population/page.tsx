@@ -226,6 +226,7 @@ export default function PopulationPage() {
                                 value={provinceFilter === "all" ? "" : provinceFilter}
                                 onChange={(val) => setProvinceFilter(val || "all")}
                                 icon={<MapPin size={18} className="text-muted-foreground" />}
+                                prefixIcon={<MapPin size={18} />}
                                 searchable
                                 clearable
                             />
@@ -239,6 +240,7 @@ export default function PopulationPage() {
                                 onChange={(val) => setDistrictFilter(val || "all")}
                                 disabled={districts.length === 0}
                                 icon={<MapPin size={18} className="text-muted-foreground" />}
+                                prefixIcon={<MapPin size={18} />}
                                 searchable
                                 clearable
                             />
@@ -251,6 +253,7 @@ export default function PopulationPage() {
                                 value={hcodeFilter === "all" ? "" : hcodeFilter}
                                 onChange={(val) => setHcodeFilter(val || "all")}
                                 icon={<Building2 size={18} className="text-muted-foreground" />}
+                                prefixIcon={<Building2 size={18} />}
                                 searchable
                                 clearable
                             />
