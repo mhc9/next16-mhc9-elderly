@@ -10,6 +10,7 @@ import {
 import { calculateAge } from "@/lib/utils/calculation";
 import { ActionMenu, MenuItem } from "@/components/ui/ActionMenu";
 import { useSession } from "next-auth/react";
+import SearchableSelect from "@/components/ui/forms/SearchableSelect";
 
 interface LocationOption {
     id: number;
@@ -218,53 +219,41 @@ export default function PopulationPage() {
 
                 {isAdmin && (
                     <>
-                        <div className="relative group">
-                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
-                                <MapPin size={18} />
-                            </div>
-                            <select
-                                value={provinceFilter}
-                                onChange={(e) => setProvinceFilter(e.target.value)}
-                                className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
-                            >
-                                <option value="all">ทุกจังหวัด</option>
-                                {provinces.map(p => (
-                                    <option key={p.id} value={p.id}>{p.name}</option>
-                                ))}
-                            </select>
+                        <div className="md:col-span-1">
+                            <SearchableSelect
+                                placeholder="ทุกจังหวัด"
+                                options={provinces.map(p => ({ value: p.id.toString(), label: p.name }))}
+                                value={provinceFilter === "all" ? "" : provinceFilter}
+                                onChange={(val) => setProvinceFilter(val || "all")}
+                                icon={<MapPin size={18} className="text-muted-foreground" />}
+                                searchable
+                                clearable
+                            />
                         </div>
 
-                        <div className="relative group">
-                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
-                                <MapPin size={18} />
-                            </div>
-                            <select
-                                value={districtFilter}
-                                onChange={(e) => setDistrictFilter(e.target.value)}
+                        <div className="md:col-span-1">
+                            <SearchableSelect
+                                placeholder="ทุกอำเภอ"
+                                options={districts.map(d => ({ value: d.id.toString(), label: d.name }))}
+                                value={districtFilter === "all" ? "" : districtFilter}
+                                onChange={(val) => setDistrictFilter(val || "all")}
                                 disabled={districts.length === 0}
-                                className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer disabled:opacity-50"
-                            >
-                                <option value="all">ทุกอำเภอ</option>
-                                {districts.map(d => (
-                                    <option key={d.id} value={d.id}>{d.name}</option>
-                                ))}
-                            </select>
+                                icon={<MapPin size={18} className="text-muted-foreground" />}
+                                searchable
+                                clearable
+                            />
                         </div>
 
-                        <div className="relative group">
-                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
-                                <Building2 size={18} />
-                            </div>
-                            <select
-                                value={hcodeFilter}
-                                onChange={(e) => setHcodeFilter(e.target.value)}
-                                className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
-                            >
-                                <option value="all">ทุกหน่วยบริการ</option>
-                                {hospitals.map(h => (
-                                    <option key={h.hcode} value={h.hcode}>{h.name}</option>
-                                ))}
-                            </select>
+                        <div className="md:col-span-1">
+                            <SearchableSelect
+                                placeholder="ทุกหน่วยบริการ"
+                                options={hospitals.map(h => ({ value: h.hcode, label: h.name }))}
+                                value={hcodeFilter === "all" ? "" : hcodeFilter}
+                                onChange={(val) => setHcodeFilter(val || "all")}
+                                icon={<Building2 size={18} className="text-muted-foreground" />}
+                                searchable
+                                clearable
+                            />
                         </div>
                     </>
                 )}
