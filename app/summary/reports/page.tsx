@@ -37,6 +37,16 @@ function SummaryReportsContent() {
     const [error, setError] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [yearFilter, setYearFilter] = useState<string>(initialYear);
+
+    // Set default year for ADMIN/SUPERADMIN
+    useEffect(() => {
+        const isInitialAll = !searchParams.get("year");
+        if (session?.user && session.user.role !== "USER" && isInitialAll && yearFilter === "all") {
+            const currentYearBE = (new Date().getFullYear() + 543).toString();
+            setYearFilter(currentYearBE);
+        }
+    }, [session]);
+
     const [provinceFilter, setProvinceFilter] = useState<string>(initialProvince);
     const [districtFilter, setDistrictFilter] = useState<string>(initialDistrict);
     const [currentPage, setCurrentPage] = useState(1);
