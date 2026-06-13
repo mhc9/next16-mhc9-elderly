@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Search, Filter, Calendar, Building2, MapPin, ChevronRight, ChevronLeft, Loader2, AlertCircle, Plus, ChartPie } from "lucide-react";
+import { Search, Filter, Calendar, Building2, MapPin, ChevronRight, ChevronLeft, Loader2, AlertCircle, Plus, ChartPie, Upload } from "lucide-react";
 import SearchableSelect from "@/components/ui/forms/SearchableSelect";
 
 interface SummaryReport {
@@ -132,13 +132,24 @@ function SummaryReportsContent() {
                         ภาพรวมผลการดำเนินงานการคัดกรองและการดูแลช่วยเหลือผู้สูงอายุ
                     </p>
                 </div>
-                <Link 
-                    href="/summary/reports/new"
-                    className="flex items-center gap-2 px-6 py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 shrink-0 whitespace-nowrap text-sm cursor-pointer"
-                >
-                    <Plus size={18} />
-                    สร้างรายงานใหม่
-                </Link>
+                <div className="flex items-center gap-3">
+                    {!isUser && (
+                        <Link 
+                            href="/summary/reports/upload"
+                            className="flex items-center gap-2 px-6 py-3 bg-card border border-border text-foreground font-bold rounded-xl hover:bg-muted transition-all shadow-sm shrink-0 whitespace-nowrap text-sm cursor-pointer"
+                        >
+                            <Upload size={18} />
+                            อัปโหลดไฟล์
+                        </Link>
+                    )}
+                    <Link 
+                        href="/summary/reports/new"
+                        className="flex items-center gap-2 px-6 py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 shrink-0 whitespace-nowrap text-sm cursor-pointer"
+                    >
+                        <Plus size={18} />
+                        สร้างรายงานใหม่
+                    </Link>
+                </div>
             </div>
 
             {error && (
