@@ -28,6 +28,7 @@ interface SearchableSelectProps {
   className?: string;
   label?: string;
   icon?: React.ReactNode;
+  prefixIcon?: React.ReactNode;
   error?: string;
   searchable?: boolean;
   searchPlaceholder?: string;
@@ -195,6 +196,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
   className = '',
   label,
   icon,
+  prefixIcon,
   error,
   searchable = false,
   searchPlaceholder = 'พิมพ์เพื่อค้นหา...',
@@ -658,10 +660,14 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
           }
         `}
       >
-        {/* Search Icon (when typing) */}
-        {typeToSearch && isTyping && (
+        {/* Prefix Icon / Search Icon */}
+        {typeToSearch && isTyping ? (
           <Search size={16} className="shrink-0 text-muted-foreground" />
-        )}
+        ) : prefixIcon ? (
+          <div className="shrink-0 text-muted-foreground">
+            {prefixIcon}
+          </div>
+        ) : null}
 
         {/* Input Field */}
         {typeToSearch ? (
@@ -748,10 +754,14 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
                 bg-card shadow-xl
               `}
             >
-              {/* Search Icon (when typing) */}
-              {typeToSearch && isTyping && (
+              {/* Prefix Icon / Search Icon */}
+              {typeToSearch && isTyping ? (
                 <Search size={16} className="shrink-0 text-muted-foreground" />
-              )}
+              ) : prefixIcon ? (
+                <div className="shrink-0 text-muted-foreground">
+                  {prefixIcon}
+                </div>
+              ) : null}
 
               {/* Input Field */}
               {typeToSearch ? (

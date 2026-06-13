@@ -161,7 +161,7 @@ function SummaryReportsContent() {
                                 options={provinces.map(p => ({ value: p, label: p }))}
                                 value={provinceFilter === "all" ? "" : provinceFilter}
                                 onChange={(val) => setProvinceFilter(val || "all")}
-                                icon={<MapPin size={18} className="text-muted-foreground" />}
+                                prefixIcon={<MapPin size={18} />}
                                 searchable
                                 clearable
                             />
@@ -174,7 +174,7 @@ function SummaryReportsContent() {
                                 value={districtFilter === "all" ? "" : districtFilter}
                                 onChange={(val) => setDistrictFilter(val || "all")}
                                 disabled={districts.length === 0}
-                                icon={<MapPin size={18} className="text-muted-foreground" />}
+                                prefixIcon={<MapPin size={18} />}
                                 searchable
                                 clearable
                             />
@@ -182,20 +182,16 @@ function SummaryReportsContent() {
                     </>
                 )}
 
-                <div className="relative group">
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
-                        <Calendar size={18} />
-                    </div>
-                    <select
-                        value={yearFilter}
-                        onChange={(e) => setYearFilter(e.target.value)}
-                        className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
-                    >
-                        <option value="all">ทุกปีงบประมาณ</option>
-                        {years.map(y => (
-                            <option key={y} value={y}>{y}</option>
-                        ))}
-                    </select>
+                <div className="md:col-span-1">
+                    <SearchableSelect
+                        placeholder="ทุกปีงบประมาณ"
+                        options={years.map(y => ({ value: y.toString(), label: y.toString() }))}
+                        value={yearFilter === "all" ? "" : yearFilter}
+                        onChange={(val) => setYearFilter(val || "all")}
+                        prefixIcon={<Calendar size={18} />}
+                        searchable
+                        clearable
+                    />
                 </div>
 
                 <div className="flex items-center justify-center gap-2 px-4 py-2.5 bg-muted/50 rounded-xl border border-border text-[12px] text-muted-foreground font-semibold uppercase tracking-wider">
