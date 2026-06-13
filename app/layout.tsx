@@ -13,7 +13,7 @@ const prompt = Prompt({
 });
 
 export const metadata: Metadata = {
-    title: "MHC9 Elder Care",
+    title: "MHC9 Elderly Care",
     description: "ระบบคัดกรองและดูแลสุขภาพผู้สูงอายุ เขตสุขภาพที่ 9",
 };
 

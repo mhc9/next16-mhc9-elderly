@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Search, Filter, Calendar, Building2, MapPin, ChevronRight, ChevronLeft, Loader2, AlertCircle, Plus, ChartPie } from "lucide-react";
+import SearchableSelect from "@/components/ui/forms/SearchableSelect";
 
 interface SummaryReport {
     id: number;
@@ -154,37 +155,29 @@ function SummaryReportsContent() {
                             />
                         </div>
 
-                        <div className="relative group">
-                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
-                                <MapPin size={18} />
-                            </div>
-                            <select
-                                value={provinceFilter}
-                                onChange={(e) => setProvinceFilter(e.target.value)}
-                                className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
-                            >
-                                <option value="all">ทุกจังหวัด</option>
-                                {provinces.map(p => (
-                                    <option key={p} value={p}>{p}</option>
-                                ))}
-                            </select>
+                        <div className="md:col-span-1">
+                            <SearchableSelect
+                                placeholder="ทุกจังหวัด"
+                                options={provinces.map(p => ({ value: p, label: p }))}
+                                value={provinceFilter === "all" ? "" : provinceFilter}
+                                onChange={(val) => setProvinceFilter(val || "all")}
+                                icon={<MapPin size={18} className="text-muted-foreground" />}
+                                searchable
+                                clearable
+                            />
                         </div>
 
-                        <div className="relative group">
-                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors pointer-events-none">
-                                <MapPin size={18} />
-                            </div>
-                            <select
-                                value={districtFilter}
-                                onChange={(e) => setDistrictFilter(e.target.value)}
+                        <div className="md:col-span-1">
+                            <SearchableSelect
+                                placeholder="ทุกอำเภอ"
+                                options={districts.map(d => ({ value: d, label: d }))}
+                                value={districtFilter === "all" ? "" : districtFilter}
+                                onChange={(val) => setDistrictFilter(val || "all")}
                                 disabled={districts.length === 0}
-                                className="w-full bg-muted/30 border border-border rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer disabled:opacity-50"
-                            >
-                                <option value="all">ทุกอำเภอ</option>
-                                {districts.map(d => (
-                                    <option key={d} value={d}>{d}</option>
-                                ))}
-                            </select>
+                                icon={<MapPin size={18} className="text-muted-foreground" />}
+                                searchable
+                                clearable
+                            />
                         </div>
                     </>
                 )}
