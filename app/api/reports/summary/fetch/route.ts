@@ -107,7 +107,7 @@ export async function GET(req: Request) {
                 screened: report.screened_total,
                 coverage: report.target_population > 0 ? (report.screened_total / report.target_population * 100) : 0
             }))
-            .sort((a, b) => b.coverage - a.coverage)
+            .sort((a: any, b: any) => b.coverage - a.coverage)
             .slice(0, 5);
 
         return NextResponse.json({
