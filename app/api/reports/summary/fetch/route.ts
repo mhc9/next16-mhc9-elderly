@@ -28,10 +28,10 @@ export async function GET(req: Request) {
         });
 
         // ... (Summary Cards, Funnel, Assessments, Care Distribution remain the same)
-        const totalTarget = reports.reduce((acc, curr) => acc + curr.target_population, 0);
-        const totalScreened = reports.reduce((acc, curr) => acc + curr.screened_total, 0);
-        const totalRisk = reports.reduce((acc, curr) => acc + curr.screened_risk, 0);
-        const totalCare = reports.reduce((acc, curr) => acc + curr.care_total, 0);
+        const totalTarget = reports.reduce((acc: number, curr: any) => acc + curr.target_population, 0);
+        const totalScreened = reports.reduce((acc: number, curr: any) => acc + curr.screened_total, 0);
+        const totalRisk = reports.reduce((acc: number, curr: any) => acc + curr.screened_risk, 0);
+        const totalCare = reports.reduce((acc: number, curr: any) => acc + curr.care_total, 0);
 
         const screeningCoverage = totalTarget > 0 ? (totalScreened / totalTarget) * 100 : 0;
         const riskDetectionRate = totalScreened > 0 ? (totalRisk / totalScreened) * 100 : 0;
@@ -44,18 +44,18 @@ export async function GET(req: Request) {
             { name: "ได้รับดูแล", value: totalCare },
         ];
 
-        const total9QNormal = reports.reduce((acc, curr) => acc + curr.assess_9q_normal, 0);
-        const total9QRisk = reports.reduce((acc, curr) => acc + curr.assess_9q_risk, 0);
-        const total8QNormal = reports.reduce((acc, curr) => acc + curr.assess_8q_normal, 0);
-        const total8QRisk = reports.reduce((acc, curr) => acc + curr.assess_8q_risk, 0);
+        const total9QNormal = reports.reduce((acc: number, curr: any) => acc + curr.assess_9q_normal, 0);
+        const total9QRisk = reports.reduce((acc: number, curr: any) => acc + curr.assess_9q_risk, 0);
+        const total8QNormal = reports.reduce((acc: number, curr: any) => acc + curr.assess_8q_normal, 0);
+        const total8QRisk = reports.reduce((acc: number, curr: any) => acc + curr.assess_8q_risk, 0);
 
         const assessments = [
             { name: "9Q (ภาวะซึมเศร้า)", normal: total9QNormal, risk: total9QRisk },
             { name: "8Q (ความเสี่ยงฆ่าตัวตาย)", normal: total8QNormal, risk: total8QRisk },
         ];
 
-        const totalCounseling = reports.reduce((acc, curr) => acc + curr.care_counseling, 0);
-        const totalReferral = reports.reduce((acc, curr) => acc + curr.care_referral, 0);
+        const totalCounseling = reports.reduce((acc: number, curr: any) => acc + curr.care_counseling, 0);
+        const totalReferral = reports.reduce((acc: number, curr: any) => acc + curr.care_referral, 0);
         
         const careTypes = [
             { name: "การให้คำปรึกษา", value: totalCounseling },
