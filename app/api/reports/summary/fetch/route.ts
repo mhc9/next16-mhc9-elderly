@@ -67,7 +67,7 @@ export async function GET(req: Request) {
         const districtMap = new Map();
         const provinceSet = new Set<string>();
 
-        reports.forEach(report => {
+        reports.forEach((report: any) => {
             const districtName = report.hospital?.district?.name || "ไม่ระบุ";
             const provinceName = report.hospital?.province?.name || "ไม่ระบุ";
             
