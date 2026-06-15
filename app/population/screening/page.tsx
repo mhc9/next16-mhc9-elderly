@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { 
     ClipboardCheck, Search, Building2, ChevronRight, ChevronLeft, 
     Loader2, AlertCircle, Plus, Activity, Brain, HeartPulse, ArrowLeft,
@@ -42,7 +42,7 @@ interface Screening {
     };
 }
 
-export default function ScreeningListPage() {
+function ScreeningListContent() {
     const { data: session } = useSession();
     const user = session?.user;
     const isAdmin = user?.role === "ADMIN" || user?.role === "SUPERADMIN";
@@ -457,5 +457,20 @@ export default function ScreeningListPage() {
                 )}
             </div>
         </div>
+    );
+}
+
+export default function ScreeningListPage() {
+    return (
+        <Suspense fallback={
+            <div className="p-6 space-y-6 animate-in fade-in duration-700">
+                <div className="flex flex-col items-center justify-center min-h-[40vh] gap-4">
+                    <Loader2 size={40} className="animate-spin text-primary" />
+                    <p className="text-muted-foreground">กำลังโหลดรายการคัดกรอง...</p>
+                </div>
+            </div>
+        }>
+            <ScreeningListContent />
+        </Suspense>
     );
 }

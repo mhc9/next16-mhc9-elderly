@@ -16,7 +16,7 @@ import "moment/locale/th";
 interface Screening {
     id: number;
     screen_date: string;
-    q2_result: boolean;
+    q2_result: string | null;
     q9_score: number | null;
     q9_result: boolean | null;
     q8_score: number | null;
@@ -288,8 +288,7 @@ export default function PersonDetailPage() {
                                                         <div className="flex items-center gap-1.5">
                                                             <span className="text-xs text-muted-foreground">ผล 2Q plus:</span>
                                                             <span className={`text-xs font-bold ${s.q2_result === "NORMAL" ? "text-emerald-600" : "text-rose-600"}`}>
-                                                                {s.q2_result === "NORMAL" ? "ปกติ" : 
-                                                                 s.q2_result === "RISK_Q12" ? "เสี่ยง Q1/Q2" : "เสี่ยง Q3"}
+                                                                {s.q2_result === "NORMAL" ? "ปกติ" : s.q2_result === "RISK_Q12" ? "เสี่ยง Q1/Q2" : "เสี่ยง Q3"}
                                                             </span>
                                                         </div>
                                                         {(s.q9_score !== null) && (

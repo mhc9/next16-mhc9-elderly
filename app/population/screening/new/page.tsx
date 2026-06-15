@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { 
     ArrowLeft, Save, Loader2, AlertCircle, 
@@ -25,7 +25,7 @@ interface PersonOption {
     hospital?: { name: string };
 }
 
-export default function NewScreeningPage() {
+function NewScreeningContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const pidFromUrl = searchParams.get("pid");
@@ -631,5 +631,18 @@ export default function NewScreeningPage() {
                 onSelect={handlePersonSelect}
             />
         </div>
+    );
+}
+
+export default function NewScreeningPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 animate-in fade-in duration-500">
+                <Loader2 size={40} className="animate-spin text-primary" />
+                <p className="text-muted-foreground">กำลังโหลดแบบคัดกรอง...</p>
+            </div>
+        }>
+            <NewScreeningContent />
+        </Suspense>
     );
 }

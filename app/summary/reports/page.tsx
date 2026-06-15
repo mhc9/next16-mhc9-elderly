@@ -179,7 +179,7 @@ function SummaryReportsContent() {
                         <div className="md:col-span-1">
                             <SearchableSelect
                                 placeholder="ทุกจังหวัด"
-                                options={provinces.map(p => ({ value: p, label: p }))}
+                                options={provinces.map(p => ({ value: p as string, label: p as string }))}
                                 value={provinceFilter === "all" ? "" : provinceFilter}
                                 onChange={(val) => setProvinceFilter(val || "all")}
                                 prefixIcon={<MapPin size={18} />}
@@ -191,7 +191,7 @@ function SummaryReportsContent() {
                         <div className="md:col-span-1">
                             <SearchableSelect
                                 placeholder="ทุกอำเภอ"
-                                options={districts.map(d => ({ value: d, label: d }))}
+                                options={districts.map(d => ({ value: d as string, label: d as string }))}
                                 value={districtFilter === "all" ? "" : districtFilter}
                                 onChange={(val) => setDistrictFilter(val || "all")}
                                 disabled={districts.length === 0}

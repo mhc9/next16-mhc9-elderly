@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
@@ -11,7 +11,7 @@ interface ValidationErrors {
     password?: string;
 }
 
-export default function LoginPage() {
+function LoginContent() {
     const searchParams = useSearchParams();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -193,5 +193,20 @@ export default function LoginPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-[80vh] flex items-center justify-center p-4">
+                <div className="w-full max-w-md p-8 text-center">
+                    <Loader2 size={40} className="animate-spin text-primary mx-auto mb-4" />
+                    <p className="text-muted-foreground">Loading login form...</p>
+                </div>
+            </div>
+        }>
+            <LoginContent />
+        </Suspense>
     );
 }
