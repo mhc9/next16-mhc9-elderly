@@ -201,7 +201,7 @@ model Person {
     telephone          String?      @db.VarChar(20)
     mobile             String?      @db.VarChar(20)
     email              String?      @db.VarChar(100)
-    hcode              String
+    hcode              String       @db.VarChar(9)
 
     subdistrict        Subdistrict? @relation(fields: [subdistrict_id], references: [id])
     district           District?    @relation(fields: [district_id], references: [id])
