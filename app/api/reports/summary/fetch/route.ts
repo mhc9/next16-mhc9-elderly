@@ -98,7 +98,7 @@ export async function GET(req: Request) {
 
         // 6. Top 5 Hospitals by Coverage
         const topScreenings = reports
-            .map(report => ({
+            .map((report: any) => ({
                 hcode: report.hcode,
                 name: report.hospital?.name || "ไม่ระบุ",
                 district: report.hospital?.district?.name || "ไม่ระบุ",
