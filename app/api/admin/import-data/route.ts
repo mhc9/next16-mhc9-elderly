@@ -50,7 +50,7 @@ export async function POST() {
         const validHospitals = await prisma.hospital.findMany({
             select: { hcode: true }
         });
-        const validHcodes = new Set(validHospitals.map(h => h.hcode));
+        const validHcodes = new Set(validHospitals.map((h: any) => h.hcode));
 
         for (const line of dataRows) {
             const parts = line.split(",");
