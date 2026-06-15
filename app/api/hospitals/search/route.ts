@@ -52,7 +52,7 @@ export async function GET(req: Request) {
 
         // Filter hospitals that have hcode value length more than 5 digits out
         const filteredHospitals = hospitals
-            .filter(h => h.hcode.length <= 5)
+            .filter((h: any) => h.hcode.length <= 5)
             .slice(0, 20);
 
         return NextResponse.json({ data: filteredHospitals });
