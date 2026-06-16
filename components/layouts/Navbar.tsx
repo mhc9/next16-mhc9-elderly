@@ -78,7 +78,7 @@ export default function Navbar() {
                         </NavDropdown>
 
                         <NavLink href="/summary/reports" icon={<ChartPie size={18} />} label="รายงาน" active={pathname.startsWith("/summary/reports")} />
-                        {(user?.role === "ADMIN" || user?.role === "SUPERADMIN") && (
+                        {user?.role === "SUPERADMIN" && (
                             <NavLink href="/admin/users" icon={<CircleUser size={18} />} label="ผู้ใช้งาน" active={pathname.startsWith("/admin/users")} />
                         )}
                     </div>
@@ -128,7 +128,7 @@ export default function Navbar() {
                                         <p className="text-sm font-bold text-foreground truncate">{user?.email}</p>
                                     </div>
                                     <MenuLink href={`/admin/users/${user?.id}`} icon={<CircleUser size={16} />} label="โปรไฟล์" />
-                                    {(user?.role === "ADMIN" || user?.role === "SUPERADMIN") && (
+                                    {user?.role === "SUPERADMIN" && (
                                         <MenuLink href="/admin/users" icon={<Users size={16} />} label="จัดการผู้ใช้งาน" />
                                     )}
                                     <MenuLink href="/settings" icon={<Settings size={16} />} label="การตั้งค่า" />
