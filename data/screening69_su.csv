@@ -1,4 +1,4 @@
-no,province_id,province,district,hcode,year,hospital name,target_population,screened_total,screened_normal,screened_risk,care_total,assess_9q_normal,assess_9q_risk,assess_8q_normal,assess_8q_risk,care_counseling,care_referral,followup_normal,followup_risk_q12,followup_risk_q3
+﻿no,province_id,province,district,hcode,year,hospital name,target_population,screened_total,screened_normal,screened_risk,care_total,assess_9q_normal,assess_9q_risk,assess_8q_normal,assess_8q_risk,care_counseling,care_referral,followup_normal,followup_risk_q12,followup_risk_q3
 1,32,สุรินทร์,กาบเชิง,03169,2569,โรงพยาบาลส่งเสริมสุขภาพตำบลคูตัน,550,15,12,3,,,,,,,,,,
 2,32,สุรินทร์,กาบเชิง,03170,2569,โรงพยาบาลส่งเสริมสุขภาพตำบลด่าน,1190,0,,,,,,,,,,,,
 3,32,สุรินทร์,กาบเชิง,03175,2569,โรงพยาบาลส่งเสริมสุขภาพตำบลตะเคียน,686,104,100,4,,,,,,,,,,
