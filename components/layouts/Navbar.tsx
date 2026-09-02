@@ -134,7 +134,7 @@ export default function Navbar() {
                                     <MenuLink href="/settings" icon={<Settings size={16} />} label="การตั้งค่า" />
                                     <div className="border-t border-border mt-1 pt-1">
                                         <button 
-                                            onClick={() => signOut({ callbackUrl: "/login" })}
+                                            onClick={() => signOut({ callbackUrl: "/" })}
                                             className="w-full text-left cursor-pointer"
                                         >
                                             <MenuLink href="#" icon={<LogOut size={16} />} label="ออกจากระบบ" variant="danger" />
