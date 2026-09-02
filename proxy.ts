@@ -5,18 +5,22 @@ export default auth((req: NextRequest) => {
     const isLoggedIn = !!(req as any).auth
     const { nextUrl } = req
 
-    const isDashboardRoute = nextUrl.pathname.startsWith("/")
+    const isDashboardRoute = nextUrl.pathname === "/" || nextUrl.pathname.startsWith("/dashboard")
     const isApiAiRoute = nextUrl.pathname.startsWith("/api/ai")
     const isSettingsRoute = nextUrl.pathname.startsWith("/settings")
     const isAdminRoute = nextUrl.pathname.startsWith("/admin/users")
-    const publicPaths = ['/login', '/register'] // Define public paths
+    
+    // Paths that only unauthenticated users should see (will redirect to / if logged in)
+    const unauthOnlyPaths = ['/login', '/register'] 
+    // Paths that everyone can see
+    const publicPaths = ['/']
 
-    if (!isLoggedIn && !publicPaths.includes(nextUrl.pathname)) {
+    if (!isLoggedIn && !unauthOnlyPaths.includes(nextUrl.pathname) && !publicPaths.includes(nextUrl.pathname)) {
         return Response.redirect(new URL("/login", nextUrl))
     }
 
-    if (isLoggedIn && publicPaths.includes(nextUrl.pathname)) {
-        return NextResponse.redirect(new URL('/', req.url)); // Redirect logged-in users from public pages
+    if (isLoggedIn && unauthOnlyPaths.includes(nextUrl.pathname)) {
+        return NextResponse.redirect(new URL('/', req.url)); 
     }
 
     // Role-based access control for /admin/users

@@ -145,6 +145,15 @@ export default function Navbar() {
                         </div>
                     </>
                 )}
+                
+                {!isLoggedIn && (
+                    <Link 
+                        href="/login" 
+                        className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-medium text-sm rounded-full hover:bg-primary/90 transition-colors shadow-sm cursor-pointer"
+                    >
+                        เข้าสู่ระบบ
+                    </Link>
+                )}
             </div>
         </nav>
     );
